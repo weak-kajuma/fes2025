@@ -1,0 +1,17 @@
+export default config = {
+  printWidth: 80,
+  tabWidth: 2,
+  useTabs: false,
+  semi: false,
+  singleQuote: false,
+  quoteProps: "as-needed",
+  jsxSingleQuote: false,
+  trailingComma: "all",
+  bracketSpacing: true,
+  bracketSameLine: false,
+  arrowParens: "avoid",
+  proseWrap: "preserve",
+  htmlWhitespaceSensitivity: "css",
+  endOfLine: "lf",
+  embeddedLanguageFormatting: "off",
+};
