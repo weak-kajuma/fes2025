@@ -1,0 +1,99 @@
+.about_btn {
+  display: flex;
+  justify-content: center;
+  width: 30%;
+}
+
+@media screen and (max-width: 768px) {
+  .about_btn {
+    width: 60%;
+  }
+
+}
+
+.flipBtn {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 90px;
+  perspective: 1000px;
+}
+
+.flipBtnInner {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.2s;
+  transform-origin: bottom center;
+}
+
+.flipBtnItem {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.9em 0 0.9em;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  border-radius: 6px;
+  backface-visibility: hidden;
+}
+
+@media screen and (max-width: 768px) {
+  .flipBtnItem {
+    font-size: 1rem;
+  }
+
+}
+
+.flipBtnFront {
+  color: #1A4274;
+  background-color: transparent;
+}
+
+.flipBtnBack {
+  top: 0;
+  color: #fff;
+  background-color: #1A4274;
+  transform: rotateX(90deg) translateY(-100%);
+  transform-origin: top center;
+}
+
+.flipBtnText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  font-weight: bold;
+}
+
+.flipBtnIcon {
+  display: flex;
+  margin-left: 0.9333em;
+  width: 0.4667em;
+}
+
+.flipBtnIcon svg {
+  width: 100%;
+  height: auto;
+}
+
+@media only screen and (min-width: 769px) and (hover:hover) and (pointer:fine) {
+  .flipBtn {
+    cursor: pointer;
+  }
+  .flipBtn:hover .flipBtnInner {
+    transform: rotateX(-90deg) translateY(50%);
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  /* スマホサイズでは常に裏面（フリップ後）を表示 */
+  .flipBtnInner {
+    transform: rotateX(-90deg) translateY(50%) !important;
+  }
+}
