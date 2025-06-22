@@ -226,10 +226,10 @@ export default function Home() {
           <h2 className={styles.search_title} ref={search_title_Ref}>SEARCH</h2>
           <div className={styles.function_wrapper}>
             <div className={styles.functionItems}>
-              <FunctionItem href="/function/map" className="function_map" title="マップ" icon="/icon/map.svg" ref={function_map_Ref} scroll={false}></FunctionItem>
-              <FunctionItem href="/function/timetable" className="function_timetable" title="タイムテーブル" icon="/icon/timetable.svg" ref={function_timetable_Ref} scroll={false}></FunctionItem>
-              <FunctionItem href="/function/allEvents" className="function_allEvents" title="企画一覧" icon="/icon/allEvents.svg" ref={function_allEvents_Ref} scroll={false}></FunctionItem>
-              <FunctionItem href="/function/pamphlet" className="function_pamphlet" title="パンフレット" icon="/icon/pamphlet.svg" ref={function_pamphlet_Ref} scroll={false}></FunctionItem>
+              <FunctionItem href="/map" className="function_map" title="マップ" icon="/icon/map.svg" ref={function_map_Ref} scroll={false}></FunctionItem>
+              <FunctionItem href="/timetable" className="function_timetable" title="タイムテーブル" icon="/icon/timetable.svg" ref={function_timetable_Ref} scroll={false}></FunctionItem>
+              <FunctionItem href="/allEvents" className="function_allEvents" title="企画一覧" icon="/icon/allEvents.svg" ref={function_allEvents_Ref} scroll={false}></FunctionItem>
+              <FunctionItem href="/pamphlet" className="function_pamphlet" title="パンフレット" icon="/icon/pamphlet.svg" ref={function_pamphlet_Ref} scroll={false}></FunctionItem>
             </div>
             <div className={styles.eventSearch} ref={eventSearch_Ref}>
               <a href="">
