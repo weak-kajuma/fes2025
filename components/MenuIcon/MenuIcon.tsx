@@ -112,7 +112,7 @@ export default function MenuIcon() {
       animation.current.play();
 
       // 背景のスクロールを無効化
-      document.body.style.overflow = "hidden";
+      // document.body.style.overflow = "hidden";
       content_Ref.current.style.pointerEvents = "auto";
     } else {
       closeMenu();

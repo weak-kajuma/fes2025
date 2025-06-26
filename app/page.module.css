@@ -43,6 +43,112 @@
       width: 100%;
     }
 
+    .countdown_wrapper {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background-color: #232323;
+      margin-bottom: 10vh;
+
+      h2 {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 3vw;
+        font-weight: 500;
+        margin-top: 9rem;
+        color: #fff;
+
+        @media screen and (max-width: 768px) {
+          font-size: 8vw;
+          margin-top: 12rem;
+        }
+      }
+
+      & > h3 {
+        position: absolute;
+        bottom: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2vw;
+        font-weight: 800;
+        margin-top: 12rem;
+        color: #fff;
+
+        @media screen and (max-width: 768px) {
+          font-size: 5vw;
+          margin-top: 15rem;
+        }
+      }
+
+      .time {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 1vw;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        h3 {
+          font-size: 10vw;
+          font-weight: 1000;
+          color: #fff;
+        }
+
+        p {
+          font-size: 2vw;
+          font-weight: 900;
+          color: #fff;
+          /* margin-top: 3.5vw; */
+        }
+
+        .countdown_number_mask {
+          background: linear-gradient(90deg, #ff8a00, #e52e71);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          color: transparent;
+
+          /* background: url('/background.png') center/cover no-repeat; */
+        }
+
+        @media screen and (max-width: 768px) {
+          flex-direction: column;
+          align-items: center;
+          gap: 2vw;
+        }
+
+        .time_top,
+        .time_bottom {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+
+          @media screen and (max-width: 768px) {
+            gap: 4vw;
+          }
+
+          & > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 2vw;
+
+            @media screen and (max-width: 768px) {
+              & > h3{
+                font-size: 18vw;
+              }
+              & > p {
+                font-size: 6vw;
+              }
+            }
+          }
+        }
+      }
+    }
+
     .title_wrapper {
       display: flex;
       justify-content: center;

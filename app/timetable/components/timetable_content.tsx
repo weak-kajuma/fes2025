@@ -18,29 +18,36 @@ interface EventData {
 // location文字列をCSSクラス名に適した形式に変換するヘルパー関数
 const formatLocationToClassName = (location: string | null): string => {
   if (!location) {
-    return styles.locationDefault || 'locationDefault'; // CSS Modulesのクラス名またはプレーンなクラス名
+    return styles.locationDefault; // ここは必ずCSS Modulesのクラス名
   }
-  // 例: "ステージA" -> "locationStageA"
-  // スペースを除去し、英字の最初の文字を大文字にするなど、適宜調整してください。
-  const sanitized = location.replace(/\s+/g, ''); // スペース除去
-  // CSS Modules を使っている場合、stylesオブジェクト経由でクラス名を取得
-  return styles[`location${sanitized}`] || styles.locationDefault || `location${sanitized}`;
+  const sanitized = location.replace(/\s+/g, '');
+  return styles[`location${sanitized}`] || styles.locationDefault;
 };
 
 export default function TimeTableContent ({ eventData }: { eventData: EventData }) {
 
   const locationClassName = formatLocationToClassName(eventData.location);
 
-  const getGridRow = (timeStr?: string | null) => {
-    if (!timeStr) return 2;
-    const [h, m] = timeStr.split(":").map(Number);
-    const baseMinutes = 8 * 60 + 30;
+  // Date型からgridRowを計算
+  const getGridRowFromDate = (date: Date | null) => {
+    if (!date) return 2;
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const baseMinutes = 8 * 60 + 30; // 8:30基準
     const eventMinutes = h * 60 + m;
     return 2 + (eventMinutes - baseMinutes);
   };
 
-  const gridRowStart = getGridRow(eventData.displayTimeStartTime);
-  const gridRowEnd = getGridRow(eventData.displayTimeEndTime);
+  const gridRowStart = getGridRowFromDate(eventData.startDate);
+  const gridRowEnd = getGridRowFromDate(eventData.endDate);
+
+  // 表示用時刻（サーバーで生成されていない場合はここで生成）
+  const formatTime = (date: Date | null) => {
+    if (!date) return '--:--';
+    const h = date.getHours().toString().padStart(2, '0');
+    const m = date.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m}`;
+  };
 
   return (
     <div
@@ -51,8 +58,7 @@ export default function TimeTableContent ({ eventData }: { eventData: EventData 
       }}
     >
       <p className={styles.time}>
-        {/* サーバーで生成された表示用時刻をそのまま表示 */}
-        {(eventData.displayTimeStartTime ?? '--:--') + ' - ' + (eventData.displayTimeEndTime ?? '--:--')}
+        {formatTime(eventData.startDate) + ' - ' + formatTime(eventData.endDate)}
       </p>
       <p className={styles.title}>{eventData.title ?? 'タイトルなし'}</p>
     </div>

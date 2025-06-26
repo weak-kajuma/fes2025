@@ -32,11 +32,11 @@ export async function getAllEventsForDate(
 
   // Supabaseから取得
   const { data, error } = await supabase
-    .from('events')
+    .from('Event')
     .select(`*`)
-    // .gte('startDate', dateStart.toISOString())
-    // .lte('startDate', dateEnd.toISOString())
-    // .in('locationType', allAreaValues);
+    .gte('startDate', dateStart.toISOString())
+    .lte('startDate', dateEnd.toISOString())
+    .in('locationType', allAreaValues);
 
   console.log("Supabase fetch result:", { data, error });
 
@@ -56,7 +56,7 @@ export async function getAllEventsForDate(
       description: event.description,
       startDate: event.startDate ? new Date(event.startDate) : null,
       endDate: event.endDate ? new Date(event.endDate) : null,
-      location: event.location,
+      location: event.locationType, // ←ここを追加
       imageUrl: event.imageUrl,
     });
   });

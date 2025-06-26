@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./page.module.css"
@@ -12,6 +12,39 @@ import { animateTextByChar } from "../utils/animateTextByChar";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
+  // カウントダウンの目標日時を設定
+  const targetDate = new Date("2025-09-20T06:30:00+09:00");
+  const formattedTargetDate = `${targetDate.getMonth() + 1}/${targetDate.getDate()} ${targetDate.getHours()}:${String(targetDate.getMinutes()).padStart(2, "0")}`;
+
+  // カウントダウン状態
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // カウントダウン計算
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime();
+      if (diff <= 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      setCountdown({ days, hours, minutes, seconds });
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, []); // ←依存配列は空でOK
+
   const home_wrapper_Ref = useRef<HTMLElement>(null);
   const title_wrapper_Ref = useRef<HTMLDivElement>(null);
   const search_wrapper_Ref = useRef<HTMLElement>(null);
@@ -196,7 +229,33 @@ export default function Home() {
   return (
     <div className={styles.main}>
       <section className={styles.home_wrapper} ref={home_wrapper_Ref}>
-        <div className={styles.h}></div>
+        <div className={styles.countdown_wrapper}>
+          <h2 className="mincho">青霞祭</h2>
+          <div className={styles.time}>
+            <div className={styles.time_top}>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.days).padStart(2, "0")}</h3>
+                <p>days</p>
+              </div>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.hours).padStart(2, "0")}</h3>
+                <p>hrs</p>
+              </div>
+            </div>
+            <div className={styles.time_bottom}>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.minutes).padStart(2, "0")}</h3>
+                <p>min</p>
+              </div>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.seconds).padStart(2, "0")}</h3>
+                <p>sec</p>
+              </div>
+            </div>
+          </div>
+          <h3>{formattedTargetDate}</h3>
+        </div>
+
         <div className={styles.title_wrapper} ref={title_wrapper_Ref}>
           <div className={styles.title_content}>
             <div className={styles.title_image}></div>
@@ -212,6 +271,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+
         <div className={styles.about_wrapper}>
           <div className={styles.logo_target} ref={logo_target_Ref}></div>
           <div className={styles.about_content}></div>

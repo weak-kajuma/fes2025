@@ -286,6 +286,7 @@
         }
         &:nth-of-type(15) {
           grid-row: 32;
+          height: 2.5px;
         }
         &:nth-of-type(16) {
           grid-row: 62;

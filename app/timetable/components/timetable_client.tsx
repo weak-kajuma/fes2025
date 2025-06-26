@@ -201,8 +201,13 @@ export default function Timetable_Client() {
                 setSelectedArea(prev => {
                   const idx = prev.indexOf(areaOpt.value);
                   const newSelected = [...prev];
-                  if (idx > -1) newSelected.splice(idx, 1);
-                  else {
+                  // 選択解除は、選択数がmaxSelectableAreasより大きい時だけ許可
+                  if (idx > -1) {
+                    if (newSelected.length > maxSelectableAreas) {
+                      newSelected.splice(idx, 1);
+                    }
+                    // それ未満の時は何もしない
+                  } else {
                     if (newSelected.length >= maxSelectableAreas && maxSelectableAreas > 0) newSelected.shift();
                     if (maxSelectableAreas > 0) newSelected.push(areaOpt.value);
                   }
