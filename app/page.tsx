@@ -229,6 +229,7 @@ export default function Home() {
   return (
     <div className={styles.main}>
       <section className={styles.home_wrapper} ref={home_wrapper_Ref}>
+        {/* <div className={styles.h}></div> */}
         <div className={styles.countdown_wrapper}>
           <h2 className="mincho">青霞祭</h2>
           <div className={styles.time}>
@@ -274,7 +275,11 @@ export default function Home() {
 
         <div className={styles.about_wrapper}>
           <div className={styles.logo_target} ref={logo_target_Ref}></div>
-          <div className={styles.about_content}></div>
+
+          <div className={styles.about_content}>
+            <p className={styles.about_text}>概要など</p>
+          </div>
+
           <div className={styles.about_btn}>
             <FlipButton front="LEAN MORE" back="LEAN MORE" />
           </div>
@@ -292,7 +297,7 @@ export default function Home() {
               <FunctionItem href="/pamphlet" className="function_pamphlet" title="パンフレット" icon="/icon/pamphlet.svg" ref={function_pamphlet_Ref} scroll={false}></FunctionItem>
             </div>
             <div className={styles.eventSearch} ref={eventSearch_Ref}>
-              <a href="">
+              <a href="/search">
                 <div className={styles.eventSearch_inner}>
                   <div className={styles.icon_wrapper}>
                     <img src="/icon/search.svg" alt="search" className={styles.search_icon} />

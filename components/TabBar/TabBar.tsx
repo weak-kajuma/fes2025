@@ -49,7 +49,7 @@ export default function TabBar() {
         <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false}>
           <img src="/icon/timetable.svg" alt="timetable" className={styles.icon_svg} />
         </Link>
-        <Link className={`${styles.item} ${styles.search}`} href="" scroll={false}>
+        <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false}>
           <img src="/icon/search.svg" alt="search" className={styles.icon_svg} />
         </Link>
         <Link className={`${styles.item} ${styles.user}`} href="" scroll={false}>

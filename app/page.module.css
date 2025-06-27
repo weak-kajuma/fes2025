@@ -287,11 +287,16 @@
       }
 
       .about_content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
         width: 80vw;
         max-width: 1200px;
         height: 50vh;
-        background-color: #ffd3d3;
         margin-top: 10vh;
+        font-size: 1vw;
       }
 
       .about_btn {
