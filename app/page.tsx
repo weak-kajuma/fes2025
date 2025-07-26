@@ -1,20 +1,22 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image"; // 追加
+import { useEffect, useRef, useState } from "react";
+
 import styles from "./page.module.css"
-import Logo from "../components/Logo";
 import FlipButton from "../components/FlipButton/FlipButton";
 import FunctionItem from "../components/FunctionItem/FunctionItem";
+import Logo from "../components/Logo";
 import { animateTextByChar } from "../utils/animateTextByChar";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   // カウントダウンの目標日時を設定
-  const targetDate = new Date("2025-09-20T06:30:00+09:00");
-  const formattedTargetDate = `${targetDate.getMonth() + 1}/${targetDate.getDate()} ${targetDate.getHours()}:${String(targetDate.getMinutes()).padStart(2, "0")}`;
+  const targetDate = new Date("2025-09-20T09:00:00+09:00");
+  const formattedTargetDate = `${String(targetDate.getMonth() + 1)}/${String(targetDate.getDate())} ${String(targetDate.getHours())}:${String(targetDate.getMinutes()).padStart(2, "0")}`;
 
   // カウントダウン状態
   const [countdown, setCountdown] = useState({
@@ -42,8 +44,8 @@ export default function Home() {
 
     updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
-    return () => clearInterval(timer);
-  }, []); // ←依存配列は空でOK
+    return () => { clearInterval(timer); };
+  }, []); // ← 依存配列を空に
 
   const home_wrapper_Ref = useRef<HTMLElement>(null);
   const title_wrapper_Ref = useRef<HTMLDivElement>(null);
@@ -77,7 +79,7 @@ export default function Home() {
       // gsap.context を使用してアニメーションと ScrollTrigger を管理
       mainContext.current = gsap.context(() => {
         ScrollTrigger.create({
-          trigger: home_wrapper_Ref.current!, // Non-null assertion operator (!) を追加
+          trigger: home_wrapper_Ref.current,
           start: "bottom bottom",
           end: "bottom top",
           pin: true,
@@ -85,7 +87,7 @@ export default function Home() {
         });
 
         ScrollTrigger.create({
-          trigger: search_wrapper_Ref.current!, // Non-null assertion operator (!) を追加
+          trigger: search_wrapper_Ref.current,
           start: "bottom bottom",
           end: "bottom top",
           pin: true,
@@ -93,7 +95,7 @@ export default function Home() {
         });
 
         ScrollTrigger.create({
-          trigger: guide_wrapper_Ref.current!, // Non-null assertion operator (!) を追加
+          trigger: guide_wrapper_Ref.current,
           start: "bottom bottom",
           pin: true,
           pinSpacing: false,
@@ -104,8 +106,9 @@ export default function Home() {
           { x: 0, y: 0 },
           {
             x: () => {
-              const targetRect = logo_target_Ref.current!.getBoundingClientRect();
-              const logoRect = logo_Ref.current!.getBoundingClientRect();
+              const targetRect = logo_target_Ref.current?.getBoundingClientRect();
+              const logoRect = logo_Ref.current?.getBoundingClientRect();
+              if (!targetRect || !logoRect) return 0;
               return (
                 targetRect.left +
                 targetRect.width / 2 -
@@ -113,8 +116,9 @@ export default function Home() {
               );
             },
             y: () => {
-              const targetRect = logo_target_Ref.current!.getBoundingClientRect();
-              const logoRect = logo_Ref.current!.getBoundingClientRect();
+              const targetRect = logo_target_Ref.current?.getBoundingClientRect();
+              const logoRect = logo_Ref.current?.getBoundingClientRect();
+              if (!targetRect || !logoRect) return 0;
               return (
                 targetRect.top +
                 targetRect.height / 2 -
@@ -123,7 +127,7 @@ export default function Home() {
             },
             scale: 1.2,
             scrollTrigger: {
-              trigger: title_wrapper_Ref.current!, // Non-null assertion operator (!) を追加
+              trigger: title_wrapper_Ref.current,
               start: "top top",
               end: "bottom top",
               scrub: 1.2,
@@ -132,27 +136,30 @@ export default function Home() {
           }
         )
 
-        gsap.fromTo(
-          logo_Ref.current!.querySelectorAll("path"), // Non-null assertion operator (!) を追加
-          { fill: "#fff" },
-          {
-            fill: "#2A2948",
-            scrollTrigger: {
-              trigger: title_wrapper_Ref.current!, // Non-null assertion operator (!) を追加
-              start: "top top",
-              end: "bottom top",
-              toggleActions: "play none none reverse",
-              scrub: 1.2,
-            },
-          }
-        )
+        const logoPaths = logo_Ref.current?.querySelectorAll("path");
+        if (logoPaths) {
+          gsap.fromTo(
+            logoPaths,
+            { fill: "#fff" },
+            {
+              fill: "#2A2948",
+              scrollTrigger: {
+                trigger: title_wrapper_Ref.current,
+                start: "top top",
+                end: "bottom top",
+                toggleActions: "play none none reverse",
+                scrub: 1.2,
+              },
+            }
+          );
+        }
 
         const pElements = title_wrapper_Ref.current?.querySelectorAll("p");
         if (pElements) {
           const allSpans: HTMLElement[] = [];
 
           pElements.forEach((p) => {
-            const text = p.textContent || "";
+            const text = p.textContent ?? "";
             p.innerHTML = "";
             text.split("").forEach((char) => {
               const span = document.createElement("span");
@@ -173,7 +180,7 @@ export default function Home() {
                 from: "start",
               },
               scrollTrigger: {
-                trigger: title_wrapper_Ref.current!, // Non-null assertion operator (!) を追加
+                trigger: title_wrapper_Ref.current,
                 start: "top top",
                 end: "center top",
                 scrub: 1.2,
@@ -201,7 +208,7 @@ export default function Home() {
 
         gsap.timeline({
           scrollTrigger: {
-            trigger: search_title_Ref.current!, // Non-null assertion operator (!) を追加
+            trigger: search_title_Ref.current,
             start: "top center",
             toggleActions: "play none none reverse",
           },
@@ -215,7 +222,7 @@ export default function Home() {
           });
 
         window.dispatchEvent(
-          new CustomEvent("searchWrapperReady", { detail: search_wrapper_Ref.current! }) // Non-null assertion operator (!) を追加
+          new CustomEvent("searchWrapperReady", { detail: search_wrapper_Ref.current })
         );
       }, home_wrapper_Ref); // スコープを指定
     }
@@ -300,7 +307,8 @@ export default function Home() {
               <a href="/search">
                 <div className={styles.eventSearch_inner}>
                   <div className={styles.icon_wrapper}>
-                    <img src="/icon/search.svg" alt="search" className={styles.search_icon} />
+                    {/* <img src="/icon/search.svg" alt="search" className={styles.search_icon} /> */}
+                    <Image src="/icon/search.svg" alt="search" className={styles.search_icon} width={24} height={24} />
                   </div>
                   <p>企画検索</p>
                 </div>

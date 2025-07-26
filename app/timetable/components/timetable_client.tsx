@@ -2,7 +2,7 @@
 
 import styles from "./timetable_client.module.css";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { getAllEventsForDate, EventsByLocation } from "./ServerAction";
+import { getEventsBySort, EventsByLocation } from "./ServerAction";
 import Link from "next/link";
 import TimeTableContent from "./timetable_content";
 
@@ -36,9 +36,11 @@ export default function Timetable_Client() {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      if (width > 1200 - 1) setMaxSelectableAreas(3);
-      else if (width > 768 - 1) setMaxSelectableAreas(2);
-      else setMaxSelectableAreas(1);
+      let newMax = 3;
+      if (width > 1200 - 1) newMax = 3;
+      else if (width > 768 - 1) newMax = 2;
+      else newMax = 1;
+      setMaxSelectableAreas(prev => prev !== newMax ? newMax : prev);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -47,39 +49,43 @@ export default function Timetable_Client() {
 
   // 初期データロード
   useEffect(() => {
+    let mounted = true;
     const fetchAllInitialData = async () => {
       setIsInitialLoading(true);
       setErrorLoading(null);
       try {
         const dataPromises = dateOptions.map(dateOpt =>
-          getAllEventsForDate(dateOpt.value, areaOptions.map(opt => opt.value), EVENT_YEAR, EVENT_MONTH)
+          getEventsBySort(dateOpt.value, areaOptions.map(opt => opt.value), EVENT_YEAR, EVENT_MONTH)
         );
         const results = await Promise.all(dataPromises);
         const newData: { [date: string]: EventsByLocation[] } = {};
         dateOptions.forEach((dateOpt, idx) => {
           newData[dateOpt.value] = results[idx];
         });
-        setAllEventsData(newData);
-        if (areaOptions.length > 0 && maxSelectableAreas > 0) {
-          setSelectedArea(areaOptions.slice(0, maxSelectableAreas).map(opt => opt.value));
+        if (mounted) {
+          setAllEventsData(prev => JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData);
+          if (areaOptions.length > 0 && maxSelectableAreas > 0) {
+            const initialArea = areaOptions.slice(0, maxSelectableAreas).map(opt => opt.value);
+            setSelectedArea(prev => JSON.stringify(prev) === JSON.stringify(initialArea) ? prev : initialArea);
+          }
         }
       } catch (err) {
-        setErrorLoading("タイムテーブル情報の読み込みに失敗しました。");
+        if (mounted) setErrorLoading("タイムテーブル情報の読み込みに失敗しました。");
       } finally {
-        setIsInitialLoading(false);
+        if (mounted) setIsInitialLoading(false);
       }
     };
     fetchAllInitialData();
-  }, [EVENT_YEAR, EVENT_MONTH]);
+    return () => { mounted = false; };
+  }, [EVENT_YEAR, EVENT_MONTH, maxSelectableAreas]);
 
   // 日付・データ変更時の表示更新
   useEffect(() => {
     if (selectedDate && allEventsData[selectedDate]) {
-      startTransitionDate(() => {
-        setCurrentDisplayEvents(allEventsData[selectedDate] || []);
-      });
+      const newEvents = allEventsData[selectedDate] || [];
+      setCurrentDisplayEvents(prev => JSON.stringify(prev) === JSON.stringify(newEvents) ? prev : newEvents);
     } else if (selectedDate && !allEventsData[selectedDate] && !isInitialLoading) {
-      startTransitionDate(() => setCurrentDisplayEvents([]));
+      setCurrentDisplayEvents(prev => prev.length === 0 ? prev : []);
     }
   }, [selectedDate, allEventsData, isInitialLoading]);
 
@@ -96,7 +102,8 @@ export default function Timetable_Client() {
         const candidates = areaOptions.filter(opt => !set.has(opt.value)).slice(0, needed);
         newSelected.push(...candidates.map(opt => opt.value));
       }
-      if (maxSelectableAreas === 0) return [];
+      if (maxSelectableAreas === 0) newSelected = [];
+      if (JSON.stringify(prev) === JSON.stringify(newSelected)) return prev;
       return newSelected;
     });
   }, [maxSelectableAreas, isInitialLoading]);
@@ -112,19 +119,16 @@ export default function Timetable_Client() {
       const endTime = new Date();
       endTime.setHours(15, 30, 0, 0); // 終了時刻 15:30
 
-      // 8:30 より前なら最初の行 (ヘッダーの次)
+      let newRow = 2;
       if (now < startTime) {
-        setCurrentRow(2);
-        return;
+        newRow = 2;
+      } else if (now >= endTime) {
+        newRow = 422 + 2;
+      } else {
+        const diffInMinutes = Math.floor((now.getTime() - startTime.getTime()) / (1000 * 60));
+        newRow = diffInMinutes + 2;
       }
-      // 15:30 以降なら最後の行の次 (表示範囲外) or 最後の行
-      if (now >= endTime) {
-        setCurrentRow(422 + 2); // 422分 + ヘッダー行 + 1
-        return;
-      }
-
-      const diffInMinutes = Math.floor((now.getTime() - startTime.getTime()) / (1000 * 60));
-      setCurrentRow(diffInMinutes + 2);
+      setCurrentRow(prev => prev === newRow ? prev : newRow);
     };
 
     calculateCurrentRow();

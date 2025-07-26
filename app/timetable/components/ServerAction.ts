@@ -1,6 +1,6 @@
 import { supabase } from '../../../lib/supabaseClient';
 
-export interface EventDataForClient {
+type EventDataForClient = {
   id: number;
   title: string | null;
   subtitle: string | null;
@@ -9,17 +9,28 @@ export interface EventDataForClient {
   endDate: Date | null;
   location: string | null;
   imageUrl: string | null;
-}
+};
 
-export interface EventsByLocation {
+export type EventsByLocation = {
   locationType: string;
   events: EventDataForClient[];
-}
+};
+
+type EventRow = {
+  id: number;
+  title: string | null;
+  subtitle: string | null;
+  description: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  locationType: string;
+  imageUrl: string | null;
+};
 
 /**
  * 指定された日付・エリアのイベントデータをSupabaseから取得し、JST時刻を整形せず返す
  */
-export async function getAllEventsForDate(
+export async function getEventsBySort(
   targetDate: string,
   allAreaValues: string[],
   year: number,
@@ -27,13 +38,13 @@ export async function getAllEventsForDate(
 ): Promise<EventsByLocation[]> {
   // 日付範囲を作成
   const day = parseInt(targetDate, 10);
-  const dateStart = new Date(year, month - 1 , day, 0, 0, 0, 0);
-  const dateEnd = new Date(year, month - 1 , day, 23, 59, 59, 999);
+  const dateStart = new Date(year, month - 1, day, 0, 0, 0, 0);
+  const dateEnd = new Date(year, month - 1, day, 23, 59, 59, 999);
 
   // Supabaseから取得
   const { data, error } = await supabase
-    .from('Event')
-    .select(`*`)
+    .from('Event_timetable')
+    .select(`id, title, subtitle, description, startDate, endDate, locationType, imageUrl`)
     .gte('startDate', dateStart.toISOString())
     .lte('startDate', dateEnd.toISOString())
     .in('locationType', allAreaValues);
@@ -46,9 +57,9 @@ export async function getAllEventsForDate(
   }
 
   // locationTypeごとにグループ化
-  const grouped: { [key: string]: EventDataForClient[] } = {};
-  data?.forEach((event: any) => {
-    if (!grouped[event.locationType]) grouped[event.locationType] = [];
+  const grouped: Record<string, EventDataForClient[]> = {};
+  (data as EventRow[]).forEach((event) => {
+    grouped[event.locationType] ??= [];
     grouped[event.locationType].push({
       id: event.id,
       title: event.title,
@@ -56,7 +67,7 @@ export async function getAllEventsForDate(
       description: event.description,
       startDate: event.startDate ? new Date(event.startDate) : null,
       endDate: event.endDate ? new Date(event.endDate) : null,
-      location: event.locationType, // ←ここを追加
+      location: event.locationType,
       imageUrl: event.imageUrl,
     });
   });

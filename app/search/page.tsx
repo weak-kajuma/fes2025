@@ -1,41 +1,150 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import styles from './page.module.css';
-import Tab from './components/tab';
+import { useState, useEffect } from "react";
+
 import SearchBar from "./components/searchBar";
+import type { EventDataForClient } from './components/ServerAction';
+import { getEventsWithFilters } from './components/ServerAction';
+import Tab from './components/tab';
+import EventCard from './components/eventCard';
+import styles from './page.module.css';
 
 export default function Search() {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [open, setOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedArea, setSelectedArea] = useState<string | null>(null);
+  const [results, setResults] = useState<EventDataForClient[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 画面幅を監視
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 600);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.removeAttribute("required");
-      }
-    }, 200);
-    return () => clearTimeout(timer);
+    handleSearch(keyword);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleSearch = async (value: string) => {
+    setKeyword(value);
+
+    const areas = selectedArea ? [selectedArea] : [];
+    const data = await getEventsWithFilters(
+      selectedDate,
+      areas,
+      value // ← 修正: valueを直接渡す
+    );
+
+    setResults(data);
+  };
+
+  // 共通のタブコンテンツ
+  const renderTabContent = () => (
+    <>
+      <div className={styles.tab_row}>
+        <Tab title={"日付"}>
+          <div className={styles.tab_content}>
+            <div
+              className={`${styles.option} ${styles.date} ${styles.date_20} ${selectedDate === "20" ? styles.selected : ""}`}
+              onClick={() => { setSelectedDate(selectedDate === "20" ? null : "20"); }}
+            >
+              <p>9/20<span> Sat</span></p>
+            </div>
+            <div
+              className={`${styles.option} ${styles.date} ${styles.date_21} ${selectedDate === "21" ? styles.selected : ""}`}
+              onClick={() => { setSelectedDate(selectedDate === "21" ? null : "21"); }}
+            >
+              <p>9/21<span> Sun</span></p>
+            </div>
+          </div>
+        </Tab>
+        <Tab title={"エリア"}>
+          <div className={styles.tab_content}>
+            <div className={`${styles.option} ${styles.area} ${styles.juniorHighSchool} ${selectedArea === "中学校舎" ? styles.selected : ""}`}
+              onClick={() => { setSelectedArea(selectedArea === "中学校舎" ? null : "中学校舎"); }}
+            >
+              <p>中学校舎</p>
+            </div>
+            <div className={`${styles.option} ${styles.area} ${styles.highSchool} ${selectedArea === "高校校舎" ? styles.selected : ""}`}
+              onClick={() => { setSelectedArea(selectedArea === "高校校舎" ? null : "高校校舎"); }}
+            >
+              <p>高校校舎</p>
+            </div>
+            <div className={`${styles.option} ${styles.area} ${styles.yard} ${selectedArea === "中庭" ? styles.selected : ""}`}
+              onClick={() => { setSelectedArea(selectedArea === "中庭" ? null : "中庭"); }}
+            >
+              <p>中庭</p>
+            </div>
+            <div className={`${styles.option} ${styles.area} ${styles.gym} ${selectedArea === "体育館" ? styles.selected : ""}`}
+              onClick={() => { setSelectedArea(selectedArea === "体育館" ? null : "体育館"); }}
+            >
+              <p>体育館</p>
+            </div>
+          </div>
+        </Tab>
+      </div>
+      <div className={styles.tab_row}>
+        <Tab title={"title"}>children</Tab>
+        <Tab title={"title"}>children</Tab>
+      </div>
+    </>
+  );
+
+  // 共通の結果表示
+  const renderResults = () => (
+    <div className={styles.results}>
+      <div className={styles.results_inner}>
+        {results.length > 0 ? (
+          results.map(event => (
+            // <div key={event.id} className={styles.result_item}>
+            //   <h3>{event.title}</h3>
+            //   <p>{event.host}</p>
+            //   <p>{event.intro}</p>
+            //   <p>{event.brief_intro}</p>
+            //   <p>{event.locationType}</p>
+            //   <p>{event.tags?.join(", ")}</p>
+            // </div>
+            <div className={styles.card}>
+              <EventCard key={event.id} event={event} />
+            </div>
+          ))
+        ) : (
+          <p>No results found.</p>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className={styles.main}>
       <h1 className={styles.title}>SEARCH</h1>
-      <SearchBar onSubmit={value => console.log(value)} />
-      <section className={styles.selector}>
-        <Tab title={"title"} children={
-          "children"
-          } />
-        <Tab title={"title"} children={
-          "children"
-          } />
-          <Tab title={"title"} children={
-          "children"
-          } />
-        <Tab title={"title"} children={
-          "children"
-          } />
-      </section>
+      <SearchBar
+        value={keyword}
+        onSubmit={handleSearch}
+        onChange={setKeyword}
+      />
+
+      {isMobile ? (
+        // スマホサイズ用の構造
+        <div className={styles.mobileLayout}>
+          <section className={styles.selector}>
+            {renderTabContent()}
+            {renderResults()}
+          </section>
+        </div>
+      ) : (
+        // PCサイズ用の構造（現状維持）
+        <>
+          <section className={styles.selector}>
+            {renderTabContent()}
+          </section>
+          {renderResults()}
+        </>
+      )}
     </div>
   );
 }

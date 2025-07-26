@@ -2,11 +2,17 @@
   display: flex;
   flex-direction: column; /* ← これで縦並び */
   position: relative;
-  width: 20vw;
+  width: 15vw;
   height: 4vw;
   border: #c5c5c5 1px solid;
-  border-radius: 12px;
+  border-radius: 30px;
   gap: 0.5vw;
+
+  @media screen and (max-width: 600px) {
+    width: 80vw; /* スマホサイズでの幅 */
+    height: 15vw; /* スマホサイズでの高さ */
+    border-radius: 30px;
+  }
 
   .toggle {
     position: absolute;
@@ -16,6 +22,10 @@
     height: 4vw;
     z-index: 2;
     cursor: pointer;
+
+    @media screen and (max-width: 600px) {
+      height: 15vw;
+    }
   }
 
   h2 {
@@ -24,16 +34,22 @@
     left: 10%;
     width: 100%;
     transform: translateY(-50%);
-    font-size: 1.5vw;
-    font-weight: normal;
+    font-size: 1vw;
+    font-weight: 500;
     color: #171717;
     user-select: none;
     padding-right: 2em; /* 矢印分の余白 */
+    font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", "MS PMincho", serif;
+
+    @media screen and (max-width: 600px) {
+      font-size: 4vw; /* スマホサイズでのフォントサイズ */
+      top: calc(15vw / 2);
+    }
 
     &::after {
       position: absolute;
       top: 50%;
-      right: 15%;
+      right: 2rem; /* ← ここを10vw→1vwなど小さくする */
       transform: translateY(-50%) rotate(90deg);
       content: "\276F";
       width: 2vw;
@@ -41,6 +57,13 @@
       text-align: center;
       display: inline-block;
       transition: transform 0.35s;
+      transform-origin: center center;
+      font-size: 1rem; /* 矢印の大きさを明示 */
+      line-height: 2vw; /* 矢印を縦中央に */
+
+      @media screen and (max-width: 600px) {
+        right: 4rem;
+      }
     }
   }
   /* open時の回転 */
@@ -52,5 +75,22 @@
     opacity: 1; /* アニメーションはJS側で */
     transition: opacity 0.3s;
     margin: 2vw auto 0;
+    width: 100%;
+
+    @media screen and (max-width: 600px) {
+      margin: 7vw auto 0;
+    }
   }
+}
+
+@media screen and (max-width: 1024px) and (min-width: 601px) {
+  .tab {
+    width: 30vw;
+    height: 10vw;
+
+    h2 {
+      font-size: 2vw;
+    }
+  }
+
 }
