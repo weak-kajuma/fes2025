@@ -1,14 +1,24 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, forwardRef } from "react";
 import gsap from "gsap";
 import styles from "./TabBar.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function TabBar() {
+export default forwardRef<HTMLDivElement>((props, ref) => {
   const tabBar_Ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  // 外部refと内部refを結合
+  const combinedRef = (node: HTMLDivElement) => {
+    tabBar_Ref.current = node;
+    if (typeof ref === 'function') {
+      ref(node);
+    } else if (ref) {
+      ref.current = node;
+    }
+  };
 
   useEffect(() => {
     if (pathname === "/") {
@@ -41,7 +51,7 @@ export default function TabBar() {
   }, [pathname]);
 
   return (
-    <div className={styles.wrapper} ref={tabBar_Ref}>
+    <div className={styles.wrapper} ref={combinedRef}>
       <div className={styles.items}>
         <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false}>
           <img src="/icon/pamphlet.svg" alt="pamphlet" className={styles.icon_svg} />
@@ -61,4 +71,4 @@ export default function TabBar() {
       </div>
     </div>
   );
-}
+});

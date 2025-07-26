@@ -7,6 +7,7 @@ import MenuIcon from "../components/MenuIcon/MenuIcon"
 import TabBar from "../components/TabBar/TabBar"
 import { unstable_ViewTransition as ViewTransition } from "react"
 import { ScrollManager } from "../components/ScrollManager"
+import TabBarProvider from "../components/TabBarProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,7 +47,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html>
       <head>
@@ -55,10 +55,11 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable}`}>
         <ViewTransition>
-          <ScrollManager />
-          <MenuIcon />
-          <TabBar />
-          {children}
+          <TabBarProvider>
+            <ScrollManager />
+            <MenuIcon />
+            {children}
+          </TabBarProvider>
         </ViewTransition>
       </body>
     </html>

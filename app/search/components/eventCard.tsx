@@ -12,9 +12,9 @@ type EventDataForClient = {
   tags: string[] | null;
 };
 
-export default function EventCard({ event }: { event: EventDataForClient }) {
+export default function EventCard({ event, onClick }: { event: EventDataForClient, onClick?: (event: EventDataForClient) => void }) {
   return (
-    <div className={styles.event_card}>
+    <div className={styles.event_card} onClick={() => onClick?.(event)}>
 
       <div className={styles.img}></div>
 

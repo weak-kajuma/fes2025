@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 
 import SearchBar from "./components/searchBar";
 import type { EventDataForClient } from './components/ServerAction';
 import { getEventsWithFilters } from './components/ServerAction';
 import Tab from './components/tab';
 import EventCard from './components/eventCard';
+import DetailOverlay from './components/DetailOverlay';
+import { TabBarContext } from '../contexts/TabBarContext';
 import styles from './page.module.css';
 
 export default function Search() {
@@ -15,6 +17,13 @@ export default function Search() {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [results, setResults] = useState<EventDataForClient[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [detailEvent, setDetailEvent] = useState<EventDataForClient | null>(null);
+  const [animating, setAnimating] = useState(false);
+  const [animStyle, setAnimStyle] = useState<any>({});
+  const animDivRef = useRef<HTMLDivElement>(null);
+
+  // TabBarのrefを取得
+  const tabBarRef = useContext(TabBarContext);
 
   // 画面幅を監視
   useEffect(() => {
@@ -40,6 +49,46 @@ export default function Search() {
     );
 
     setResults(data);
+  };
+
+  // 詳細表示divのアニメーション開始
+  const handleEventCardClick = (event: EventDataForClient) => {
+    // TabBarのrefから位置・サイズを取得
+    if (!tabBarRef?.current) return;
+    const rect = tabBarRef.current.getBoundingClientRect();
+    setDetailEvent(event);
+    setAnimating(true);
+    setAnimStyle({
+      position: 'fixed',
+      left: rect.left + 'px',
+      top: rect.top + 'px',
+      width: rect.width + 'px',
+      height: rect.height + 'px',
+      borderRadius: '10rem',
+      background: '#F4F4F4',
+      zIndex: 9999,
+      transition: 'all 1s cubic-bezier(0.4,0,0.2,1)',
+      overflow: 'hidden',
+    });
+    // 1フレーム後にアニメーション先のスタイルに変更
+    setTimeout(() => {
+      setAnimStyle({
+        position: 'fixed',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '90vw',
+        height: '80vh',
+        bottom: 0,
+        top: 'auto',
+        borderRadius: '2rem 2rem 0 0',
+        background: '#F4F4F4',
+        zIndex: 9999,
+        transition: 'all 1s cubic-bezier(0.4,0,0.2,1)',
+        overflow: 'hidden',
+      });
+      // 1秒後にアニメーション終了
+      setTimeout(() => setAnimating(false), 1000);
+    }, 30);
   };
 
   // 共通のタブコンテンツ
@@ -100,16 +149,8 @@ export default function Search() {
       <div className={styles.results_inner}>
         {results.length > 0 ? (
           results.map(event => (
-            // <div key={event.id} className={styles.result_item}>
-            //   <h3>{event.title}</h3>
-            //   <p>{event.host}</p>
-            //   <p>{event.intro}</p>
-            //   <p>{event.brief_intro}</p>
-            //   <p>{event.locationType}</p>
-            //   <p>{event.tags?.join(", ")}</p>
-            // </div>
-            <div className={styles.card}>
-              <EventCard key={event.id} event={event} />
+            <div className={styles.card} key={event.id}>
+              <EventCard event={event} onClick={handleEventCardClick} />
             </div>
           ))
         ) : (
@@ -144,6 +185,13 @@ export default function Search() {
           </section>
           {renderResults()}
         </>
+      )}
+      {detailEvent && (
+        <div ref={animDivRef} style={animStyle}>
+          {!animating && (
+            <DetailOverlay event={detailEvent} onClose={() => setDetailEvent(null)} />
+          )}
+        </div>
       )}
     </div>
   );
