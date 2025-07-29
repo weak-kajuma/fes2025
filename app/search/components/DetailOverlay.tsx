@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import styles from './DetailOverlay.module.css';
+import LiquidGlass from '@/components/LiquidGlass/LiquidGlass';
 
 type EventDataForClient = {
   id: number;
@@ -194,83 +195,85 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
   }, [onClose]);
 
   return (
-    <div
-      ref={overlayRef}
-      className={`${styles.detail_overlay} ${isClosing ? styles.closing : ''}`}
-    >
+    <LiquidGlass>
       <div
-        ref={dragHandleRef}
-        className={styles.drag_handle}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
+        ref={overlayRef}
+        className={`${styles.detail_overlay} ${isClosing ? styles.closing : ''}`}
       >
-        <div className={styles.bar}></div>
-      </div>
-      <div className={styles.detail_content}>
+        <div
+          ref={dragHandleRef}
+          className={styles.drag_handle}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+        >
+          <div className={styles.bar}></div>
+        </div>
+        <div className={styles.detail_content}>
 
-        <button className={styles.close_button} onClick={onClose}>
-          ✕
-        </button>
+          <button className={styles.close_button} onClick={onClose}>
+            ✕
+          </button>
 
-        <div className={styles.event_info} onWheel={handleEventInfoWheel}>
-          <div className={styles.basic}>
-          <div className={styles.img}></div>
-            <div className={styles.other}>
-              <h2 className={styles.event_title}>{event.title}</h2>
-              {event.host && <p className={styles.event_host}>{event.host}</p>}
-              {event.tags && event.tags.length > 0 && (
-                <div className={styles.event_tags}>
-                  {event.tags.map((tag, index) => (
-                    <span key={index} className={styles.tag}>{tag}</span>
-                  ))}
-                </div>
-              )}
+          <div className={styles.event_info} onWheel={handleEventInfoWheel}>
+            <div className={styles.basic}>
+            <div className={styles.img}></div>
+              <div className={styles.other}>
+                <h2 className={styles.event_title}>{event.title}</h2>
+                {event.host && <p className={styles.event_host}>{event.host}</p>}
+                {event.tags && event.tags.length > 0 && (
+                  <div className={styles.event_tags}>
+                    {event.tags.map((tag, index) => (
+                      <span key={index} className={styles.tag}>{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          <div className={styles.functions}>
-            <div className={styles.function}>
-              <span className={`material-icons ${styles.share_icon}`}>share</span>
-              <p className={styles.share_text}>共有</p>
+            <div className={styles.functions}>
+              <div className={styles.function}>
+                <span className={`material-icons ${styles.share_icon}`}>share</span>
+                <p className={styles.share_text}>共有</p>
+              </div>
+              <div className={styles.function}>
+                <span className={`material-icons ${styles.detail_icon}`}>open_in_new</span>
+                <p className={styles.detail_text}>詳細ページ</p>
+              </div>
             </div>
-            <div className={styles.function}>
-              <span className={`material-icons ${styles.detail_icon}`}>open_in_new</span>
-              <p className={styles.detail_text}>詳細ページ</p>
+            {event.locationType && (
+              <p className={styles.event_location}>
+                <span className={styles.location_icon}>location_on</span>
+                {event.locationType}
+              </p>
+            )}
+            <div className={styles.text_wrapper}>
+              <p className={styles.text_title}><span>● </span>紹介</p>
+              {event.intro && <p className={styles.text}>{event.intro}</p>}
             </div>
-          </div>
-          {event.locationType && (
-            <p className={styles.event_location}>
-              <span className={styles.location_icon}>location_on</span>
-              {event.locationType}
-            </p>
-          )}
-          <div className={styles.text_wrapper}>
-            <p className={styles.text_title}><span>● </span>紹介</p>
-            {event.intro && <p className={styles.text}>{event.intro}</p>}
-          </div>
-          <div className={styles.text_wrapper}>
-            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-            {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-            <p className={styles.text}>そのほか追加予定</p>
-          </div>
-          <div className={styles.text_wrapper}>
-            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-            {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-            <p className={styles.text}>そのほか追加予定</p>
-          </div>
-          <div className={styles.text_wrapper}>
-            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-            {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-            <p className={styles.text}>そのほか追加予定</p>
-          </div>
-          <div className={styles.text_wrapper}>
-            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-            {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-            <p className={styles.text}>そのほか追加予定</p>
+            <div className={styles.text_wrapper}>
+              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
+              <p className={styles.text}>そのほか追加予定</p>
+            </div>
+            <div className={styles.text_wrapper}>
+              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
+              <p className={styles.text}>そのほか追加予定</p>
+            </div>
+            <div className={styles.text_wrapper}>
+              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
+              <p className={styles.text}>そのほか追加予定</p>
+            </div>
+            <div className={styles.text_wrapper}>
+              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
+              <p className={styles.text}>そのほか追加予定</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </LiquidGlass>
   );
 }

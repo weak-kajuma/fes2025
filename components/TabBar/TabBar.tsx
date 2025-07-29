@@ -5,6 +5,7 @@ import gsap from "gsap";
 import styles from "./TabBar.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import LiquidGlass from "../LiquidGlass/LiquidGlass";
 
 export default forwardRef<HTMLDivElement>((props, ref) => {
   const tabBar_Ref = useRef<HTMLDivElement>(null);
@@ -52,23 +53,25 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
 
   return (
     <div className={styles.wrapper} ref={combinedRef}>
-      <div className={styles.items}>
-        <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false}>
-          <img src="/icon/pamphlet.svg" alt="pamphlet" className={styles.icon_svg} />
-        </Link>
-        <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false}>
-          <img src="/icon/timetable.svg" alt="timetable" className={styles.icon_svg} />
-        </Link>
-        <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false}>
-          <img src="/icon/search.svg" alt="search" className={styles.icon_svg} />
-        </Link>
-        <Link className={`${styles.item} ${styles.user}`} href="" scroll={false}>
-          <img src="/icon/user.svg" alt="user" className={styles.icon_svg} />
-        </Link>
-        <Link className={`${styles.item} ${styles.allEvents}`} href="/allEvents" scroll={false}>
-          <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={styles.icon_svg} />
-        </Link>
-      </div>
+      <LiquidGlass>
+        <div className={styles.items}>
+          <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false}>
+            <img src="/icon/pamphlet.svg" alt="pamphlet" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+          </Link>
+          <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false}>
+            <img src="/icon/timetable.svg" alt="timetable" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+          </Link>
+          <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false}>
+            <img src="/icon/search.svg" alt="search" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+          </Link>
+          <Link className={`${styles.item} ${styles.user}`} href="" scroll={false}>
+            <img src="/icon/user.svg" alt="user" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+          </Link>
+          <Link className={`${styles.item} ${styles.allEvents}`} href="/allEvents" scroll={false}>
+            <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+          </Link>
+        </div>
+      </LiquidGlass>
     </div>
   );
 });

@@ -10,6 +10,7 @@ import EventCard from './components/eventCard';
 import DetailOverlay from './components/DetailOverlay';
 import { TabBarContext } from '../contexts/TabBarContext';
 import styles from './page.module.css';
+import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 
 export default function Search() {
   const [keyword, setKeyword] = useState("");
@@ -65,7 +66,7 @@ export default function Search() {
       width: rect.width + 'px',
       height: rect.height + 'px',
       borderRadius: '10rem',
-      background: '#F4F4F4',
+      // background: '#F4F4F4',
       zIndex: 9999,
       transition: 'all 1s cubic-bezier(0.4,0,0.2,1)',
       overflow: 'hidden',
@@ -81,7 +82,7 @@ export default function Search() {
         bottom: 0,
         top: 'auto',
         borderRadius: '2rem 2rem 0 0',
-        background: '#F4F4F4',
+        // background: '#F4F4F4',
         zIndex: 9999,
         transition: 'all 1s cubic-bezier(0.4,0,0.2,1)',
         overflow: 'hidden',
@@ -194,9 +195,11 @@ export default function Search() {
       )}
       {detailEvent && (
         <div ref={animDivRef} style={animStyle}>
-          {!animating && (
-            <DetailOverlay event={detailEvent} onClose={() => setDetailEvent(null)} />
-          )}
+          <LiquidGlass>
+            {!animating && (
+              <DetailOverlay event={detailEvent} onClose={() => setDetailEvent(null)} />
+            )}
+          </LiquidGlass>
         </div>
       )}
     </div>

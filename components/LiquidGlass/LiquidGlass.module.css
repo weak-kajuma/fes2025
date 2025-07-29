@@ -27,7 +27,7 @@
   position: absolute;
   z-index: 0;
   inset: 0;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(5px);
   filter: url(#glass-distortion);
   overflow: hidden;
   isolation: isolate;
@@ -53,6 +53,7 @@
 }
 
 .liquidGlass_content {
+  width: 100%;
   z-index: 3;
   font-size: 2rem;
   color: black;

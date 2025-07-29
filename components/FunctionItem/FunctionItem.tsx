@@ -3,6 +3,7 @@ import React from 'react';
 import styles from './FunctionItem.module.css';
 import { forwardRef } from 'react';
 import Link from 'next/link';
+import LiquidGlass from '../LiquidGlass/LiquidGlass';
 
 type FunctionItemProps = {
   title?: string;
@@ -15,14 +16,16 @@ type FunctionItemProps = {
 const FunctionItem = forwardRef<HTMLDivElement, FunctionItemProps>(
   ({ title, icon, href = "", className = ""}, ref) => (
     <div className={`${styles.functionItem} ${className}`} ref={ref}>
-      <Link href={href} className={styles.inner} scroll={false}>
-        <div className={styles.icon}>
-          {icon && (
-            <img src={icon} alt={title} className={styles.icon_svg} />
-          )}
-        </div>
-        <div className={styles.title}>{title}</div>
-      </Link>
+      {/* <LiquidGlass> */}
+        <Link href={href} className={styles.inner} scroll={false}>
+          <div className={styles.icon}>
+            {icon && (
+              <img src={icon} alt={title} className={styles.icon_svg} />
+            )}
+          </div>
+          <div className={styles.title}>{title}</div>
+        </Link>
+      {/* </LiquidGlass> */}
     </div>
   )
 );

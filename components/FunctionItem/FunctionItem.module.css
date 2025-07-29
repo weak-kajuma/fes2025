@@ -63,7 +63,9 @@
       left: 8%;
 
       color: #474747;
-      font-size: 1.8vw;
+      /* color: black; */
+      font-size: 1.5vw;
+      font-weight: 450;
 
       @media screen and (max-width: 1200px) {
         /* bottom: 1;
