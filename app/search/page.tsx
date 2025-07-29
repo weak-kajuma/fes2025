@@ -86,8 +86,14 @@ export default function Search() {
         transition: 'all 1s cubic-bezier(0.4,0,0.2,1)',
         overflow: 'hidden',
       });
-      // 1秒後にアニメーション終了
-      setTimeout(() => setAnimating(false), 1000);
+      // 1秒後にアニメーション終了と背景色を透明に
+      setTimeout(() => {
+        setAnimating(false);
+        setAnimStyle((prev: any) => ({
+          ...prev,
+          background: 'transparent',
+        }));
+      }, 1000);
     }, 30);
   };
 

@@ -1,9 +1,9 @@
 .detail_overlay {
   position: fixed;
   left: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 50vh;
+  top: 0;
+  width: 100%;
+  height: 100%;
   background: #F4F4F4;
   border-radius: 2rem 2rem 0 0;
   z-index: 10000;
@@ -11,13 +11,35 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 4rem 2rem 0 2rem;
   animation: fadeInDetail 0.3s;
+  transform: translateY(0);
+  transition: transform 0.3s ease-out;
+  touch-action: none; /* スマホでのデフォルト動作を無効化 */
+  user-select: none; /* テキスト選択を防ぐ */
 }
 
-@keyframes fadeInDetail {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.detail_overlay.closing {
+  transform: translateY(100%);
+}
+
+.drag_handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4rem;
+  z-index: 10001;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none; /* スマホでのデフォルト動作を無効化 */
+  user-select: none; /* テキスト選択を防ぐ */
+}
+
+.drag_handle:active {
+  cursor: grabbing;
 }
 
 .detail_content {
@@ -27,12 +49,19 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow-y: auto;
+}
+
+.bar {
+  width: 10%;
+  height: .1rem;
+  background: #C9C9C9;
+  border-radius: 10px;
+  margin: 2rem auto auto;
 }
 
 .close_button {
   position: absolute;
-  top: 1rem;
+  top: 2rem;
   right: 1rem;
   width: 2.5rem;
   height: 2.5rem;
@@ -52,27 +81,148 @@
   background: rgba(0,0,0,0.2);
 }
 
+@keyframes fadeInDetail {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .event_info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 3rem;
   padding: 3rem 1rem 1rem;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  max-height: calc(100vh - 200px); /* 固定の高さを設定 */
+}
+
+.event_info::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+.basic {
+  display: flex;
+  gap: 3rem;
+  flex-shrink: 0; /* 圧縮を防ぐ */
+}
+
+.img {
+  width: 20vw;
+  height: 12vw;
+  background-color: #D9D9D9;
+  border-radius: 1.5rem;
+  flex-shrink: 0; /* 圧縮を防ぐ */
+}
+
+.other {
+  display: flex;
+  flex-direction: column;
 }
 
 .event_title {
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 1.7rem;
+  font-weight: 500;
   color: #171717;
-  margin: 0;
+  margin-top: 1.5rem;
   line-height: 1.2;
 }
 
 .event_host {
-  font-size: 1.1rem;
+  font-size: .9rem;
   color: #666;
-  margin: 0;
+  margin-top: 1rem;
   font-weight: 500;
+}
+
+.event_tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+}
+
+.tag {
+  font-size: 0.8rem;
+  background-color: #D9D9D9;
+  color: #222222;
+  padding: 0.3rem 0.8rem;
+  border-radius: 1rem;
+  font-weight: 500;
+}
+
+.functions {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-evenly;
+}
+
+.function {
+  width: 15rem;
+  height: 4rem;
+  border-radius: 1.5rem;
+  font-size: .8rem;
+  position: relative;
+
+  &:nth-child(1) {
+    background-color: #EAEFFF;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #d8e3ff;
+    }
+
+    .share_icon {
+      font-size: 1.5rem;
+      color: #333;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .share_text {
+      font-size: 0.7rem;
+      color: #333;
+      font-weight: 500;
+      position: absolute;
+      bottom: .1rem;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  &:nth-child(2) {
+    background-color: #E9E9E9;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #d8d8d8;
+    }
+
+    .detail_icon {
+      font-size: 1.5rem;
+      color: #333;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .detail_text {
+      font-size: 0.7rem;
+      color: #333;
+      font-weight: 500;
+      position: absolute;
+      bottom: .1rem;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
 }
 
 .event_location {
@@ -80,66 +230,109 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
-  color: #555;
-  margin: 0;
+  color: #333;
 }
 
 .location_icon {
-  font-size: 1.2rem;
-}
-
-.event_intro {
-  font-size: 1rem;
-  line-height: 1.6;
+  font-family: "Material Symbols Outlined";
+  font-size: 1.5rem;
   color: #333;
-  margin: 0;
-  white-space: pre-wrap;
 }
 
-.event_brief {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: #666;
-  margin: 0;
-  font-style: italic;
-}
-
-.event_tags {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-
-.tag {
-  font-size: 0.8rem;
-  background-color: #48B9FF;
-  color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 1rem;
+.text_title {
+  font-size: 1.2rem;
   font-weight: 500;
+
+  &>span {
+    font-size: 1.5rem;
+    color: #D9D9D9;
+  }
 }
 
-/* レスポンシブ対応 */
-@media screen and (max-width: 768px) {
+.text {
+  font-size: 1rem;
+  color: #333;
+  margin-top: .5rem;
+  margin-left: 1.5rem;
+}
+
+@media screen and (max-width: 1200px) and (min-width: 769px) {
   .detail_overlay {
-    height: 60vh;
-    padding: 1rem;
+    padding: 2rem 1rem 0 1rem;
+  }
+
+  .bar {
+    margin-top: 1rem;
+  }
+
+  .img {
+    width: 25vw;
+    height: 15vw;
   }
 
   .event_title {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .event_info {
-    padding: 2rem 0.5rem 0.5rem;
+    padding: 4rem 5rem 5rem;
   }
 
   .close_button {
-    top: 0.5rem;
+    top: 2rem;
     right: 0.5rem;
     width: 2rem;
     height: 2rem;
     font-size: 1rem;
+  }
+
+  .event_tags {
+    margin-top: 1.5rem;
+  }
+}
+
+
+/* レスポンシブ対応 */
+@media screen and (max-width: 768px) {
+  .detail_overlay {
+    padding: 2rem;
+  }
+
+  .bar {
+    margin-top: 1rem;
+  }
+
+  .img {
+    width: 38vw;
+    height: 24vw;
+  }
+
+  .event_title {
+    font-size: 1.2rem;
+    margin-top: .5rem;
+  }
+
+  .event_host {
+    margin-top: .5rem;
+  }
+
+  .event_tags {
+    margin-top: 1rem;
+  }
+
+  .basic {
+    gap: 2rem;
+  }
+
+  .event_info {
+    padding: 3rem 0.5rem 0.5rem;
+  }
+
+  .text_title > span {
+    font-size: 1rem;
+  }
+
+  .close_button {
+    display: none;
   }
 }

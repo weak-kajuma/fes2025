@@ -48,7 +48,6 @@ export default function MenuIcon() {
         }
       );
 
-
       animation.current = gsap.timeline({ paused: true })
         .add(animationMenu.current)
         .to(content_Ref.current, {

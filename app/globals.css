@@ -10,6 +10,13 @@
   --location-secondary-color-gym: #E6E6FA;
   --location-primary-color-hole: #89FF8D;
   --location-secondary-color-hole: #E2FFEE;
+
+  /* Liquid Glass Effect Variables */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(20px);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -64,6 +71,37 @@ a {
   font-family: var(--font-biz-ud-mincho), serif;
 }
 
+/* Liquid Glass Effect Animations */
+@keyframes liquid-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes glass-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes glass-glow {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+}
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
