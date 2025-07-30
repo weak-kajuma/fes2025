@@ -16,7 +16,7 @@ type FunctionItemProps = {
 const FunctionItem = forwardRef<HTMLDivElement, FunctionItemProps>(
   ({ title, icon, href = "", className = ""}, ref) => (
     <div className={`${styles.functionItem} ${className}`} ref={ref}>
-      {/* <LiquidGlass> */}
+      <LiquidGlass>
         <Link href={href} className={styles.inner} scroll={false}>
           <div className={styles.icon}>
             {icon && (
@@ -25,7 +25,7 @@ const FunctionItem = forwardRef<HTMLDivElement, FunctionItemProps>(
           </div>
           <div className={styles.title}>{title}</div>
         </Link>
-      {/* </LiquidGlass> */}
+      </LiquidGlass>
     </div>
   )
 );

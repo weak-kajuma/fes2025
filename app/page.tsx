@@ -10,6 +10,7 @@ import FlipButton from "../components/FlipButton/FlipButton";
 import FunctionItem from "../components/FunctionItem/FunctionItem";
 import Logo from "../components/Logo";
 import { animateTextByChar } from "../utils/animateTextByChar";
+import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -304,15 +305,17 @@ export default function Home() {
               <FunctionItem href="/pamphlet" className="function_pamphlet" title="パンフレット" icon="/icon/pamphlet.svg" ref={function_pamphlet_Ref} scroll={false}></FunctionItem>
             </div>
             <div className={styles.eventSearch} ref={eventSearch_Ref}>
-              <a href="/search">
-                <div className={styles.eventSearch_inner}>
-                  <div className={styles.icon_wrapper}>
-                    {/* <img src="/icon/search.svg" alt="search" className={styles.search_icon} /> */}
-                    <Image src="/icon/search.svg" alt="search" className={styles.search_icon} width={24} height={24} />
+              <LiquidGlass>
+                <a href="/search">
+                  <div className={styles.eventSearch_inner}>
+                    <div className={styles.icon_wrapper}>
+                      {/* <img src="/icon/search.svg" alt="search" className={styles.search_icon} /> */}
+                      <Image src="/icon/search.svg" alt="search" className={styles.search_icon} width={24} height={24} />
+                    </div>
+                    <p>企画検索</p>
                   </div>
-                  <p>企画検索</p>
-                </div>
-              </a>
+                </a>
+              </LiquidGlass>
             </div>
           </div>
         </div>

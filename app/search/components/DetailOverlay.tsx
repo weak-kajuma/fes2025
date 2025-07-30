@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
+import gsap from 'gsap';
 import styles from './DetailOverlay.module.css';
 import LiquidGlass from '@/components/LiquidGlass/LiquidGlass';
 
@@ -39,7 +40,7 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
     setStartTime(Date.now());
   };
 
-      const handleTouchMove = (e: React.TouchEvent) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
 
     e.preventDefault(); // リロードを防ぐ
@@ -51,17 +52,20 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
 
     if (deltaY > 0) {
       setCurrentY(touch.clientY);
-      if (overlayRef.current) {
-        overlayRef.current.style.transform = `translateY(${deltaY}px)`;
+      // liquidGlass_wrapperを動かす（transitionを一時的に無効化）
+      const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
+      if (liquidGlassWrapper) {
+        liquidGlassWrapper.style.transition = 'none';
+        liquidGlassWrapper.style.transform = `translateY(${deltaY}px)`;
       }
     }
   };
 
-    const handleTouchEnd = () => {
+  const handleTouchEnd = () => {
     if (!isDragging) return;
 
     setIsDragging(false);
-        const deltaY = currentY - startY;
+    const deltaY = currentY - startY;
     const deltaX = currentX - startX;
     const deltaTime = Date.now() - startTime;
 
@@ -74,13 +78,27 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
     if (deltaY > 100) {
       // 十分に下にドラッグされた場合、閉じる
       setIsClosing(true);
-      setTimeout(() => {
-        onClose();
-      }, 300);
+      // GSAPでアニメーション
+      const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
+      if (liquidGlassWrapper) {
+        gsap.to(liquidGlassWrapper, {
+          y: '100vh',
+          duration: 0.3,
+          ease: 'power2.out',
+          onComplete: () => {
+            onClose();
+          }
+        });
+      }
     } else {
-      // 元の位置に戻す
-      if (overlayRef.current) {
-        overlayRef.current.style.transform = 'translateY(0)';
+      // 元の位置に戻す（GSAPでアニメーション）
+      const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
+      if (liquidGlassWrapper) {
+        gsap.to(liquidGlassWrapper, {
+          y: 0,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
       }
     }
   };
@@ -91,7 +109,7 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
     setCurrentY(e.clientY);
   };
 
-    const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging) return;
 
     e.preventDefault(); // デフォルト動作を防ぐ
@@ -100,8 +118,11 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
 
     if (deltaY > 0) {
       setCurrentY(e.clientY);
-      if (overlayRef.current) {
-        overlayRef.current.style.transform = `translateY(${deltaY}px)`;
+      // liquidGlass_wrapperを動かす（transitionを一時的に無効化）
+      const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
+      if (liquidGlassWrapper) {
+        liquidGlassWrapper.style.transition = 'none';
+        liquidGlassWrapper.style.transform = `translateY(${deltaY}px)`;
       }
     }
   };
@@ -115,18 +136,32 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
     if (deltaY > 100) {
       // 十分に下にドラッグされた場合、閉じる
       setIsClosing(true);
-      setTimeout(() => {
-        onClose();
-      }, 300);
+      // GSAPでアニメーション
+      const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
+      if (liquidGlassWrapper) {
+        gsap.to(liquidGlassWrapper, {
+          y: '100vh',
+          duration: 0.3,
+          ease: 'power2.out',
+          onComplete: () => {
+            onClose();
+          }
+        });
+      }
     } else {
-      // 元の位置に戻す
-      if (overlayRef.current) {
-        overlayRef.current.style.transform = 'translateY(0)';
+      // 元の位置に戻す（GSAPでアニメーション）
+      const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
+      if (liquidGlassWrapper) {
+        gsap.to(liquidGlassWrapper, {
+          y: 0,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
       }
     }
   };
 
-      useEffect(() => {
+  useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove, { passive: false });
       document.addEventListener('mouseup', handleMouseUp);
@@ -138,7 +173,7 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
     }
   }, [isDragging, startY, currentY]);
 
-    // PC版でのスクロール制御
+  // PC版でのスクロール制御
   const handleWheel = (e: WheelEvent) => {
     const eventInfo = overlayRef.current?.querySelector(`.${styles.event_info}`) as HTMLElement;
     if (eventInfo) {
@@ -162,7 +197,7 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
     e.stopPropagation();
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const overlayElement = overlayRef.current;
     if (overlayElement) {
       overlayElement.addEventListener('wheel', handleWheel, { passive: false });
@@ -195,85 +230,108 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
   }, [onClose]);
 
   return (
-    <LiquidGlass>
+    <div
+      ref={overlayRef}
+      className={`${styles.detail_overlay} ${isClosing ? styles.closing : ''}`}
+    >
       <div
-        ref={overlayRef}
-        className={`${styles.detail_overlay} ${isClosing ? styles.closing : ''}`}
+        ref={dragHandleRef}
+        className={styles.drag_handle}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
       >
-        <div
-          ref={dragHandleRef}
-          className={styles.drag_handle}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-        >
-          <div className={styles.bar}></div>
-        </div>
-        <div className={styles.detail_content}>
+        <div className={styles.bar}></div>
+      </div>
+      <div className={styles.detail_content}>
 
-          <button className={styles.close_button} onClick={onClose}>
+        <button className={styles.close_button} onClick={() => {
+          // GSAPアニメーションで閉じる
+          const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
+          if (liquidGlassWrapper) {
+            gsap.to(liquidGlassWrapper, {
+              y: '100vh',
+              duration: .3,
+              ease: 'power2.inOut',
+              onComplete: () => {
+                onClose();
+              }
+            });
+          } else {
+            onClose();
+          }
+        }}>
+          <LiquidGlass>
             ✕
-          </button>
+          </LiquidGlass>
+        </button>
 
-          <div className={styles.event_info} onWheel={handleEventInfoWheel}>
-            <div className={styles.basic}>
-            <div className={styles.img}></div>
-              <div className={styles.other}>
-                <h2 className={styles.event_title}>{event.title}</h2>
-                {event.host && <p className={styles.event_host}>{event.host}</p>}
-                {event.tags && event.tags.length > 0 && (
-                  <div className={styles.event_tags}>
-                    {event.tags.map((tag, index) => (
-                      <span key={index} className={styles.tag}>{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
+        <div className={styles.event_info} onWheel={handleEventInfoWheel}>
+          <div className={styles.basic}>
+            <div className={styles.img}>
+              <LiquidGlass>
+                <div className={styles.img_inner}></div>
+              </LiquidGlass>
             </div>
-            <div className={styles.functions}>
-              <div className={styles.function}>
+            <div className={styles.other}>
+              <h2 className={styles.event_title}>{event.title}</h2>
+              {event.host && <p className={styles.event_host}>{event.host}</p>}
+              {event.tags && event.tags.length > 0 && (
+                <div className={styles.event_tags}>
+                  {event.tags.map((tag, index) => (
+                    <div key={index} className={styles.tag}>
+                      <LiquidGlass>
+                        {tag}
+                      </LiquidGlass>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className={styles.functions}>
+            <div className={styles.function}>
+              <LiquidGlass>
                 <span className={`material-icons ${styles.share_icon}`}>share</span>
                 <p className={styles.share_text}>共有</p>
-              </div>
-              <div className={styles.function}>
+              </LiquidGlass>
+            </div>
+            <div className={styles.function}>
+              <LiquidGlass>
                 <span className={`material-icons ${styles.detail_icon}`}>open_in_new</span>
                 <p className={styles.detail_text}>詳細ページ</p>
-              </div>
+              </LiquidGlass>
             </div>
-            {event.locationType && (
-              <p className={styles.event_location}>
-                <span className={styles.location_icon}>location_on</span>
-                {event.locationType}
-              </p>
-            )}
-            <div className={styles.text_wrapper}>
-              <p className={styles.text_title}><span>● </span>紹介</p>
-              {event.intro && <p className={styles.text}>{event.intro}</p>}
-            </div>
-            <div className={styles.text_wrapper}>
-              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-              <p className={styles.text}>そのほか追加予定</p>
-            </div>
-            <div className={styles.text_wrapper}>
-              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-              <p className={styles.text}>そのほか追加予定</p>
-            </div>
-            <div className={styles.text_wrapper}>
-              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-              <p className={styles.text}>そのほか追加予定</p>
-            </div>
-            <div className={styles.text_wrapper}>
-              <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
-              {/* {event.intro && <p className={styles.event_intro}>{event.intro}</p>} */}
-              <p className={styles.text}>そのほか追加予定</p>
-            </div>
+          </div>
+          {event.locationType && (
+            <p className={styles.event_location}>
+              <span className={styles.location_icon}>location_on</span>
+              {event.locationType}
+            </p>
+          )}
+          <div className={styles.text_wrapper}>
+            <p className={styles.text_title}><span>● </span>紹介</p>
+            {event.intro && <p className={styles.text}>{event.intro}</p>}
+          </div>
+          <div className={styles.text_wrapper}>
+            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+            <p className={styles.text}>そのほか追加予定</p>
+          </div>
+          <div className={styles.text_wrapper}>
+            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+            <p className={styles.text}>そのほか追加予定</p>
+          </div>
+          <div className={styles.text_wrapper}>
+            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+            <p className={styles.text}>そのほか追加予定</p>
+          </div>
+          <div className={styles.text_wrapper}>
+            <p className={styles.text_title}><span>● </span>そのほか追加予定</p>
+            <p className={styles.text}>そのほか追加予定</p>
           </div>
         </div>
       </div>
-    </LiquidGlass>
+    </div>
   );
 }

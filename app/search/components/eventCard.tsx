@@ -1,6 +1,8 @@
 "use client"
 
+import { useContext } from 'react';
 import styles from './eventCard.module.css';
+import { TabBarContext } from '../../contexts/TabBarContext';
 
 type EventDataForClient = {
   id: number;
@@ -13,8 +15,22 @@ type EventDataForClient = {
 };
 
 export default function EventCard({ event, onClick }: { event: EventDataForClient, onClick?: (event: EventDataForClient) => void }) {
+  const tabBarContext = useContext(TabBarContext);
+
+  const handleClick = () => {
+    // TabBarのアニメーションをトリガー（イベントデータを渡す）
+    if (tabBarContext?.triggerAnimation) {
+      tabBarContext.triggerAnimation(event);
+    }
+
+    // 元のonClick関数を実行
+    if (onClick) {
+      onClick(event);
+    }
+  };
+
   return (
-    <div className={styles.event_card} onClick={() => onClick?.(event)}>
+    <div className={styles.event_card} onClick={handleClick}>
 
       <div className={styles.img}></div>
 

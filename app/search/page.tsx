@@ -7,10 +7,8 @@ import type { EventDataForClient } from './components/ServerAction';
 import { getEventsWithFilters } from './components/ServerAction';
 import Tab from './components/tab';
 import EventCard from './components/eventCard';
-import DetailOverlay from './components/DetailOverlay';
 import { TabBarContext } from '../contexts/TabBarContext';
 import styles from './page.module.css';
-import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 
 export default function Search() {
   const [keyword, setKeyword] = useState("");
@@ -18,10 +16,6 @@ export default function Search() {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [results, setResults] = useState<EventDataForClient[]>([]);
   const [isMobile, setIsMobile] = useState(false);
-  const [detailEvent, setDetailEvent] = useState<EventDataForClient | null>(null);
-  const [animating, setAnimating] = useState(false);
-  const [animStyle, setAnimStyle] = useState<any>({});
-  const animDivRef = useRef<HTMLDivElement>(null);
 
   // TabBarのrefを取得
   const tabBarRef = useContext(TabBarContext);
@@ -54,48 +48,10 @@ export default function Search() {
 
   // 詳細表示divのアニメーション開始
   const handleEventCardClick = (event: EventDataForClient) => {
-    // TabBarのrefから位置・サイズを取得
-    if (!tabBarRef?.current) return;
-    const rect = tabBarRef.current.getBoundingClientRect();
-    setDetailEvent(event);
-    setAnimating(true);
-    setAnimStyle({
-      position: 'fixed',
-      left: rect.left + 'px',
-      top: rect.top + 'px',
-      width: rect.width + 'px',
-      height: rect.height + 'px',
-      borderRadius: '10rem',
-      // background: '#F4F4F4',
-      zIndex: 9999,
-      transition: 'all 1s cubic-bezier(0.4,0,0.2,1)',
-      overflow: 'hidden',
-    });
-    // 1フレーム後にアニメーション先のスタイルに変更
-    setTimeout(() => {
-      setAnimStyle({
-        position: 'fixed',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '90vw',
-        height: '80vh',
-        bottom: 0,
-        top: 'auto',
-        borderRadius: '2rem 2rem 0 0',
-        // background: '#F4F4F4',
-        zIndex: 9999,
-        transition: 'all 1s cubic-bezier(0.4,0,0.2,1)',
-        overflow: 'hidden',
-      });
-      // 1秒後にアニメーション終了と背景色を透明に
-      setTimeout(() => {
-        setAnimating(false);
-        setAnimStyle((prev: any) => ({
-          ...prev,
-          background: 'transparent',
-        }));
-      }, 1000);
-    }, 30);
+    // TabBarのアニメーション関数を呼び出し
+    if ((window as any).__TAB_BAR_CONTEXT__?.triggerAnimation) {
+      (window as any).__TAB_BAR_CONTEXT__.triggerAnimation(event);
+    }
   };
 
   // 共通のタブコンテンツ
@@ -193,15 +149,7 @@ export default function Search() {
           {renderResults()}
         </>
       )}
-      {detailEvent && (
-        <div ref={animDivRef} style={animStyle}>
-          <LiquidGlass>
-            {!animating && (
-              <DetailOverlay event={detailEvent} onClose={() => setDetailEvent(null)} />
-            )}
-          </LiquidGlass>
-        </div>
-      )}
+
     </div>
   );
 }
