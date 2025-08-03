@@ -1,7 +1,10 @@
+'use client';
+
 import { supabase } from "@/lib/supabaseClient";
-import ReserveForm from "./components/ReserveForm";
 import Image from "next/image";
 import styles from "./page.module.css";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 // export default async function RservePage() {
 //   const { data: events, error } = await supabase
@@ -22,14 +25,49 @@ import styles from "./page.module.css";
 // }
 
 
-export default async function ReservePage() {
-  const { data: events, error } = await supabase
-    .from("reserveEvents")
-    .select("*")
-    // .gte("reserved_count", 0);
+export default function ReservePage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // データ取得をuseEffectで行う
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("reserveEvents")
+          .select("*");
+
+        if (error) {
+          setError("イベントの取得に失敗しました。");
+        } else {
+          setEvents(data || []);
+        }
+      } catch (err) {
+        setError("イベントの取得に失敗しました。");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  const handleQRClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  if (loading) {
+    return <div>読み込み中...</div>;
+  }
 
   if (error || !events) {
-    return <div>イベントの取得に失敗しました。</div>;
+    return <div>{error || "イベントの取得に失敗しました。"}</div>;
   }
 
   return (
@@ -74,12 +112,12 @@ export default async function ReservePage() {
           <div className={styles.header_sub_inner}>
             <div className={styles.nav}>
               <ul className={styles.menu}>
-                <li className={styles.munu_index}>チケットの購入</li>
-                <li className={styles.munu_index}>予約・抽選の申し込み</li>
-                <li className={styles.munu_index}>マイチケット</li>
-                <li className={styles.munu_index}>メッセージ</li>
-                <li className={styles.munu_index}>よくあるお問い合わせ</li>
-                <li className={styles.munu_index}>
+                <li>チケットの購入</li>
+                <li>予約・抽選の申し込み</li>
+                <li>マイチケット</li>
+                <li>メッセージ</li>
+                <li>よくあるお問い合わせ</li>
+                <li>
                   <div className={styles.logout}>ログアウト</div>
                 </li>
               </ul>
@@ -87,6 +125,7 @@ export default async function ReservePage() {
           </div>
         </div>
       </div>
+
       <div className={styles.main}>
         <div className={styles.main_inner}>
           <div className={styles.top}>
@@ -150,7 +189,7 @@ export default async function ReservePage() {
                   <div className={styles.ticket_middle_left_text}>チケットID：--------</div>
                   <div className={styles.ticket_middle_left_text}>来場日変更回数：残り3回</div>
                 </div>
-                <div className={styles.ticket_middle_right}>
+                <div className={styles.ticket_middle_right} onClick={handleQRClick}>
                   <div className={styles.ticket_middle_right_inner}>
                     <Image
                       src="/images/qrcode.png"
@@ -212,7 +251,9 @@ export default async function ReservePage() {
                           height={40}
                           alt="右矢印"
                         />
-                        <div className={styles.arrow_middle}>7日前抽選申込<br/>(受付中)</div>
+                        <Link className={styles.arrow_middle} href="/reserve/7days-before-reservation/ticketselect">
+                          <div>7日前抽選申込<br/>(受付中)</div>
+                        </Link>
                         <Image
                           src="/images/arrow_red_right.png"
                           width={15}
@@ -274,7 +315,23 @@ export default async function ReservePage() {
               />
             </div>
           </div>
-          <div className={styles.buttons}></div>
+          <div className={styles.buttons}>
+            <div className={styles.button_top}>
+              <div className={styles.button_more}>もっと見る　</div>
+              <p>チケットの購入履歴はこちら</p>
+            </div>
+            <ul className={styles.button_bottom}>
+              <li>
+                <div className={styles.button_other}>チケットの追加購入</div>
+                <p>※ 入場後の登録、使用済みチケットの登録はできませんのでご注意ください。</p>
+              </li>
+              <li>
+                <div className={styles.button_other}>チケットの受け渡し</div>
+                <p>チケットの受け渡し履歴<br/>
+                ※ 入場後の受け渡し、使用済みチケットの受け渡しはできませんのでご注意ください。</p>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -283,6 +340,63 @@ export default async function ReservePage() {
 
         </div>
       </div>
+
+      {/* QRモーダル */}
+      {isModalOpen && (
+        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modal_inner}>
+              <button className={styles.closeButton} onClick={handleCloseModal}>
+                <Image
+                  src="/images/close.png"
+                  width={20}
+                  height={20}
+                  alt="閉じる"
+                />
+              </button>
+              <div className={styles.modal_content}>
+                <h2 className={styles.modal_title}>青霞祭予約券</h2>
+                <div className={styles.modal_carousel}>
+                  <div className={styles.modal_carousel_inner}>
+                    <div className={styles.ticket_number}>1/1</div>
+                    <div className={styles.ticket_kind}>青霞祭予約券</div>
+                    <div className={styles.age}>来場者</div>
+                    <div className={styles.qrcode}>
+                      <Image
+                        src="/images/qr-ex.png"
+                        width={200}
+                        height={200}
+                        alt="QRコード"
+                      />
+                    </div>
+                    <div className={styles.ticket_id}>チケットID：--------</div>
+                    <div className={styles.ticket_badges}>イベントの予約なし</div>
+                    <div className={styles.ticket_schedule}>
+                      <div className={styles.ticket_schedule_row}>8月10日<span>(日)</span></div>
+                      <div className={styles.ticket_schedule_row}>11:00-</div>
+                      <div className={styles.ticket_schedule_row}>[正門]</div>
+                    </div>
+                    <Image
+                      className={styles.ticket_gif}
+                      src="/images/ticket_gif.gif"
+                      width={333}
+                      height={198}
+                      alt="青霞祭予約券"
+                    />
+                  </div>
+                </div>
+                <div className={styles.detail_button}>
+                  <div className={styles.detail_button_inner}>イベントの予約状況</div>
+                </div>
+                <div className={styles.action_button}>
+                  <div className={styles.action_close} onClick={handleCloseModal}>とじる</div>
+                  <div className={styles.action_print}>印刷する</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

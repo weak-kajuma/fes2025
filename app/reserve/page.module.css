@@ -1,21 +1,24 @@
-:root {
-  --header_main-img1: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAu4AAACaCAMAAADB7z0GAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAydpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDkuMC1jMDAxIDc5LmMwMjA0YjJkZWYsIDIwMjMvMDIvMDItMTI6MTQ6MjQgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCAyNC4zIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozRjhGMEMzM0Q1MjQxMUVEOUVFQUE3REJCQTQ5OTM1RCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozRjhGMEMzNEQ1MjQxMUVEOUVFQUE3REJCQTQ5OTM1RCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjNGOEYwQzMxRDUyNDExRUQ5RUVBQTdEQkJBNDk5MzVEIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjNGOEYwQzMyRDUyNDExRUQ5RUVBQTdEQkJBNDk5MzVEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+uB5mBwAAAqZQTFRFAGi3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");
-}
-
 .wrapper {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .header {
-  height: calc(77px + 7.7rem);
-  position: relative;
+  /* height: calc(77px + 7.7rem); */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 70;
-  min-height: 154px;
+  min-height: 77px;
+  background: #fff;
 
   .header_main {
     height: 77px;
-    background: #0068b7 var(--header_main-img1) no-repeat 0 0 / auto 77px;
+    background: #0068b7 url(/images/header-bg.png) no-repeat 0 0 / auto 77px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .16);
     position: relative;
@@ -144,7 +147,7 @@
 
           li {
             font-size: .9rem;
-            font-weight: 700;
+            font-weight: 800;
             position: relative;
             display: flex;
             align-items: center;
@@ -165,12 +168,19 @@
 }
 
 .main {
-  margin-bottom: 30vh;
+  margin-top: calc(77px);
+  /* margin-bottom: 30vh; */
 
   .main_inner {
-    width: 96%;
-    max-width: 880px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    box-sizing: border-box;
+
+    @media screen and (max-width: 768px) {
+      padding: 0 15px;
+    }
 
     .top {
 
@@ -182,6 +192,11 @@
         line-height: 1.5;
         letter-spacing: .1em;
         text-align: center;
+        margin-top: 77px;
+
+        @media screen and (max-width: 768px) {
+          margin-top: 0;
+        }
       }
 
       .top_info {
@@ -240,6 +255,11 @@
       border-bottom: 2px solid #222426;
       margin: 0 auto;
 
+      @media screen and (max-width: 768px) {
+        flex-direction: column;
+        gap: 10px;
+      }
+
       .controller_content {
         display: flex;
         flex-direction: row;
@@ -273,10 +293,15 @@
     }
 
     .ticket_wrapper {
-      margin-top: 2.4rem;
+      margin-top: 30px;
+      width: 100%;
+      overflow-x: hidden;
+
+      @media screen and (max-width: 768px) {
+        margin-top: 20px;
+      }
 
       .ticket {
-        margin-top: 2.4rem;
         border-radius: 25px;
         box-shadow: 4px 4px 4px rgba(0, 0, 0, .25);
         counter-increment: my_ticket_count;
@@ -286,7 +311,8 @@
         width: 680px;
 
         @media screen and (max-width: 768px) {
-          width: 335px;
+          margin-bottom: 20px;
+          width: 350px;
         }
 
         .box {
@@ -576,6 +602,125 @@
         }
       }
     }
+
+    .buttons {
+
+      .button_top {
+
+        .button_more {
+          margin: 30px auto 0;
+          justify-content: flex-start;
+          width: -webkit-max-content;
+          width: -moz-max-content;
+          width: max-content;
+          min-width: 1rem;
+          max-width: 100%;
+          min-height: 50px;
+          padding-left: 24px;
+          border: 2px solid #222426;
+          opacity: .64;
+          filter: grayscale(1);
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          /* width: 315px; */
+          padding: .7em 44px;
+          font-size: 1.6rem;
+          font-weight: 700;
+          line-height: 1.5;
+          text-decoration: none;
+          cursor: pointer;
+          transition: background .2s ease-out;
+          background-color: initial;
+          font-size: 1rem;
+
+          &::after {
+            background: url(/images/button_back_red.png) no-repeat 0 0 / 100% auto;
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            display: block;
+            width: 22px;
+            height: 22px;
+            content: "";
+            transform: translateY(-50%);
+            transform: translateY(-50%) rotate(90deg);
+          }
+        }
+
+        p {
+          margin-top: .7em;
+          text-align: center;
+          font-size: .9rem;
+          line-height: 1.5;
+          margin-left: 10px;
+          text-decoration: underline;
+        }
+      }
+
+      .button_bottom {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        flex-direction: row-reverse;
+        margin-top: 30px;
+        list-style-type: none;
+
+        @media screen and (max-width: 768px) {
+          flex-direction: column;
+        }
+
+        li {
+          position: relative;
+          padding-bottom: 2.2rem;
+
+          &:last-child {
+            margin-right: 20px;
+          }
+
+          .button_other {
+            min-height: 50px;
+            border: 2px solid #222426;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 315px;
+            padding: .7em 44px;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background .2s ease-out;
+            background-color: initial;
+
+            &::after {
+              background: url(/images/button_back_red.png) no-repeat 0 0 / 100% auto;
+              position: absolute;
+              top: 50%;
+              right: 8px;
+              display: block;
+              width: 22px;
+              height: 22px;
+              content: "";
+              transform: translateY(-50%);
+            }
+          }
+
+          p {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            transform: translateY(.7em);
+            font-size: .8rem;
+            line-height: 1.5;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -587,6 +732,7 @@
   color: #fff;
   padding: 140px 0 0;
   background: url(/images/footer.png) no-repeat calc(50% - 60px) top;
+  margin-top: 50px;
 
   .footer_inner {
     width: calc(100% - 4vw);
@@ -594,5 +740,278 @@
     margin: 0 auto;
     position: relative;
     height: 50vh;
+  }
+}
+
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .modal {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    border: 1px solid rgb(204, 204, 204);
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    border-radius: 20px;
+    outline: none;
+    padding: 0px;
+    margin-right: -50%;
+    width: 335px;
+    max-width: calc(-24px + 100dvw);
+    height: auto;
+    max-height: calc(-24px + 100dvh);
+    transform: translate(-50%, -50%);
+
+    .modal_inner {
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+
+      .closeButton {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: none;
+        background: none;
+        padding: 0;
+      }
+
+      .modal_content {
+
+        .modal_title {
+          width: 100%;
+          height: 60px;
+          padding-top: 8px;
+          text-align: center;
+          background-image: url(/images/ticket_top.png);
+          background-repeat: no-repeat;
+          background-size: 105% 60px;
+          background-position: top;
+          color: #fff;
+          font-size: 1.2rem;
+          font-weight: 700;
+        }
+
+        .modal_carousel {
+          width: 100%;
+          user-select: none;
+          outline: none;
+
+          .modal_carousel_inner {
+            overflow: hidden;
+            margin: auto;
+            width: 100%;
+            transition: height .15s ease-in;
+            transform: translate3d(0px, 0px, 0px);
+            transition-duration: 350ms;
+            display: flex;
+            flex-direction: column;
+            transition: all .35s ease-in-out;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            list-style: none;
+            width: 100%;
+
+            .ticket_number {
+              position: absolute;
+              right: 20px;
+              width: 35px;
+              height: 35px;
+              border-radius: 50%;
+              background-color: #222426;
+              color: #fff;
+              line-height: 35px;
+              font-size: .8rem;
+              margin-top: 10px;
+            }
+
+            .ticket_kind {
+              font-size: 1.6rem;
+              font-weight: 700;
+              letter-spacing: .1em;
+              text-align: center;
+              margin-bottom: 12px;
+              padding: 0 60px;
+            }
+
+            .age {
+              font-size: 1.3rem;
+              font-weight: 700;
+              line-height: 1.6;
+            }
+
+            .qrcode {
+              display: flex;
+              justify-content: center;
+            }
+
+            .ticket_id {
+              font-size: .8rem;
+              font-weight: 550;
+              margin: 5px 0;
+            }
+
+            .ticket_badges {
+              display: flex;
+              justify-content: center;
+              font-size: .8rem;
+              background: #d2d7da;
+              padding: 2px 8px;
+              border-radius: 10px;
+              font-weight: 700;
+              line-height: 1.6;
+              margin: 0 20% 10px;
+            }
+
+            .ticket_schedule {
+              position: relative;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+
+              .ticket_schedule_row {
+                font-size: 2.3rem;
+                font-weight: 700;
+
+                span {
+                  font-size: 1.5rem;
+                }
+              }
+            }
+
+            .ticket_gif {
+              margin-top: 10px;
+            }
+          }
+        }
+
+        .detail_button {
+          background: #e60d12;
+          color: #fff;
+          width: 100%;
+          min-height: 50px;
+          box-sizing: border-box;
+          border-bottom: 1px solid #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+
+          .detail_button_inner {
+            width: 100%;
+            position: relative;
+            background: #e60d12;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            padding: 8px 36px 8px 8px;
+
+            &::before {
+              background: url(/images/ticket_back_red.png) no-repeat 0 0 / 100% auto;
+              content: "";
+              width: 22px;
+              height: 22px;
+              position: absolute;
+              top: 50%;
+              right: 8px;
+              color: #fff;
+              z-index: 10;
+              transform: translateY(-50%);
+            }
+
+            &::after {
+              content: "";
+              display: inline-block;
+              vertical-align: baseline;
+              margin-top: 3px;
+              margin-left: 4px;
+              background: url(/images/open.png) no-repeat 0 0 / 100% auto;
+              width: 16px;
+              height: 15px;
+            }
+          }
+        }
+
+        .action_button {
+          color: #fff;
+          display: flex;
+          height: 50px;
+
+          .action_close {
+            border-right: 1px solid #fff;
+            width: 50%;
+            height: 100%;
+            box-sizing: border-box;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: #e60d12;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            line-height: 1.5;
+            text-decoration: none !important;
+          }
+
+          .action_print {
+            width: 50%;
+            height: 100%;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: #e60d12;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            line-height: 1.5;
+            text-decoration: none !important;
+
+            &::before {
+              content: "";
+              background: url(/images/print.png) no-repeat 0 0 / 100% auto;
+              width: 20px;
+              height: 18.4px;
+              position: absolute;
+              top: 15px;
+              left: 20px;
+              color: #fff;
+              z-index: 10;
+            }
+          }
+        }
+      }
+    }
   }
 }
