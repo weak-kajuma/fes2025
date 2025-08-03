@@ -1,9 +1,10 @@
 "use client";
 
-import styles from "./timetable_client.module.css";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { getEventsBySort, EventsByLocation } from "./ServerAction";
 import Link from "next/link";
+import { useEffect, useRef, useState, useTransition } from "react";
+
+import { getEventsBySort, EventsByLocation } from "./Action";
+import styles from "./timetable_client.module.css";
 import TimeTableContent from "./timetable_content";
 
 // 日付・エリアボタン定義
@@ -23,7 +24,7 @@ export default function Timetable_Client() {
   const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0].value);
   const [selectedArea, setSelectedArea] = useState<string[]>([]);
   const [maxSelectableAreas, setMaxSelectableAreas] = useState<number>(3);
-  const [allEventsData, setAllEventsData] = useState<{ [date: string]: EventsByLocation[] | undefined }>({});
+  const [allEventsData, setAllEventsData] = useState<Record<string, EventsByLocation[] | undefined>>({});
   const [currentDisplayEvents, setCurrentDisplayEvents] = useState<EventsByLocation[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [errorLoading, setErrorLoading] = useState<string | null>(null);
@@ -44,21 +45,20 @@ export default function Timetable_Client() {
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => { window.removeEventListener("resize", handleResize); };
   }, []);
 
   // 初期データロード
   useEffect(() => {
     let mounted = true;
-    const fetchAllInitialData = async () => {
+    const fetchAllInitialData = () => {
       setIsInitialLoading(true);
       setErrorLoading(null);
       try {
-        const dataPromises = dateOptions.map(dateOpt =>
-          getEventsBySort(dateOpt.value, areaOptions.map(opt => opt.value), EVENT_YEAR, EVENT_MONTH)
+        const results = dateOptions.map(dateOpt =>
+          getEventsBySort(dateOpt.value)
         );
-        const results = await Promise.all(dataPromises);
-        const newData: { [date: string]: EventsByLocation[] } = {};
+        const newData: Record<string, EventsByLocation[]> = {};
         dateOptions.forEach((dateOpt, idx) => {
           newData[dateOpt.value] = results[idx];
         });
@@ -133,7 +133,7 @@ export default function Timetable_Client() {
 
     calculateCurrentRow();
     const intervalId = setInterval(calculateCurrentRow, 60000);
-    return () => clearInterval(intervalId);
+    return () => { clearInterval(intervalId); };
   }, []);
 
   // イベントカード
@@ -190,7 +190,7 @@ export default function Timetable_Client() {
             <button
               key={dateOpt.label}
               className={`${dateOpt.className} ${styles.button} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
-              onClick={() => setSelectedDate(dateOpt.value)}
+              onClick={() => { setSelectedDate(dateOpt.value); }}
             >
               {dateOpt.label}
             </button>
