@@ -1,0 +1,10 @@
+.description {
+  position: relative;
+  z-index: 10;
+  top: 0;
+  font-size: 1.5rem;
+  color: black;
+  text-transform: uppercase;
+  margin-top: 100px;
+  height: 100vh;
+}

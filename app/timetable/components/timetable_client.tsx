@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { getEventsBySort, EventsByLocation } from "./ServerAction";
 import Link from "next/link";
 import TimeTableContent from "./timetable_content";
+import { useLocomotiveScroll } from "@/components/LocomotiveScroll";
 
 // 日付・エリアボタン定義
 const dateOptions = [
@@ -31,6 +32,9 @@ export default function Timetable_Client() {
 
   const EVENT_YEAR = 2025;
   const EVENT_MONTH = 9;
+
+  // LocomotiveScrollの初期化（トップレベルで呼び出し）
+  useLocomotiveScroll();
 
   // レスポンシブ対応
   useEffect(() => {
@@ -182,7 +186,7 @@ export default function Timetable_Client() {
   };
 
   return (
-    <div className={styles.main}>
+    <div className={styles.main} data-scroll-container>
       <h2 className={styles.title} ref={title_Ref}>TIME TABLE</h2>
       <div className={styles.selector}>
         <div className={styles.dateSelector}>

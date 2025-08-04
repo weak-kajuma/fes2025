@@ -9,6 +9,7 @@ import Tab from './components/tab';
 import EventCard from './components/eventCard';
 import { TabBarContext } from '../contexts/TabBarContext';
 import styles from './page.module.css';
+import { useLocomotiveScroll } from "@/components/LocomotiveScroll";
 
 export default function Search() {
   const [keyword, setKeyword] = useState("");
@@ -19,6 +20,9 @@ export default function Search() {
 
   // TabBarのrefを取得
   const tabBarRef = useContext(TabBarContext);
+
+  // LocomotiveScrollインスタンスを取得
+  useLocomotiveScroll();
 
   // 画面幅を監視
   useEffect(() => {
@@ -32,6 +36,9 @@ export default function Search() {
     handleSearch(keyword);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // LocomotiveScrollの初期化
+  useLocomotiveScroll();
 
   const handleSearch = async (value: string) => {
     setKeyword(value);
@@ -124,7 +131,7 @@ export default function Search() {
   );
 
   return (
-    <div className={styles.main}>
+    <div className={styles.main} data-scroll-container>
       <h1 className={styles.title}>SEARCH</h1>
       <SearchBar
         value={keyword}

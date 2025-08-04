@@ -33,8 +33,25 @@ body {
   /* overflow-x: hidden; */
 }
 
+/* Locomotive Scroll用の設定 */
+html.has-scroll-smooth {
+  overflow: hidden;
+}
+
+html.has-scroll-dragging {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Locomotive Scrollが有効な場合は通常のスクロール動作を無効化 */
+html.has-scroll-smooth body {
+  overflow: hidden;
+}
+
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* Locomotive Scroll使用時はautoに変更 */
 }
 
 body {
