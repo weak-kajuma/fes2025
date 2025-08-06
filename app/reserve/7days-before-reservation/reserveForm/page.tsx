@@ -121,7 +121,7 @@ export default function Reserve7DaysBeforeReserveForm() {
             alt="OSAKA, KANSAI, JAPAN. EXPO 2025"
           />
           <div className={styles.title}>
-            <span>EXPO2025デジタルチケット</span>
+            <span>スパークル</span>
           </div>
           <ul className={styles.shortcut}>
             <li>

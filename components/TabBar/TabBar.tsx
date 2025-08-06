@@ -18,11 +18,31 @@ type EventDataForClient = {
   tags: string[] | null;
 };
 
+// デバイス判定フック
+function useDeviceDetection() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsDesktop(width >= 768); // 768px以上をPCとする
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  return { isDesktop };
+}
+
 export default forwardRef<HTMLDivElement>((props, ref) => {
   const tabBar_Ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventDataForClient | null>(null);
+  const { isDesktop } = useDeviceDetection();
 
   // 外部refと内部refを結合
   const combinedRef = (node: HTMLDivElement) => {
@@ -137,25 +157,28 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
     }
   }, [pathname]);
 
+  // PC版のトップページかどうかを判定
+  const isDesktopTopPage = isDesktop && pathname === "/";
+
   return (
     <div className={styles.wrapper} ref={combinedRef}>
       <LiquidGlass>
         {!isExpanded ? (
           <div className={styles.items}>
             <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false}>
-              <img src="/icon/pamphlet.svg" alt="pamphlet" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+              <img src="/icon/pamphlet.svg" alt="pamphlet" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
             </Link>
             <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false}>
-              <img src="/icon/timetable.svg" alt="timetable" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+              <img src="/icon/timetable.svg" alt="timetable" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
             </Link>
             <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false}>
-              <img src="/icon/search.svg" alt="search" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+              <img src="/icon/search.svg" alt="search" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
             </Link>
             <Link className={`${styles.item} ${styles.user}`} href="" scroll={false}>
-              <img src="/icon/user.svg" alt="user" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+              <img src="/icon/user.svg" alt="user" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
             </Link>
             <Link className={`${styles.item} ${styles.allEvents}`} href="/allEvents" scroll={false}>
-              <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={`${styles.icon_svg} ${styles.icon_svg_black}`} />
+              <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
             </Link>
           </div>
         ) : (

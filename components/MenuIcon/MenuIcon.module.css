@@ -105,3 +105,21 @@
 .ham1.active .bottom {
   stroke-dashoffset: -138px;
 }
+
+/* ハンバーガーメニューの色分け */
+.ham_white .line {
+  stroke: #fff;
+}
+
+.ham_black .line {
+  stroke: #000;
+}
+
+/* リンクテキストの色分け */
+.link_text_white {
+  color: #fff !important;
+}
+
+.link_text_black {
+  color: #000 !important;
+}

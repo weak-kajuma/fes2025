@@ -7,7 +7,7 @@
                 alt="OSAKA, KANSAI, JAPAN. EXPO 2025"></a>
             <div class="style_main_header__titles__Bhikv sp-none"><span class=style_site_heading__W80I0><a
                   class=style_main_header__main_title__oeFBJ tabindex=0 data-role=site_title><span
-                    data-message-code=SW_GP_DL_001_0101 class=style_renderer__ip0Pm>EXPO2025デジタルチケット</span></a></span>
+                    data-message-code=SW_GP_DL_001_0101 class=style_renderer__ip0Pm>スパークル</span></a></span>
             </div>
             <div class="pc-none style_sp_title_box__oK11Q sf-hidden"></div>
             <ul class=style_header_shortcut__LkkEp>
@@ -266,7 +266,7 @@
         <div class=style_footer__layout__21SM8>
           <dl>
             <dt class=style_footer__title__U0Pn7><span data-message-code=SW_GP_DL_001_0401 class=style_renderer__ip0Pm>
-                EXPO2025デジタルチケット</span>
+                スパークル</span>
             <dd>
               <ul class=style_footer__columns__m5RWD>
                 <li class=style_footer__column__Bssxc>

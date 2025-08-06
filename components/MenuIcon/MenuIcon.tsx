@@ -7,11 +7,34 @@ import styles from "./MenuIcon.module.css";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// デバイス判定フック
+function useDeviceDetection() {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsDesktop(width >= 768); // 768px以上をPCとする
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  return { isDesktop };
+}
+
 export default function MenuIcon() {
   const [isOpen, setIsOpen] = useState(false);
   const iconRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { isDesktop } = useDeviceDetection();
+
+  // PC版のトップページかどうかを判定
+  const isDesktopTopPage = isDesktop && pathname === "/";
 
   // 画面遷移時にメニューを閉じる
   useEffect(() => {
@@ -66,12 +89,12 @@ export default function MenuIcon() {
     <div className={styles.menu_wrapper}>
       <div ref={iconRef} className={styles.menu_icon}>
         <LiquidGlass>
-          <svg
-            className={`${styles.ham} ${styles.hamRotate} ${styles.ham1} ${isOpen ? styles.active : ''}`}
-            viewBox="0 0 100 100"
-            width="50"
-            onClick={handleIconClick}
-          >
+                     <svg
+             className={`${styles.ham} ${styles.hamRotate} ${styles.ham1} ${isOpen ? styles.active : ''} ${isDesktopTopPage ? styles.ham_white : styles.ham_black}`}
+             viewBox="0 0 100 100"
+             width="50"
+             onClick={handleIconClick}
+           >
             <path
               className={`${styles.line} ${styles.top}`}
               d="m 30,33 h 40 c 0,0 9.044436,-0.654587 9.044436,-8.508902 0,-7.854315 -8.024349,-11.958003 -14.89975,-10.85914 -6.875401,1.098863 -13.637059,4.171617 -13.637059,16.368042 v 40"
@@ -90,18 +113,18 @@ export default function MenuIcon() {
             ref={contentRef}
             className={styles.menu_content}
           >
-            <div className={styles.link}>
-              <Link href="/">ホーム</Link>
-            </div>
-            <div className={styles.link}>
-              <Link href="/map">マップ</Link>
-            </div>
-            <div className={styles.link}>
-              <Link href="/allEvents">企画一覧</Link>
-            </div>
-            <div className={styles.link}>
-              <Link href="/timetable">タイムテーブル</Link>
-            </div>
+                         <div className={styles.link}>
+               <Link href="/" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>ホーム</Link>
+             </div>
+             <div className={styles.link}>
+               <Link href="/map" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>マップ</Link>
+             </div>
+             <div className={styles.link}>
+               <Link href="/allEvents" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>企画一覧</Link>
+             </div>
+             <div className={styles.link}>
+               <Link href="/timetable" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>タイムテーブル</Link>
+             </div>
           </div>
         </LiquidGlass>
       </div>

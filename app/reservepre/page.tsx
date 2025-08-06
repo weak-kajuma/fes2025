@@ -60,7 +60,7 @@ export default async function ReservePage() {
                           data-message-code="SW_GP_DL_001_0101"
                           className="style_renderer__ip0Pm"
                         >
-                          EXPO2025デジタルチケット
+                          スパークル
                         </span>
                       </a>
                     </span>
@@ -840,7 +840,7 @@ export default async function ReservePage() {
                       data-message-code="SW_GP_DL_001_0401"
                       className="style_renderer__ip0Pm"
                     >
-                      EXPO2025デジタルチケット
+                      スパークル
                     </span>
                   </dt>
                   <dd>

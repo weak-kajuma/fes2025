@@ -1,15 +1,56 @@
 "use client"
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import styles from "./page.module.css";
 import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
 import FunctionItem from "@/components/LiquidGlass/FunctionItem/FunctionItem";
 import Image from "next/image";
 
+// モバイル版コンポーネントを動的インポート
+const MobileHome = dynamic(() => import("./MobileHome"), { ssr: false });
 const Scene = dynamic(() => import("@/components/model/Scene"), { ssr: false });
 
+// デバイス判定フック
+function useDeviceDetection() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 1201); // 768px未満をモバイルとする
+      setIsLoading(false);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  return { isMobile, isLoading };
+}
+
 export default function Home() {
+  const { isMobile, isLoading } = useDeviceDetection();
+
+  // ローディング中は何も表示しない
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // モバイル版の場合はバックアップファイルのコンポーネントを表示
+  if (isMobile) {
+    return <MobileHome />;
+  }
+
+  // PC版の場合は現在のコンポーネントを表示
+  return <DesktopHome />;
+}
+
+// PC版のコンポーネント
+function DesktopHome() {
   const h1Ref = useRef<HTMLHeadingElement>(null);
   const pRef = useRef<HTMLParagraphElement>(null);
   const newsRef = useRef<HTMLDivElement>(null);
@@ -171,5 +212,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }

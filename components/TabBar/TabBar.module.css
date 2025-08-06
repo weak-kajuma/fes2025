@@ -72,3 +72,7 @@
 .icon_svg_black {
   filter: brightness(.5);
 }
+
+.icon_svg_white {
+  filter: brightness(4);
+}

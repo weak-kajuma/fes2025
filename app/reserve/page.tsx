@@ -1,74 +1,9 @@
-'use client';
-
-import { supabase } from "@/lib/supabaseClient";
+import { signIn, auth, signOut } from "@/auth";
 import Image from "next/image";
-import styles from "./page.module.css";
-import Link from "next/link";
-import { useState, useEffect } from "react";
+import styles from "./ticket/page.module.css";
 
-// export default async function RservePage() {
-//   const { data: events, error } = await supabase
-//     .from("reserveEvents")
-//     .select("*")
-//     // .gte("reserved_count", 0);
-
-//   if (error || !events) {
-//     return <div>イベントの取得に失敗しました。</div>;
-//   }
-
-//   return (
-//     <main className="p-4">
-//       <h1 className="text-2xl font-bold mb-4">予約可能なイベント</h1>
-//       <ReserveForm events={events} />
-//     </main>
-//   );
-// }
-
-
-export default function ReservePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // データ取得をuseEffectで行う
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("reserveEvents")
-          .select("*");
-
-        if (error) {
-          setError("イベントの取得に失敗しました。");
-        } else {
-          setEvents(data || []);
-        }
-      } catch (err) {
-        setError("イベントの取得に失敗しました。");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
-  const handleQRClick = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  if (loading) {
-    return <div>読み込み中...</div>;
-  }
-
-  if (error || !events) {
-    return <div>{error || "イベントの取得に失敗しました。"}</div>;
-  }
+export default async function ReserveLoginPage() {
+  const session = await auth();
 
   return (
     <div className={styles.wrapper}>
@@ -82,7 +17,7 @@ export default function ReservePage() {
             alt="OSAKA, KANSAI, JAPAN. EXPO 2025"
           />
           <div className={styles.title}>
-            <span>EXPO2025デジタルチケット</span>
+            <span>スパークル</span>
           </div>
           <ul className={styles.shortcut}>
             <li>
@@ -129,274 +64,103 @@ export default function ReservePage() {
       <div className={styles.main}>
         <div className={styles.main_inner}>
           <div className={styles.top}>
-            <h1 className={styles.top_title}>マイチケット</h1>
-            <div className={styles.top_info}>お持ちのチケットを確認できます。<br />
-              複数のチケットにまとめて予約･抽選を<br />
-              申し込むことができます。<br />
-              入場および予約したパビリオン･イベントに入館する際には、QRコード表示ボタンを押してQRコードを提示してください。<br />
-              予約･抽選の確認や変更･取消は、チケットを選択して1枚ずつ行ってください。<br />
-              まとめて申し込んだ内容を変更する場合は<br />
-              チケット毎に取り消し、再度まとめてお申し込みください。</div>
-            <div className={styles.top_summaryButton}>まとめて予約･抽選に申し込む</div>
-            <ul className={styles.top_note}>
-              <li>まとめて申し込んだ内容を変更する場合は、チケット毎に取消を行ったうえで再度まとめてお申し込みください。チケットを1枚だけ選択して変更すると、別の申し込みになるのでご注意ください。予約の変更･取消は内容によりできないものもあります。</li>
-              <li>3歳以下無料券の予約･抽選は必ず大人･中人と一緒に行う必要があります。3歳以下無料券の入手はチケットの購入から。 </li>
-            </ul>
-            <div className={styles.top_ticketCount}>1枚 のチケットをお持ちです。</div>
-          </div>
-          <div className={styles.controller}>
-            <div className={styles.controller_content}>
-              <Image
-                src="/images/sort.png"
-                width={20}
-                height={20}
-                alt="絞り込み"
-              />
-              <p>絞り込み</p>
-              <div className={styles.controller_text}>ご利用可能なチケット</div>
+            <h1 className={styles.top_title}>ログイン</h1>
+            <div className={styles.top_info}>
+              青霞祭のチケット予約システムにログインしてください。<br />
+              ログイン後、チケット画面に進むことができます。
             </div>
-            <div className={styles.controller_content}>
-              <Image
-                src="/images/change.png"
-                width={20}
-                height={20}
-                alt="並び替え"
-              />
-              <p>並び替え</p>
-              <div className={styles.controller_text}>来場日時の昇順</div>
-            </div>
-          </div>
-          <div className={styles.ticket_wrapper}>
-            <div className={styles.ticket}>
-              <div className={styles.box}></div>
-              <div className={styles.ticket_top}>
-                <div className={styles.ticket_title}>青霞祭予約券</div>
-                <div className={styles.ticket_info}>
-                  <Image
-                    src="/images/ticket_gif.gif"
-                    width={140}
-                    height={80}
-                    alt="青霞祭予約券"
-                  />
-                  <div className={styles.ticket_info_inner}>
-                    <div className={styles.summary}>来場者</div>
-                    <div className={styles.status}>チケット状態：予約済</div>
-                  </div>
-                </div>
-              </div>
-              <div className={styles.ticket_middle}>
-                <div className={styles.ticket_middle_left}>
-                  <div className={styles.ticket_middle_left_text}>チケットID：--------</div>
-                  <div className={styles.ticket_middle_left_text}>来場日変更回数：残り3回</div>
-                </div>
-                <div className={styles.ticket_middle_right} onClick={handleQRClick}>
-                  <div className={styles.ticket_middle_right_inner}>
+
+            {session ? (
+              <div className={styles.login_success}>
+                <div className={styles.user_info}>
+                  {session.user?.image && (
                     <Image
-                      src="/images/qrcode.png"
-                      width={37}
-                      height={37}
-                      alt="QRコード"
+                      src={session.user.image.replace('=s96-c', '=s400-c')}
+                      width={80}
+                      height={80}
+                      alt="プロフィール画像"
+                      className={styles.user_image}
                     />
-                    <p>QRコードを表示する</p>
+                  )}
+                  <div className={styles.user_details}>
+                    <h2 className={styles.user_name}>ようこそ、{session.user?.name}さん！</h2>
+                    <p className={styles.user_email}>{session.user?.email}</p>
                   </div>
                 </div>
+
+                <div className={styles.action_buttons}>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await signOut();
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      className={styles.signout_button}
+                    >
+                      サインアウト
+                    </button>
+                  </form>
+
+                  <a
+                    href="/reserve/ticket"
+                    className={styles.ticket_button}
+                  >
+                    チケット画面へ進む
+                  </a>
+                </div>
               </div>
-              <div className={styles.ticket_bottom}>
-                <div>
-                  <div className={styles.arrows}>
-                    <div className={styles.arrows_entrance_date}>
-                      <div className={styles.arrows_title}>
-                        <span>■</span>
-                        来場日時の予約
-                      </div>
-                      <div className={styles.arrow}>
-                        <Image
-                          src="/images/arrow_left.png"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <div className={styles.arrow_middle}>2025年8月10日(日) 11:00-<br/>[正門]</div>
-                        <Image
-                          src="/images/arrow_right.png"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                      </div>
-                    </div>
-                    <div className={styles.arrows_event}>
-                      <div className={styles.arrows_title}>
-                        <span>■</span>
-                        イベントの予約
-                      </div>
-                      <div className={styles.arrow}>
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        <Image
-                          src="/images/arrow_red_left.png"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        <Link className={styles.arrow_middle} href="/reserve/7days-before-reservation/ticketselect">
-                          <div>7日前抽選申込<br/>(受付中)</div>
-                        </Link>
-                        <Image
-                          src="/images/arrow_red_right.png"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.ticket_bottom_text}>
-                    <div className={styles.ticket_bottom_text_icon}>
-                      <Image
-                        src="/images/comment.png"
-                        width={20}
-                        height={20}
-                        alt="ご案内"
+            ) : (
+              <div className={styles.login_form}>
+                <div className={styles.login_description}>
+                  Googleアカウントでログインしてください
+                </div>
+
+                <form
+                  action={async () => {
+                    "use server";
+                    await signIn("google", {
+                      callbackUrl: "/reserve",
+                      redirect: true
+                    });
+                  }}
+                >
+                  <button
+                    type="submit"
+                    className={styles.google_login_button}
+                  >
+                    <svg className={styles.google_icon} viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                       />
-                    </div>
-                    <div className={styles.ticket_bottom_text_info}>
-                      <p>７日前抽選の申込は2025年8月2日(土)まで！</p>
-                    </div>
-                  </div>
-                </div>
+                      <path
+                        fill="currentColor"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    Googleでログイン
+                  </button>
+                </form>
               </div>
-              <Image
-                className={styles.ticket_bottom_image}
-                src="/images/ticket_bottom.png"
-                width={680}
-                height={41}
-                alt="bottom"
-              />
-            </div>
-          </div>
-          <div className={styles.buttons}>
-            <div className={styles.button_top}>
-              <div className={styles.button_more}>もっと見る　</div>
-              <p>チケットの購入履歴はこちら</p>
-            </div>
-            <ul className={styles.button_bottom}>
-              <li>
-                <div className={styles.button_other}>チケットの追加購入</div>
-                <p>※ 入場後の登録、使用済みチケットの登録はできませんのでご注意ください。</p>
-              </li>
-              <li>
-                <div className={styles.button_other}>チケットの受け渡し</div>
-                <p>チケットの受け渡し履歴<br/>
-                ※ 入場後の受け渡し、使用済みチケットの受け渡しはできませんのでご注意ください。</p>
-              </li>
-            </ul>
+            )}
           </div>
         </div>
       </div>
 
       <div className={styles.footer}>
         <div className={styles.footer_inner}>
-
         </div>
       </div>
-
-      {/* QRモーダル */}
-      {isModalOpen && (
-        <div className={styles.modalOverlay} onClick={handleCloseModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modal_inner}>
-              <button className={styles.closeButton} onClick={handleCloseModal}>
-                <Image
-                  src="/images/close.png"
-                  width={20}
-                  height={20}
-                  alt="閉じる"
-                />
-              </button>
-              <div className={styles.modal_content}>
-                <h2 className={styles.modal_title}>青霞祭予約券</h2>
-                <div className={styles.modal_carousel}>
-                  <div className={styles.modal_carousel_inner}>
-                    <div className={styles.ticket_number}>1/1</div>
-                    <div className={styles.ticket_kind}>青霞祭予約券</div>
-                    <div className={styles.age}>来場者</div>
-                    <div className={styles.qrcode}>
-                      <Image
-                        src="/images/qr-ex.png"
-                        width={200}
-                        height={200}
-                        alt="QRコード"
-                      />
-                    </div>
-                    <div className={styles.ticket_id}>チケットID：--------</div>
-                    <div className={styles.ticket_badges}>イベントの予約なし</div>
-                    <div className={styles.ticket_schedule}>
-                      <div className={styles.ticket_schedule_row}>8月10日<span>(日)</span></div>
-                      <div className={styles.ticket_schedule_row}>11:00-</div>
-                      <div className={styles.ticket_schedule_row}>[正門]</div>
-                    </div>
-                    <Image
-                      className={styles.ticket_gif}
-                      src="/images/ticket_gif.gif"
-                      width={333}
-                      height={198}
-                      alt="青霞祭予約券"
-                    />
-                  </div>
-                </div>
-                <div className={styles.detail_button}>
-                  <div className={styles.detail_button_inner}>イベントの予約状況</div>
-                </div>
-                <div className={styles.action_button}>
-                  <div className={styles.action_close} onClick={handleCloseModal}>とじる</div>
-                  <div className={styles.action_print}>印刷する</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
