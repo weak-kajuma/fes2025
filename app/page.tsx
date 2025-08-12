@@ -1,216 +1,367 @@
 "use client"
 
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image"; // 追加
 import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
-import styles from "./page.module.css";
+
+import styles from "./page.module.css"
+import FlipButton from "../components/FlipButton/FlipButton";
+import FunctionItem from "../components/LiquidGlass/FunctionItem/FunctionItem";
+import Logo from "../components/Logo";
+import { animateTextByChar } from "../utils/animateTextByChar";
 import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
-import FunctionItem from "@/components/LiquidGlass/FunctionItem/FunctionItem";
-import Image from "next/image";
+import { useLocomotiveScroll } from "@/components/LocomotiveScroll";
 
-// モバイル版コンポーネントを動的インポート
-const MobileHome = dynamic(() => import("./MobileHome"), { ssr: false });
-const Scene = dynamic(() => import("@/components/model/Scene"), { ssr: false });
+gsap.registerPlugin(ScrollTrigger);
 
-// デバイス判定フック
-function useDeviceDetection() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkDevice = () => {
-      const width = window.innerWidth;
-      setIsMobile(width < 1201); // 768px未満をモバイルとする
-      setIsLoading(false);
-    };
-
-    checkDevice();
-    window.addEventListener('resize', checkDevice);
-
-    return () => window.removeEventListener('resize', checkDevice);
-  }, []);
-
-  return { isMobile, isLoading };
+declare global {
+  interface Window {
+    locomotiveScroll?: any;
+  }
 }
 
 export default function Home() {
-  const { isMobile, isLoading } = useDeviceDetection();
 
-  // ローディング中は何も表示しない
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  // モバイル版の場合はバックアップファイルのコンポーネントを表示
-  if (isMobile) {
-    return <MobileHome />;
-  }
-
-  // PC版の場合は現在のコンポーネントを表示
-  return <DesktopHome />;
-}
-
-// PC版のコンポーネント
-function DesktopHome() {
-  const h1Ref = useRef<HTMLHeadingElement>(null);
-  const pRef = useRef<HTMLParagraphElement>(null);
-  const newsRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
+  useLocomotiveScroll
 
   useEffect(() => {
-    (
-      async () => {
-        const LocomotiveScroll = (await import('locomotive-scroll')).default;
-        const locomotiveScroll = new LocomotiveScroll({
-          el: document.querySelector('[data-scroll-container]') as HTMLElement,
-          smooth: true,
-          lerp: 0.03, // より滑らかな動き
-          multiplier: .8, // 通常のスクロール速度
-          class: 'is-revealed',
-          reloadOnContextChange: true,
-          touchMultiplier: 2
+    const scrollContainer = document.querySelector('[data-scroll-container]') as HTMLElement | null;
+    const loco = window.locomotiveScroll;
+    if (!scrollContainer || !loco) return;
+
+    ScrollTrigger.scrollerProxy(scrollContainer, {
+      scrollTop(value) {
+        if (arguments.length) {
+          loco.scrollTo(value, { duration: 0, disableLerp: true });
+        }
+        return loco.scroll ? loco.scroll.instance.scroll.y : 0;
+      },
+      getBoundingClientRect() {
+        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+      },
+      pinType: scrollContainer.style.transform ? "transform" : "fixed"
+    });
+
+    loco.on("scroll", ScrollTrigger.update);
+    ScrollTrigger.addEventListener("refresh", () => loco.update());
+    ScrollTrigger.refresh();
+
+    return () => {
+      ScrollTrigger.removeEventListener("refresh", () => loco.update());
+      loco.off("scroll", ScrollTrigger.update);
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
+  // カウントダウンの目標日時を設定
+  const targetDate = new Date("2025-09-20T09:00:00+09:00");
+  const formattedTargetDate = `${String(targetDate.getMonth() + 1)}/${String(targetDate.getDate())} ${String(targetDate.getHours())}:${String(targetDate.getMinutes()).padStart(2, "0")}`;
+
+  // カウントダウン状態
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // カウントダウン計算
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime();
+      if (diff <= 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      setCountdown({ days, hours, minutes, seconds });
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => { clearInterval(timer); };
+  }, []); // ← 依存配列を空に
+
+  const home_wrapper_Ref = useRef<HTMLElement>(null);
+  const title_wrapper_Ref = useRef<HTMLDivElement>(null);
+  const search_wrapper_Ref = useRef<HTMLElement>(null);
+  const guide_wrapper_Ref = useRef<HTMLElement>(null);
+  const logo_Ref = useRef<SVGSVGElement>(null);
+  const logo_target_Ref = useRef<HTMLDivElement>(null);
+  const search_title_Ref = useRef<HTMLHeadingElement>(null);
+  const function_map_Ref = useRef<HTMLDivElement>(null);
+  const function_timetable_Ref = useRef<HTMLDivElement>(null);
+  const function_allEvents_Ref = useRef<HTMLDivElement>(null);
+  const function_pamphlet_Ref = useRef<HTMLDivElement>(null);
+  const eventSearch_Ref = useRef<HTMLDivElement>(null);
+  const mainContext = useRef<gsap.Context | null>(null); // gsap.context 用の ref
+
+  useEffect(() => {
+    if (
+      home_wrapper_Ref.current &&
+      search_wrapper_Ref.current &&
+      guide_wrapper_Ref.current &&
+      logo_Ref.current &&
+      logo_target_Ref.current &&
+      title_wrapper_Ref.current &&
+      search_title_Ref.current &&
+      function_map_Ref.current &&
+      function_timetable_Ref.current &&
+      function_allEvents_Ref.current &&
+      function_pamphlet_Ref.current &&
+      eventSearch_Ref.current
+    ) {
+      // gsap.context を使用してアニメーションと ScrollTrigger を管理
+      mainContext.current = gsap.context(() => {
+        ScrollTrigger.create({
+          trigger: home_wrapper_Ref.current,
+          start: "bottom bottom",
+          end: "bottom top",
+          pin: true,
+          pinSpacing: false,
         });
 
-        // グローバル変数に保存
-        (window as any).locomotiveScroll = locomotiveScroll;
+        ScrollTrigger.create({
+          trigger: search_wrapper_Ref.current,
+          start: "bottom bottom",
+          end: "bottom top",
+          pin: true,
+          pinSpacing: false,
+        });
 
-        // h1要素のアニメーション
-        if (h1Ref.current) {
-          locomotiveScroll.on('scroll', (args: any) => {
-            const h1Element = h1Ref.current;
-            if (h1Element) {
-              const rect = h1Element.getBoundingClientRect();
-              const config = {
-                startOffset: 20, // アニメーション開始位置のオフセット（画面高さの下から20%）
-                endOffset: 50,   // アニメーション終了位置のオフセット（画面高さの下から50%）
-                delay: 0         // 遅延時間（ミリ秒）
-              };
+        ScrollTrigger.create({
+          trigger: guide_wrapper_Ref.current,
+          start: "bottom bottom",
+          pin: true,
+          pinSpacing: false,
+        });
 
-              // 画面高さの%でアニメーション開始位置と終了位置を計算
-              const startPosition = window.innerHeight * (1 - config.startOffset / 100);
-              const endPosition = window.innerHeight * (1 - config.endOffset / 100);
-              const progress = Math.max(0, Math.min(1,
-                (startPosition - rect.top) / (startPosition - endPosition)
-              ));
+        // gsap.fromTo(
+        //   logo_Ref.current,
+        //   { x: 0, y: 0 },
+        //   {
+        //     x: () => {
+        //       const targetRect = logo_target_Ref.current?.getBoundingClientRect();
+        //       const logoRect = logo_Ref.current?.getBoundingClientRect();
+        //       if (!targetRect || !logoRect) return 0;
+        //       return (
+        //         targetRect.left +
+        //         targetRect.width / 2 -
+        //         (logoRect.left + logoRect.width / 2)
+        //       );
+        //     },
+        //     y: () => {
+        //       const targetRect = logo_target_Ref.current?.getBoundingClientRect();
+        //       const logoRect = logo_Ref.current?.getBoundingClientRect();
+        //       if (!targetRect || !logoRect) return 0;
+        //       return (
+        //         targetRect.top +
+        //         targetRect.height / 2 -
+        //         (logoRect.top + logoRect.height / 2)
+        //       );
+        //     },
+        //     scale: 1.2,
+        //     scrollTrigger: {
+        //       trigger: title_wrapper_Ref.current,
+        //       start: "top top",
+        //       end: "bottom top",
+        //       scrub: 1.2,
+        //       invalidateOnRefresh: true,
+        //     },
+        //   }
+        // )
 
-              // シンプルなopacityアニメーション
-              h1Element.style.opacity = progress.toString();
-            }
+        // const logoPaths = logo_Ref.current?.querySelectorAll("path");
+        // if (logoPaths) {
+        //   gsap.fromTo(
+        //     logoPaths,
+        //     { fill: "#fff" },
+        //     {
+        //       fill: "#2A2948",
+        //       scrollTrigger: {
+        //         trigger: title_wrapper_Ref.current,
+        //         start: "top top",
+        //         end: "bottom top",
+        //         toggleActions: "play none none reverse",
+        //         scrub: 1.2,
+        //       },
+        //     }
+        //   );
+        // }
+
+        // const pElements = title_wrapper_Ref.current?.querySelectorAll("p");
+        // if (pElements) {
+        //   const allSpans: HTMLElement[] = [];
+
+        //   pElements.forEach((p) => {
+        //     const text = p.textContent ?? "";
+        //     p.innerHTML = "";
+        //     text.split("").forEach((char) => {
+        //       const span = document.createElement("span");
+        //       span.textContent = char;
+        //       span.style.display = "inline-block";
+        //       p.appendChild(span);
+        //       allSpans.push(span);
+        //     });
+        //   });
+
+        //   gsap.fromTo(
+        //     allSpans,
+        //     { opacity: 1 },
+        //     {
+        //       opacity: 0,
+        //       stagger: {
+        //         each: 0.05,
+        //         from: "start",
+        //       },
+        //       scrollTrigger: {
+        //         trigger: title_wrapper_Ref.current,
+        //         start: "top top",
+        //         end: "center top",
+        //         scrub: 1.2,
+        //       },
+        //     }
+        //   );
+        // }
+
+        // if (search_title_Ref.current) {
+        //   animateTextByChar(search_title_Ref.current, {
+        //     triggerStart: "bottom bottom",
+        //   })
+        // }
+
+        const functionItems = [
+          function_map_Ref.current,
+          function_timetable_Ref.current,
+          function_allEvents_Ref.current,
+          function_pamphlet_Ref.current,
+          eventSearch_Ref.current,
+        ];
+
+        // 初期状態を透明に
+        gsap.set(functionItems, { opacity: 0, y: 40 });
+
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: search_title_Ref.current,
+            start: "top center",
+            toggleActions: "play none none reverse",
+          },
+        })
+          .to(functionItems, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            stagger: 0.15,
+            ease: "power2.out",
           });
 
-          h1Ref.current.style.opacity = '0';
-        }
+        window.dispatchEvent(
+          new CustomEvent("searchWrapperReady", { detail: search_wrapper_Ref.current })
+        );
+      }, home_wrapper_Ref); // スコープを指定
+    }
 
-        // p要素のアニメーション（少し遅れて開始）
-        if (pRef.current) {
-          locomotiveScroll.on('scroll', (args: any) => {
-            const pElement = pRef.current;
-            if (pElement) {
-              const rect = pElement.getBoundingClientRect();
-              const config = {
-                startOffset: 20, // アニメーション開始位置のオフセット（画面高さの下から30%）
-                endOffset: 50,   // アニメーション終了位置のオフセット（画面高さの下から70%）
-                delay: 0       // 遅延時間（ミリ秒）
-              };
-
-              // 画面高さの%でアニメーション開始位置と終了位置を計算
-              const startPosition = window.innerHeight * (1 - config.startOffset / 100);
-              const endPosition = window.innerHeight * (1 - config.endOffset / 100);
-              const progress = Math.max(0, Math.min(1,
-                (startPosition - rect.top) / (startPosition - endPosition)
-              ));
-
-              // シンプルなopacityアニメーション（遅延付き）
-              pElement.style.opacity = progress.toString();
-            }
-          });
-
-          pRef.current.style.opacity = '0';
-        }
-
-        // containerのbackdrop-filterアニメーション（news要素の位置に基づく）
-        if (containerRef.current && newsRef.current) {
-          locomotiveScroll.on('scroll', (args: any) => {
-            const newsElement = newsRef.current;
-            const containerElement = containerRef.current;
-            if (newsElement && containerElement) {
-              const rect = newsElement.getBoundingClientRect();
-
-              // news要素が画面のボトムより20vh下から画面の中央に来るまでのアニメーション
-              const startPosition = window.innerHeight - window.innerHeight * 0.2; // 画面のボトムより20vh下
-              const endPosition = window.innerHeight * 0.5; // 画面の中央
-              const progress = Math.max(0, Math.min(1,
-                (startPosition - rect.top) / (startPosition - endPosition)
-              ));
-
-              // backdrop-filterをblur(0px)からblur(10px)にアニメーション
-              const blurValue = progress * 10;
-              containerElement.style.backdropFilter = `blur(${blurValue}px)`;
-              // @ts-ignore: webkitBackdropFilter is not standard but needed for Safari
-              containerElement.style.webkitBackdropFilter = `blur(${blurValue}px)`;
-            }
-          });
-
-          // 初期状態を設定
-          containerRef.current.style.backdropFilter = 'blur(0px)';
-          // @ts-ignore: webkitBackdropFilter is not standard but needed for Safari
-          containerRef.current.style.webkitBackdropFilter = 'blur(0px)';
-        }
-      }
-    )()
-  }, [])
+    // クリーンアップ関数
+    return () => {
+      mainContext.current?.revert(); // context 内のすべてのアニメーションと ScrollTrigger を kill
+    };
+  }, []); // 依存配列は空のまま
 
   return (
     <div className={styles.main}>
-      <div className={styles.threeD}>
-        <Scene />
-      </div>
-      <div ref={containerRef} className={styles.container} data-scroll-container>
-        <div className={styles.about}>
-          <h1 ref={h1Ref}>Sparkle.</h1>
-          <p ref={pRef}>Sparkle. is a platform for creating and sharing your own stories.</p>
+      <section className={styles.home_wrapper} ref={home_wrapper_Ref}>
+        {/* <div className={styles.h}></div> */}
+        <div className={styles.countdown_wrapper}>
+          <h2 className="mincho">青霞祭</h2>
+          <div className={styles.time}>
+            <div className={styles.time_top}>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.days).padStart(2, "0")}</h3>
+                <p>days</p>
+              </div>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.hours).padStart(2, "0")}</h3>
+                <p>hrs</p>
+              </div>
+            </div>
+            <div className={styles.time_bottom}>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.minutes).padStart(2, "0")}</h3>
+                <p>min</p>
+              </div>
+              <div>
+                <h3 className={styles.countdown_number_mask}>{String(countdown.seconds).padStart(2, "0")}</h3>
+                <p>sec</p>
+              </div>
+            </div>
+          </div>
+          <h3>{formattedTargetDate}</h3>
         </div>
-        <div ref={newsRef} className={styles.news}>
-          <div className={styles.news_inner}>
-            <h1 className={styles.news_title}>News</h1>
-            <div className={styles.news_items}>
-              {[...Array(5)].map((_, i) => (
-                <div className={styles.news_item} key={i}>
-                  <h2>簡潔な内容簡潔な内容簡潔な内容簡潔な内容簡潔な内容</h2>
-                  <p>タグ</p>
+
+        <div className={styles.title_wrapper} ref={title_wrapper_Ref}>
+          <div className={styles.title_content}>
+            <div className={styles.title_image}></div>
+            <div className={styles.title_text_wrapper}>
+              <div className={styles.title_text_inner}>
+                <Logo ref={logo_Ref} className={styles.title_logo} />
+                <div className={styles.title_text}>
+                  <p className="mincho">情熱が咲き誇り</p>
+                  <p className="mincho">笑顔と活気が満ちる</p>
+                  <p className="mincho">忘れられない青春の1ページ</p>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
 
-        <div ref={searchRef} className={styles.search}>
-          <div className={styles.search_inner}>
-            <h2 className={styles.search_title}>SEARCH</h2>
-            <div className={styles.function_wrapper}>
-              <div className={styles.functionItems}>
-                <FunctionItem href="/map" className="function_map" title="マップ" icon="/icon/map.svg" scroll={false}></FunctionItem>
-                <FunctionItem href="/timetable" className="function_timetable" title="タイムテーブル" icon="/icon/timetable.svg" scroll={false}></FunctionItem>
-                <FunctionItem href="/allEvents" className="function_allEvents" title="企画一覧" icon="/icon/allEvents.svg" scroll={false}></FunctionItem>
-                <FunctionItem href="/pamphlet" className="function_pamphlet" title="パンフレット" icon="/icon/pamphlet.svg" scroll={false}></FunctionItem>
-              </div>
-              <div className={styles.eventSearch}>
-                <LiquidGlass>
-                  <a href="/search">
-                    <div className={styles.eventSearch_inner}>
-                      <div className={styles.icon_wrapper}>
-                        {/* <img src="/icon/search.svg" alt="search" className={styles.search_icon} /> */}
-                        <Image src="/icon/search.svg" alt="search" className={styles.search_icon} width={24} height={24} />
-                      </div>
-                      <p>企画検索</p>
+        <div className={styles.about_wrapper}>
+          <div className={styles.logo_target} ref={logo_target_Ref}></div>
+
+          <div className={styles.about_content}>
+            <p className={styles.about_text}>概要など</p>
+          </div>
+
+          <div className={styles.about_btn}>
+            <FlipButton front="LEAN MORE" back="LEAN MORE" />
+          </div>
+        </div>
+
+      </section>
+      <section className={styles.search_wrapper} ref={search_wrapper_Ref}>
+        <div className={styles.search_inner}>
+          <h2 className={styles.search_title} ref={search_title_Ref}>SEARCH</h2>
+          <div className={styles.function_wrapper}>
+            <div className={styles.functionItems}>
+              <FunctionItem href="/map" className="function_map" title="マップ" icon="/icon/map.svg" ref={function_map_Ref} scroll={false}></FunctionItem>
+              <FunctionItem href="/timetable" className="function_timetable" title="タイムテーブル" icon="/icon/timetable.svg" ref={function_timetable_Ref} scroll={false}></FunctionItem>
+              <FunctionItem href="/allEvents" className="function_allEvents" title="企画一覧" icon="/icon/allEvents.svg" ref={function_allEvents_Ref} scroll={false}></FunctionItem>
+              <FunctionItem href="/pamphlet" className="function_pamphlet" title="パンフレット" icon="/icon/pamphlet.svg" ref={function_pamphlet_Ref} scroll={false}></FunctionItem>
+            </div>
+            <div className={styles.eventSearch} ref={eventSearch_Ref}>
+              <LiquidGlass>
+                <a href="/search">
+                  <div className={styles.eventSearch_inner}>
+                    <div className={styles.icon_wrapper}>
+                      {/* <img src="/icon/search.svg" alt="search" className={styles.search_icon} /> */}
+                      <Image src="/icon/search.svg" alt="search" className={styles.search_icon} width={24} height={24} />
                     </div>
-                  </a>
-                </LiquidGlass>
-              </div>
+                    <p>企画検索</p>
+                  </div>
+                </a>
+              </LiquidGlass>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+      <section className={styles.guide_wrapper} ref={guide_wrapper_Ref}>
+
+      </section>
     </div>
   );
 }

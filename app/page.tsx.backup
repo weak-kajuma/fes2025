@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 import styles from "./page.module.css"
 import FlipButton from "../components/FlipButton/FlipButton";
-import FunctionItem from "../components/FunctionItem/FunctionItem";
+import FunctionItem from "../components/LiquidGlass/FunctionItem/FunctionItem";
 import Logo from "../components/Logo";
 import { animateTextByChar } from "../utils/animateTextByChar";
 import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";

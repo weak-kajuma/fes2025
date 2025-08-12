@@ -49,6 +49,7 @@ export function animateTextByChar(
     duration?: number;
     ease?: string;
     toggleActions?: string;
+    scroller?: string | HTMLElement;
   }
 ) {
   if (!el) return;

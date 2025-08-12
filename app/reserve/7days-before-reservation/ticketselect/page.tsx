@@ -126,7 +126,7 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
               </li>
               <li>
                 {hasSelectedTickets ? (
-                  <Link href="/reserve/7days-before-reservation/widhlist">
+                  <Link href="/reserve/7days-before-reservation/withlist">
                     <div className={styles.ticket_link}>
                       選択したチケットで申し込む
                     </div>

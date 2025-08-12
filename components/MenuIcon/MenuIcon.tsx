@@ -90,7 +90,7 @@ export default function MenuIcon() {
       <div ref={iconRef} className={styles.menu_icon}>
         <LiquidGlass>
                      <svg
-             className={`${styles.ham} ${styles.hamRotate} ${styles.ham1} ${isOpen ? styles.active : ''} ${isDesktopTopPage ? styles.ham_white : styles.ham_black}`}
+             className={`${styles.ham} ${styles.hamRotate} ${styles.ham1} ${isOpen ? styles.active : ''} ${/* isDesktopTopPage ? styles.ham_white : */ styles.ham_black}`}
              viewBox="0 0 100 100"
              width="50"
              onClick={handleIconClick}
@@ -114,16 +114,16 @@ export default function MenuIcon() {
             className={styles.menu_content}
           >
                          <div className={styles.link}>
-               <Link href="/" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>ホーム</Link>
+               <Link href="/" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>ホーム</Link>
              </div>
              <div className={styles.link}>
-               <Link href="/map" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>マップ</Link>
+               <Link href="/map" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>マップ</Link>
              </div>
              <div className={styles.link}>
-               <Link href="/allEvents" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>企画一覧</Link>
+               <Link href="/allEvents" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>企画一覧</Link>
              </div>
              <div className={styles.link}>
-               <Link href="/timetable" className={`${styles.link_text} ${isDesktopTopPage ? styles.link_text_white : styles.link_text_black}`}>タイムテーブル</Link>
+               <Link href="/timetable" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>タイムテーブル</Link>
              </div>
           </div>
         </LiquidGlass>

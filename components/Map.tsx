@@ -8,9 +8,10 @@ interface AreaProps {
   onAreaClick: (properties: any) => void
   geojsonUrls: string[]
   onPolygonsUpdate?: (names: string[]) => void
+  onMapInteraction?: () => void // 追加
 }
 
-const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUpdate }, ref) => {
+const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUpdate, onMapInteraction }, ref) => {
   const [polygonFeatures, setPolygonFeatures] = useState<any[]>([])
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -48,59 +49,32 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
     // Mapbox アクセストークンを設定
     mapboxgl.accessToken = accessToken
 
-    // 画面幅でズームレベルを決定
-    let zoom = 18.9
-    let minZoom = 19
-    let maxZoom = 20
-    let bearing = 0
-    if (typeof window !== 'undefined') {
-      const width = window.innerWidth
-      if (width < 600) {
-        // スマホ
-        zoom = 17.1
-        minZoom = 10.2
-        maxZoom = 19.2
-        bearing = 0
-      } else if (width < 1024) {
-        // タブレット
-        zoom = 18.7
-        minZoom = 18.5
-        maxZoom = 19.5
-        bearing = 0
-      } else {
-        // PC
-        zoom = 18.9
-        minZoom = 19
-        maxZoom = 20
-        bearing = 0
-      }
-    }
+    // 固定値でシンプル化
+    const zoom = 18.9
+    const minZoom = 18
+    const maxZoom = 20
+    const bearing = 0
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [135.6279744, 34.84795],
+      center: [135.628067, 34.848015], // boundsの中心点
       zoom,
       minZoom,
       maxZoom,
-      bounds: [
-        [135.62619067552447, 34.847069126545776],
-        [135.62994407787954, 34.848561498532504],
-      ],
       dragRotate: false,
       pitchWithRotate: false,
       bearing,
       pitch: 0,
     })
-
     mapRef.current = map
 
-    // スマホ時は初期化後にもズームレベルを強制再設定
-    if (typeof window !== 'undefined' && window.innerWidth < 600) {
-      map.once('load', () => {
-        map.setZoom(zoom)
-        map.setMinZoom(minZoom)
-        map.setMaxZoom(maxZoom)
+    // マップ操作時にポップアップ消す通知
+    if (onMapInteraction) {
+      ['move', 'zoom', 'pitch', 'rotate'].forEach(ev => {
+        map.on(ev, () => {
+          onMapInteraction()
+        })
       })
     }
 
@@ -155,7 +129,25 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
         map.on('click', layerId, e => {
           const feature = e.features?.[0]
           if (feature && feature.properties?.style === 'content') {
-            onAreaClick(feature.properties)
+            // ポリゴン中心座標（地理座標）を計算
+            let center = { x: 0, y: 0 }
+            if (feature.geometry?.type === 'Polygon') {
+              const coords = feature.geometry.coordinates[0]
+              let sumLon = 0, sumLat = 0
+              coords.forEach((c: number[]) => {
+                sumLon += c[0]
+                sumLat += c[1]
+              })
+              const len = coords.length
+              const lon = sumLon / len
+              const lat = sumLat / len
+              // 地理座標→画面座標
+              if (mapRef.current) {
+                const point = mapRef.current.project([lon, lat])
+                center = { x: point.x, y: point.y }
+              }
+            }
+            onAreaClick({ ...feature.properties, center })
           }
         })
 
@@ -181,7 +173,7 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
     return () => {
       map.remove()
     }
-  }, [geojsonUrls])
+  }, [geojsonUrls, onMapInteraction])
 
   return <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
 })

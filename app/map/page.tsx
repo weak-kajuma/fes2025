@@ -20,6 +20,41 @@ export default function MapPage() {
   const mapRef = useRef<any>(null)
   const polygonMenuRef = useRef<HTMLDivElement>(null)
   const polygonContentRef = useRef<HTMLDivElement>(null)
+  const popupRef = useRef<HTMLDivElement>(null)
+  const popupInfoRef = useRef<HTMLDivElement>(null)
+
+  // ポップアップ位置
+  const [popupPosition, setPopupPosition] = useState<{ x: number, y: number }>({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (selectedArea && popupRef.current && popupInfoRef.current) {
+      // ポリゴンの中心座標を計算してセット
+      if (selectedArea.center) {
+        setPopupPosition({
+          x: selectedArea.center.x,
+          y: selectedArea.center.y,
+        });
+      }
+
+      const tl = gsap.timeline();
+
+      tl.fromTo(
+        popupRef.current,
+        { width: 0, height: 0, opacity: 0 },
+        { width: '10rem', height: '10rem', opacity: 1, duration: 0.5, ease: 'power2.out' }
+      )
+      .fromTo(
+        popupInfoRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: 'power2.out' },
+      );
+    }
+  }, [selectedArea]);
+
+  // 階層変更時にもポップアップを消す
+  useEffect(() => {
+    setSelectedArea(null)
+  }, [selectedFloor])
 
   // フロアごとのディレクトリ
   const dir = selectedFloor === 1 ? '/data/1F/' : selectedFloor === 2 ? '/data/2F/' : selectedFloor === 3 ? '/data/3F/' : '/data/4F/'
@@ -131,6 +166,11 @@ export default function MapPage() {
     }
   };
 
+  // マップ操作時にポップアップを消す
+  const handleMapInteraction = useCallback(() => {
+    setSelectedArea(null)
+  }, [])
+
   return (
     <div className={styles.container}>
 
@@ -205,12 +245,30 @@ export default function MapPage() {
           onAreaClick={handleAreaClick}
           geojsonUrls={geojsonUrls}
           onPolygonsUpdate={handlePolygonsUpdate}
+          onMapInteraction={handleMapInteraction}
         />
       </div>
-      {/* {selectedArea && (
-        <div className={styles.selectedAreaInfo}>
+      {selectedArea && (
+        <div
+          className={styles.selectedAreaInfo}
+          ref={popupRef}
+          style={{
+            position: 'absolute',
+            top: popupPosition.y, // ポリゴン中心座標に合わせて計算
+            left: popupPosition.x,
+            transform: 'translate(-50%, -100%)',
+            zIndex: 1000,
+            pointerEvents: 'auto',
+          }}
+        >
+          <div className={styles.info} ref={popupInfoRef}>
+            {/* ポリゴン情報を表示 */}
+            <h3>{selectedArea.name}</h3>
+            <p>{selectedArea.description}</p>
+            {/* 他の情報も必要に応じて */}
+          </div>
         </div>
-      )} */}
+      )}
     </div>
   )
 }
