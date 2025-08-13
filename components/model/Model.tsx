@@ -3,6 +3,8 @@ import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import gsap from 'gsap';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
 
 function BackgroundVideo({
   position = [0, 0, -10],
@@ -163,58 +165,35 @@ function ModelContent() {
     return null;
   }
 
-  // LocomotiveScrollのスクロール状況を監視
+  // ScrollSmoother のスクロール状況を監視
   useEffect(() => {
-    let locomotiveScroll: any = null;
-    let intervalId: NodeJS.Timeout | null = null;
+    let tickerFn: ((time: number, deltaTime: number, frame: number) => void) | null = null;
+    let waitId: any = null;
 
-    // LocomotiveScrollの初期化を待つ
-    const waitForLocomotiveScroll = () => {
-      locomotiveScroll = (window as any).locomotiveScroll;
-
-      if (locomotiveScroll) {
-        const handleScroll = (e: any) => {
-          try {
-            // LocomotiveScrollのイベント構造に応じてスクロール位置を取得
-            const scrollY = e.detail?.scroll?.y || e.scroll?.y || 0;
-            const scrollLimit = e.detail?.scroll?.limit || e.scroll?.limit || document.body.scrollHeight;
-
-            // スクロール進捗を0-1の範囲で計算
-            const progress = scrollY / (scrollLimit - window.innerHeight);
-            setScrollProgress(Math.max(0, Math.min(1, progress)));
-          } catch (error) {
-            console.warn('Scroll progress calculation error:', error);
-          }
-        };
-
-        locomotiveScroll.on('scroll', handleScroll);
-
-        // インターバルをクリア
-        if (intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
-        }
-
-        return () => {
-          if (locomotiveScroll) {
-            locomotiveScroll.off('scroll', handleScroll);
-          }
-        };
+    const attach = () => {
+      const smoother: any = (window as any).scrollSmoother || ScrollSmoother.get();
+      if (!smoother) {
+        waitId = setTimeout(attach, 100);
+        return;
       }
+
+      tickerFn = () => {
+        try {
+          const y = typeof smoother.scrollTop === 'function' ? smoother.scrollTop() : window.scrollY || 0;
+          const contentEl: HTMLElement = typeof smoother.content === 'function' ? smoother.content() : document.body;
+          const limit = Math.max(1, (contentEl?.scrollHeight || document.body.scrollHeight) - window.innerHeight);
+          const progress = Math.max(0, Math.min(1, y / limit));
+          setScrollProgress(progress);
+        } catch {}
+      };
+      gsap.ticker.add(tickerFn);
     };
 
-    // 初回チェック
-    waitForLocomotiveScroll();
-
-    // LocomotiveScrollがまだ初期化されていない場合、ポーリングで待つ
-    if (!locomotiveScroll) {
-      intervalId = setInterval(waitForLocomotiveScroll, 100);
-    }
+    attach();
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      if (waitId) clearTimeout(waitId);
+      if (tickerFn) gsap.ticker.remove(tickerFn);
     };
   }, []);
 

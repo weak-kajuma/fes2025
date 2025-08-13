@@ -28,6 +28,7 @@ function useDeviceDetection() {
 
 export default function MenuIcon() {
   const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -43,6 +44,17 @@ export default function MenuIcon() {
     }
   }, [pathname]);
 
+  // Topページのときだけ初期位置を右端オフスクリーンに設定
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    if (pathname === "/") {
+      gsap.set(el, { x: 80, opacity: 0 });
+    } else {
+      gsap.set(el, { clearProps: "all", x: 0, opacity: 1 });
+    }
+  }, [pathname]);
+
   const handleIconClick = () => {
     setIsOpen(!isOpen);
     if (iconRef.current && contentRef.current) {
@@ -50,8 +62,8 @@ export default function MenuIcon() {
         // 開くアニメーション
         gsap.to(iconRef.current, {
           borderRadius: "30px",
-          width: "30vw",
-          height: "50vh",
+          width: isDesktop ? "30vw" : "90vw",
+          height: isDesktop ? "60vh" : "60vh",
           duration: 0.5,
           ease: "power2.out"
         });
@@ -86,15 +98,14 @@ export default function MenuIcon() {
   };
 
   return (
-    <div className={styles.menu_wrapper}>
-      <div ref={iconRef} className={styles.menu_icon}>
+    <div ref={wrapperRef} className={styles.menu_wrapper} data-menu-icon-wrapper>
+      <div ref={iconRef} className={styles.menu_icon} onClick={handleIconClick}>
         <LiquidGlass>
-                     <svg
-             className={`${styles.ham} ${styles.hamRotate} ${styles.ham1} ${isOpen ? styles.active : ''} ${/* isDesktopTopPage ? styles.ham_white : */ styles.ham_black}`}
-             viewBox="0 0 100 100"
-             width="50"
-             onClick={handleIconClick}
-           >
+          <svg
+            className={`${styles.ham} ${styles.hamRotate} ${styles.ham1} ${isOpen ? styles.active : ''} ${styles.ham_black}`}
+            viewBox="0 0 100 100"
+            width="50"
+          >
             <path
               className={`${styles.line} ${styles.top}`}
               d="m 30,33 h 40 c 0,0 9.044436,-0.654587 9.044436,-8.508902 0,-7.854315 -8.024349,-11.958003 -14.89975,-10.85914 -6.875401,1.098863 -13.637059,4.171617 -13.637059,16.368042 v 40"
@@ -113,18 +124,21 @@ export default function MenuIcon() {
             ref={contentRef}
             className={styles.menu_content}
           >
-                         <div className={styles.link}>
-               <Link href="/" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>ホーム</Link>
-             </div>
-             <div className={styles.link}>
-               <Link href="/map" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>マップ</Link>
-             </div>
-             <div className={styles.link}>
-               <Link href="/allEvents" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>企画一覧</Link>
-             </div>
-             <div className={styles.link}>
-               <Link href="/timetable" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>タイムテーブル</Link>
-             </div>
+            <div className={styles.link}>
+              <Link href="/" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>ホーム</Link>
+            </div>
+            <div className={styles.link}>
+              <Link href="/map" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>マップ</Link>
+            </div>
+            <div className={styles.link}>
+              <Link href="/allEvents" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>企画一覧</Link>
+            </div>
+            <div className={styles.link}>
+              <Link href="/timetable" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>タイムテーブル</Link>
+            </div>
+            <div className={styles.link}>
+              <Link href="/reserve" className={`${styles.link_text} ${/* isDesktopTopPage ? styles.link_text_white : */ styles.link_text_black}`}>予約・抽選の申し込み</Link>
+            </div>
           </div>
         </LiquidGlass>
       </div>

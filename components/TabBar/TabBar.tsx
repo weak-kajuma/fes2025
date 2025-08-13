@@ -39,6 +39,7 @@ function useDeviceDetection() {
 
 export default forwardRef<HTMLDivElement>((props, ref) => {
   const tabBar_Ref = useRef<HTMLDivElement>(null);
+  const wrapperInitRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventDataForClient | null>(null);
@@ -47,6 +48,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
   // 外部refと内部refを結合
   const combinedRef = (node: HTMLDivElement) => {
     tabBar_Ref.current = node;
+    wrapperInitRef.current = node;
     if (typeof ref === 'function') {
       ref(node);
     } else if (ref) {
@@ -129,10 +131,15 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
 
   useEffect(() => {
     if (pathname === "/") {
+      // 初期位置を下端オフスクリーンに
+      if (wrapperInitRef.current) {
+        gsap.set(wrapperInitRef.current, { y: 80, opacity: 0 });
+      }
       function handleSearchWrapperReady(e: CustomEvent) {
         const triggerEl = e.detail as HTMLElement;
         if (tabBar_Ref.current && triggerEl) {
-          gsap.set(tabBar_Ref.current, { opacity: 0, y: 100 });
+          // スクロールトリガーでトップ領域に合わせてフェードイン（念のため残す）
+          gsap.set(tabBar_Ref.current, { opacity: 0, y: 80 });
           gsap.to(tabBar_Ref.current, {
             opacity: 1,
             y: 0,
@@ -161,24 +168,24 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
   const isDesktopTopPage = isDesktop && pathname === "/";
 
   return (
-    <div className={styles.wrapper} ref={combinedRef}>
+    <div className={styles.wrapper} ref={combinedRef} data-tabbar-wrapper>
       <LiquidGlass>
         {!isExpanded ? (
           <div className={styles.items}>
             <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false}>
-              <img src="/icon/pamphlet.svg" alt="pamphlet" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
+              <img src="/icon/pamphlet.svg" alt="pamphlet" className={`${styles.icon_svg}`} />
             </Link>
             <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false}>
-              <img src="/icon/timetable.svg" alt="timetable" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
+              <img src="/icon/timetable.svg" alt="timetable" className={`${styles.icon_svg}`} />
             </Link>
             <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false}>
-              <img src="/icon/search.svg" alt="search" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
+              <img src="/icon/search.svg" alt="search" className={`${styles.icon_svg}`} />
             </Link>
             <Link className={`${styles.item} ${styles.user}`} href="" scroll={false}>
-              <img src="/icon/user.svg" alt="user" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
+              <img src="/icon/user.svg" alt="user" className={`${styles.icon_svg}`} />
             </Link>
             <Link className={`${styles.item} ${styles.allEvents}`} href="/allEvents" scroll={false}>
-              <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={`${styles.icon_svg} ${isDesktopTopPage ? styles.icon_svg_white : styles.icon_svg_black}`} />
+              <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={`${styles.icon_svg}`} />
             </Link>
           </div>
         ) : (

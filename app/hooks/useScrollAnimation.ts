@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
 
 export type AnimationType = 'opacity' | 'translateY' | 'translateX' | 'scale' | 'rotate';
 
@@ -16,88 +18,76 @@ export const useScrollAnimation = (config: AnimationConfig) => {
   const elementRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const initAnimation = async () => {
-      const LocomotiveScroll = (await import('locomotive-scroll')).default;
-      const locomotiveScroll = new LocomotiveScroll({
-        el: document.querySelector('[data-scroll-container]') as HTMLElement,
-        smooth: true,
-        lerp: 0.03,
-        multiplier: 1,
-        class: 'is-revealed',
-        reloadOnContextChange: true,
-        touchMultiplier: 2
-      });
+    let tickerFn: ((time: number, deltaTime: number, frame: number) => void) | null = null;
 
-      // グローバル変数に保存
-      (window as any).locomotiveScroll = locomotiveScroll;
-
-      if (elementRef.current) {
-        locomotiveScroll.on('scroll', (args: any) => {
-          const element = elementRef.current;
-          if (element) {
-            const rect = element.getBoundingClientRect();
-
-            // 画面高さの%でアニメーション開始位置と終了位置を計算
-            const startPosition = window.innerHeight * (1 - config.startOffset / 100);
-            const endPosition = window.innerHeight * (1 - config.endOffset / 100);
-            const progress = Math.max(0, Math.min(1,
-              (startPosition - rect.top) / (startPosition - endPosition)
-            ));
-
-            // アニメーション値の計算
-            const fromValue = config.fromValue ?? 0;
-            const toValue = config.toValue ?? 1;
-            const unit = config.unit ?? '';
-            const currentValue = fromValue + (toValue - fromValue) * progress;
-
-            // アニメーションタイプに応じた適用
-            switch (config.type) {
-              case 'opacity':
-                element.style.opacity = currentValue.toString();
-                break;
-              case 'translateY':
-                element.style.transform = `translateY(${currentValue}${unit})`;
-                break;
-              case 'translateX':
-                element.style.transform = `translateX(${currentValue}${unit})`;
-                break;
-              case 'scale':
-                element.style.transform = `scale(${currentValue})`;
-                break;
-              case 'rotate':
-                element.style.transform = `rotate(${currentValue}${unit})`;
-                break;
-            }
-          }
-        });
+    // 初期状態
+    if (elementRef.current) {
+      const fromValue = config.fromValue ?? 0;
+      const unit = config.unit ?? '';
+      switch (config.type) {
+        case 'opacity':
+          elementRef.current.style.opacity = fromValue.toString();
+          break;
+        case 'translateY':
+          elementRef.current.style.transform = `translateY(${fromValue}${unit})`;
+          break;
+        case 'translateX':
+          elementRef.current.style.transform = `translateX(${fromValue}${unit})`;
+          break;
+        case 'scale':
+          elementRef.current.style.transform = `scale(${fromValue})`;
+          break;
+        case 'rotate':
+          elementRef.current.style.transform = `rotate(${fromValue}${unit})`;
+          break;
       }
+    }
 
-      // 初期状態を設定
-      if (elementRef.current) {
+    const start = () => {
+      const smoother: any = (window as any).scrollSmoother || ScrollSmoother.get();
+      // ScrollSmoother が無くても getBoundingClientRect ベースで動くように毎フレーム評価
+      tickerFn = () => {
+        const element = elementRef.current;
+        if (!element) return;
+
+        const rect = element.getBoundingClientRect();
+        const startPosition = window.innerHeight * (1 - config.startOffset / 100);
+        const endPosition = window.innerHeight * (1 - config.endOffset / 100);
+        const progress = Math.max(0, Math.min(1, (startPosition - rect.top) / (startPosition - endPosition)));
+
         const fromValue = config.fromValue ?? 0;
+        const toValue = config.toValue ?? 1;
         const unit = config.unit ?? '';
+        const currentValue = fromValue + (toValue - fromValue) * progress;
 
         switch (config.type) {
           case 'opacity':
-            elementRef.current.style.opacity = fromValue.toString();
+            element.style.opacity = currentValue.toString();
             break;
           case 'translateY':
-            elementRef.current.style.transform = `translateY(${fromValue}${unit})`;
+            element.style.transform = `translateY(${currentValue}${unit})`;
             break;
           case 'translateX':
-            elementRef.current.style.transform = `translateX(${fromValue}${unit})`;
+            element.style.transform = `translateX(${currentValue}${unit})`;
             break;
           case 'scale':
-            elementRef.current.style.transform = `scale(${fromValue})`;
+            element.style.transform = `scale(${currentValue})`;
             break;
           case 'rotate':
-            elementRef.current.style.transform = `rotate(${fromValue}${unit})`;
+            element.style.transform = `rotate(${currentValue}${unit})`;
             break;
         }
-      }
+      };
+
+      gsap.ticker.add(tickerFn);
     };
 
-    initAnimation();
+    // ScrollSmoother の有無に関わらず開始
+    start();
+
+    return () => {
+      if (tickerFn) gsap.ticker.remove(tickerFn);
+    };
   }, [config]);
 
   return elementRef;

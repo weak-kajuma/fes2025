@@ -11,10 +11,49 @@ import FunctionItem from "../components/LiquidGlass/FunctionItem/FunctionItem";
 import Logo from "../components/Logo";
 import { animateTextByChar } from "../utils/animateTextByChar";
 import LiquidGlass from "@/components/LiquidGlass/LiquidGlass";
+import { useScrollSmoother } from "@/components/LocomotiveScroll";
 
 gsap.registerPlugin(ScrollTrigger);
 
+declare global {
+  interface Window {
+    locomotiveScroll?: any;
+  }
+}
+
 export default function Home() {
+
+  useScrollSmoother
+
+  useEffect(() => {
+    const scrollContainer = document.querySelector('[data-scroll-container]') as HTMLElement | null;
+    const loco = window.locomotiveScroll;
+    if (!scrollContainer || !loco) return;
+
+    ScrollTrigger.scrollerProxy(scrollContainer, {
+      scrollTop(value) {
+        if (arguments.length) {
+          loco.scrollTo(value, { duration: 0, disableLerp: true });
+        }
+        return loco.scroll ? loco.scroll.instance.scroll.y : 0;
+      },
+      getBoundingClientRect() {
+        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+      },
+      pinType: scrollContainer.style.transform ? "transform" : "fixed"
+    });
+
+    loco.on("scroll", ScrollTrigger.update);
+    ScrollTrigger.addEventListener("refresh", () => loco.update());
+    ScrollTrigger.refresh();
+
+    return () => {
+      ScrollTrigger.removeEventListener("refresh", () => loco.update());
+      loco.off("scroll", ScrollTrigger.update);
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
   // カウントダウンの目標日時を設定
   const targetDate = new Date("2025-09-20T09:00:00+09:00");
   const formattedTargetDate = `${String(targetDate.getMonth() + 1)}/${String(targetDate.getDate())} ${String(targetDate.getHours())}:${String(targetDate.getMinutes()).padStart(2, "0")}`;
@@ -102,99 +141,99 @@ export default function Home() {
           pinSpacing: false,
         });
 
-        gsap.fromTo(
-          logo_Ref.current,
-          { x: 0, y: 0 },
-          {
-            x: () => {
-              const targetRect = logo_target_Ref.current?.getBoundingClientRect();
-              const logoRect = logo_Ref.current?.getBoundingClientRect();
-              if (!targetRect || !logoRect) return 0;
-              return (
-                targetRect.left +
-                targetRect.width / 2 -
-                (logoRect.left + logoRect.width / 2)
-              );
-            },
-            y: () => {
-              const targetRect = logo_target_Ref.current?.getBoundingClientRect();
-              const logoRect = logo_Ref.current?.getBoundingClientRect();
-              if (!targetRect || !logoRect) return 0;
-              return (
-                targetRect.top +
-                targetRect.height / 2 -
-                (logoRect.top + logoRect.height / 2)
-              );
-            },
-            scale: 1.2,
-            scrollTrigger: {
-              trigger: title_wrapper_Ref.current,
-              start: "top top",
-              end: "bottom top",
-              scrub: 1.2,
-              invalidateOnRefresh: true,
-            },
-          }
-        )
+        // gsap.fromTo(
+        //   logo_Ref.current,
+        //   { x: 0, y: 0 },
+        //   {
+        //     x: () => {
+        //       const targetRect = logo_target_Ref.current?.getBoundingClientRect();
+        //       const logoRect = logo_Ref.current?.getBoundingClientRect();
+        //       if (!targetRect || !logoRect) return 0;
+        //       return (
+        //         targetRect.left +
+        //         targetRect.width / 2 -
+        //         (logoRect.left + logoRect.width / 2)
+        //       );
+        //     },
+        //     y: () => {
+        //       const targetRect = logo_target_Ref.current?.getBoundingClientRect();
+        //       const logoRect = logo_Ref.current?.getBoundingClientRect();
+        //       if (!targetRect || !logoRect) return 0;
+        //       return (
+        //         targetRect.top +
+        //         targetRect.height / 2 -
+        //         (logoRect.top + logoRect.height / 2)
+        //       );
+        //     },
+        //     scale: 1.2,
+        //     scrollTrigger: {
+        //       trigger: title_wrapper_Ref.current,
+        //       start: "top top",
+        //       end: "bottom top",
+        //       scrub: 1.2,
+        //       invalidateOnRefresh: true,
+        //     },
+        //   }
+        // )
 
-        const logoPaths = logo_Ref.current?.querySelectorAll("path");
-        if (logoPaths) {
-          gsap.fromTo(
-            logoPaths,
-            { fill: "#fff" },
-            {
-              fill: "#2A2948",
-              scrollTrigger: {
-                trigger: title_wrapper_Ref.current,
-                start: "top top",
-                end: "bottom top",
-                toggleActions: "play none none reverse",
-                scrub: 1.2,
-              },
-            }
-          );
-        }
+        // const logoPaths = logo_Ref.current?.querySelectorAll("path");
+        // if (logoPaths) {
+        //   gsap.fromTo(
+        //     logoPaths,
+        //     { fill: "#fff" },
+        //     {
+        //       fill: "#2A2948",
+        //       scrollTrigger: {
+        //         trigger: title_wrapper_Ref.current,
+        //         start: "top top",
+        //         end: "bottom top",
+        //         toggleActions: "play none none reverse",
+        //         scrub: 1.2,
+        //       },
+        //     }
+        //   );
+        // }
 
-        const pElements = title_wrapper_Ref.current?.querySelectorAll("p");
-        if (pElements) {
-          const allSpans: HTMLElement[] = [];
+        // const pElements = title_wrapper_Ref.current?.querySelectorAll("p");
+        // if (pElements) {
+        //   const allSpans: HTMLElement[] = [];
 
-          pElements.forEach((p) => {
-            const text = p.textContent ?? "";
-            p.innerHTML = "";
-            text.split("").forEach((char) => {
-              const span = document.createElement("span");
-              span.textContent = char;
-              span.style.display = "inline-block";
-              p.appendChild(span);
-              allSpans.push(span);
-            });
-          });
+        //   pElements.forEach((p) => {
+        //     const text = p.textContent ?? "";
+        //     p.innerHTML = "";
+        //     text.split("").forEach((char) => {
+        //       const span = document.createElement("span");
+        //       span.textContent = char;
+        //       span.style.display = "inline-block";
+        //       p.appendChild(span);
+        //       allSpans.push(span);
+        //     });
+        //   });
 
-          gsap.fromTo(
-            allSpans,
-            { opacity: 1 },
-            {
-              opacity: 0,
-              stagger: {
-                each: 0.05,
-                from: "start",
-              },
-              scrollTrigger: {
-                trigger: title_wrapper_Ref.current,
-                start: "top top",
-                end: "center top",
-                scrub: 1.2,
-              },
-            }
-          );
-        }
+        //   gsap.fromTo(
+        //     allSpans,
+        //     { opacity: 1 },
+        //     {
+        //       opacity: 0,
+        //       stagger: {
+        //         each: 0.05,
+        //         from: "start",
+        //       },
+        //       scrollTrigger: {
+        //         trigger: title_wrapper_Ref.current,
+        //         start: "top top",
+        //         end: "center top",
+        //         scrub: 1.2,
+        //       },
+        //     }
+        //   );
+        // }
 
-        if (search_title_Ref.current) {
-          animateTextByChar(search_title_Ref.current, {
-            triggerStart: "bottom bottom",
-          })
-        }
+        // if (search_title_Ref.current) {
+        //   animateTextByChar(search_title_Ref.current, {
+        //     triggerStart: "bottom bottom",
+        //   })
+        // }
 
         const functionItems = [
           function_map_Ref.current,

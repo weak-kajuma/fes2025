@@ -1,11 +1,12 @@
 // app/my-reservation/[token]/page.tsx
 import { supabase } from "@/lib/supabaseClient";
 
-export default async function MyReservation({ params }: { params: { token: string } }) {
+export default async function MyReservation({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
   const { data: reservation, error } = await supabase
     .from('reservations')
     .select('*, reservation_slots(*)')
-    .eq('token', params.token)
+    .eq('token', token)
     .single();
 
   if (error || !reservation) {

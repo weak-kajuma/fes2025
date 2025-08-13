@@ -288,6 +288,10 @@
           position: absolute;
           background-color: #6a7981;
 
+          &.circle_registered {
+            background-color: #0068b7;
+          }
+
           .circle_text {
             text-align: center;
             top: -18px;
@@ -307,6 +311,10 @@
           display: flex;
           background-color: #d2d7da;
 
+          &.note_registered {
+            background-color: #e60d12;
+          }
+
           .note_inner_sp {
             display: flex;
             width: 100%;
@@ -322,6 +330,11 @@
                 @media screen and (max-width: 768px) {
                   font-size: .95rem;
                 }
+              }
+
+              .noteText_registered {
+                color: #fff;
+                font-weight: 550;
               }
 
               @media screen and (max-width: 768px) {
@@ -399,6 +412,23 @@
                 bottom: 2px;
                 transform: rotate(90deg);
               }
+
+              .actionButtonsArea {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+                gap: 8px;
+
+                .action_button {
+                  background-color: #fff;
+                  color: #000;
+                  display: inline-block;
+                  padding: 5px 10px;
+                  font-weight: 700;
+                }
+              }
+
             }
           }
 
@@ -415,154 +445,60 @@
             background-image: url(/images/points.png);
             background-repeat: no-repeat;
             background-position: 50%;
+
+            &.knob_registered {
+              background-color: #e60d12;
+              background-image: url(/images/points.png);
+            }
           }
         }
       }
     }
 
     .buttons {
+      padding-top: 50px;
 
-      .button_top {
+      .submit_button {
+        text-decoration: none;
+        background: #e60012 !important;
+        min-height: 54px;
+        color: #fff;
+        border: none;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 315px;
+        padding: .7em 44px;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.5;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background .2s ease-out;
+        background-color: initial;
+        width: 100%;
 
-                 .button_more {
-           margin: 30px auto 0;
-           justify-content: flex-start;
-           width: -webkit-max-content;
-           width: -moz-max-content;
-           width: max-content;
-           min-width: 1rem;
-           max-width: 100%;
-           min-height: var(--button-min-height);
-           padding-left: 24px;
-           border: var(--button-border);
-           opacity: .64;
-           filter: grayscale(1);
-           position: var(--button-position);
-           display: var(--button-display);
-           align-items: var(--button-align-items);
-           justify-content: center;
-           /* width: 315px; */
-           padding: var(--button-padding);
-           font-size: 1.6rem;
-           font-weight: var(--button-font-weight);
-           line-height: var(--button-line-height);
-           text-decoration: var(--button-text-decoration);
-           cursor: var(--button-cursor);
-           transition: var(--button-transition);
-           background-color: var(--button-background-color);
-           font-size: 1rem;
+        &::after {
+          background: url(/images/ticket_back_red.png) no-repeat 0 0 / 100% auto;
+          position: absolute;
+          top: 50%;
+          right: 8px;
+          display: block;
+          width: 22px;
+          height: 22px;
+          content: "";
+          transform: translateY(-50%);
+        }
+
+        &.submit_button_disabled {
+          background: #6a7981 !important;
+          color: #fff;
+          cursor: not-allowed;
 
           &::after {
-            background: url(/images/button_back_red.png) no-repeat 0 0 / 100% auto;
-            position: absolute;
-            top: 50%;
-            right: 8px;
-            display: block;
-            width: 22px;
-            height: 22px;
-            content: "";
-            transform: translateY(-50%);
-            transform: translateY(-50%) rotate(90deg);
+            background: url(/images/arrow_back_gray.png) no-repeat 0 0 / 100% auto;
           }
-        }
-
-        p {
-          margin-top: .7em;
-          text-align: center;
-          font-size: .9rem;
-          line-height: 1.5;
-          margin-left: 10px;
-          text-decoration: underline;
-        }
-      }
-
-      .button_message {
-        text-align: center;
-        border: 2px solid #ccc;
-        border-radius: 15px;
-        padding: 20px;
-        margin: 32px 0 10px;
-        font-size: 1.6rem;
-
-        h2 {
-          font-weight: 700;
-          font-size: 1.2rem;
-        }
-
-        p {
-          margin: 20px 0 0;
-          line-height: 22pt;
-          text-align: center;
-          font-size: 1rem;
-        }
-      }
-
-             .bottom_summaryButton1 {
-         min-height: var(--button-min-height);
-         border: var(--button-border);
-         position: var(--button-position);
-         display: var(--button-display);
-         align-items: var(--button-align-items);
-         justify-content: var(--button-justify-content);
-         width: var(--button-width);
-         padding: var(--button-padding);
-         font-size: 1rem;
-         font-weight: var(--button-font-weight);
-         line-height: var(--button-line-height);
-         text-decoration: var(--button-text-decoration);
-         cursor: var(--button-cursor);
-         transition: var(--button-transition);
-         background-color: var(--button-background-color);
-         margin: var(--button-margin);
-         text-align: var(--button-text-align);
-
-        &::after {
-          background: url(/images/button_back_red.png) no-repeat 0 0 / 100% auto;
-          position: absolute;
-          top: 50%;
-          right: 8px;
-          display: block;
-          width: 22px;
-          height: 22px;
-          content: "";
-          transform: translateY(-50%);
-        }
-      }
-
-             .button_back {
-         display: var(--button-display);
-         align-items: var(--button-align-items);
-         justify-content: var(--button-justify-content);
-         font-size: 1.8rem;
-         margin-top: 30px;
-         min-height: var(--button-min-height);
-         border: var(--button-border);
-         position: var(--button-position);
-         width: var(--button-width);
-         padding: var(--button-padding);
-         font-size: 1rem;
-         font-weight: var(--button-font-weight);
-         line-height: var(--button-line-height);
-         text-decoration: var(--button-text-decoration);
-         cursor: var(--button-cursor);
-         transition: var(--button-transition);
-         background-color: var(--button-background-color);
-         color: var(--button-color);
-         margin: var(--button-margin);
-
-        &::after {
-          right: auto;
-          left: 20px;
-          background: url(/images/button_back_red.png) no-repeat 0 0 / 100% auto;
-          transform: translateY(-50%) rotate(180deg);
-          position: absolute;
-          top: 50%;
-          right: 8px;
-          display: block;
-          width: 22px;
-          height: 22px;
-          content: "";
-          transform: translateY(-50%);
         }
       }
     }
@@ -586,4 +522,68 @@
     position: relative;
     height: 50vh;
   }
+}
+
+/* 完了モーダル */
+.modal_overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal_wrapper {
+  width: min(92vw, 600px);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal_inner {
+  position: relative;
+  padding: 28px 24px 24px;
+}
+
+.modal_close {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  cursor: pointer;
+}
+
+.modal_content {
+  text-align: center;
+}
+
+.modal_title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 8px 0 12px;
+}
+
+.modal_text {
+  font-size: 1rem;
+  color: #333;
+}
+
+.modal_buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.modal_button {
+  min-width: 140px;
+  min-height: 44px;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-weight: 700;
+  background: #e60012;
+  color: #fff;
+  cursor: pointer;
 }

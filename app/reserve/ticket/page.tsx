@@ -31,7 +31,8 @@ export default function TicketPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-    const { data: session, status } = useSession();
+  const { data: session, status } = useSession();
+  const [alreadyApplied, setAlreadyApplied] = useState<boolean>(false);
 
   // データ取得をuseEffectで行う
   useEffect(() => {
@@ -56,6 +57,29 @@ export default function TicketPage() {
     fetchEvents();
   }, []);
 
+  // 7日前抽選 申込済みかをチェック
+  useEffect(() => {
+    const checkApplied = async () => {
+      try {
+        const res = await fetch('/api/lottely-applications');
+        if (!res.ok) {
+          setAlreadyApplied(false);
+          return;
+        }
+        const data = await res.json();
+        const eventData = (data?.event_data ?? []) as unknown[];
+        setAlreadyApplied(Array.isArray(eventData) && eventData.length > 0);
+      } catch {
+        setAlreadyApplied(false);
+      }
+    };
+    if (status === 'authenticated') {
+      void checkApplied();
+    } else {
+      setAlreadyApplied(false);
+    }
+  }, [status]);
+
   const handleQRClick = () => {
     setIsModalOpen(true);
   };
@@ -78,7 +102,7 @@ export default function TicketPage() {
         <div className={styles.header_main}>
           <Image
             className={styles.logo}
-            src="/images/logo.png"
+            src="/images/sparkle_logo.png"
             width={209}
             height={108}
             alt="OSAKA, KANSAI, JAPAN. EXPO 2025"
@@ -258,21 +282,43 @@ export default function TicketPage() {
                           height={40}
                           alt="右矢印"
                         />
-                        <Image
-                          src="/images/arrow_red_left.png"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        <Link className={styles.arrow_middle} href="/reserve/7days-before-reservation/ticketselect">
-                          <div>7日前抽選申込<br/>(受付中)</div>
-                        </Link>
-                        <Image
-                          src="/images/arrow_red_right.png"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
+                        {alreadyApplied ? (
+                          <>
+                            <Image
+                              src="/images/arrow_left.png"
+                              width={15}
+                              height={40}
+                              alt="左矢印"
+                            />
+                            <Link className={styles.arrow_middle_submited} href="/reserve/result">
+                              <div>7日前抽選申込<br/>(申込済みの内容を確認)</div>
+                            </Link>
+                            <Image
+                              src="/images/arrow_right.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <Image
+                              src="/images/arrow_red_left.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                            <Link className={styles.arrow_middle} href="/reserve/7days-before-reservation/ticketselect">
+                              <div>7日前抽選申込<br/>(受付中)</div>
+                            </Link>
+                            <Image
+                              src="/images/arrow_red_right.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                          </>
+                        )}
                         <Image
                           className={styles.arrow_gray_left}
                           src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
@@ -383,7 +429,11 @@ export default function TicketPage() {
                       />
                     </div>
                     <div className={styles.ticket_id}>チケットID：--------</div>
-                    <div className={styles.ticket_badges}>イベントの予約なし</div>
+                    {alreadyApplied ? (
+                      <div className={styles.ticket_badges}>イベントの予約あり</div>
+                    ) : (
+                      <div className={styles.ticket_badges}>イベントの予約なし</div>
+                    )}
                     <div className={styles.ticket_schedule}>
                       <div className={styles.ticket_schedule_row}>8月10日<span>(日)</span></div>
                       <div className={styles.ticket_schedule_row}>11:00-</div>
@@ -408,7 +458,15 @@ export default function TicketPage() {
                   </div>
                 </div>
                 <div className={styles.detail_button}>
-                  <div className={styles.detail_button_inner}>イベントの予約状況</div>
+                  {alreadyApplied ? (
+                    <Link href="/reserve/result">
+                      <div className={styles.detail_button_inner}>イベントの予約状況</div>
+                    </Link>
+                  ) : (
+                    <div className={styles.detail_button_inner} style={{ pointerEvents: 'none', opacity: 0.5 }}>
+                      イベントの予約状況
+                    </div>
+                  )}
                 </div>
                 <div className={styles.action_button}>
                   <div className={styles.action_close} onClick={handleCloseModal}>とじる</div>

@@ -570,6 +570,36 @@
                     width: 22px;
                   }
                 }
+
+                .arrow_middle_submited {
+                  background-color: #0068b7;
+                  color: #fff;
+                  cursor: pointer;
+                  padding-left: 10px;
+                  position: relative;
+                  border: none;
+                  font-size: .8rem;
+                  font-weight: 700;
+                  justify-content: center;
+                  line-height: 1.5;
+                  margin-left: -1px;
+                  margin-right: -1px;
+                  padding-right: 30px;
+                  text-align: center;
+                  width: 100%;
+
+                  &::after {
+                    background: url(/images/ticket_back.png) no-repeat 0 0 / 100% auto;
+                    content: "";
+                    display: block;
+                    height: 22px;
+                    position: absolute;
+                    right: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 22px;
+                  }
+                }
               }
             }
           }

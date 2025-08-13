@@ -9,7 +9,7 @@ import Tab from './components/tab';
 import EventCard from './components/eventCard';
 import { TabBarContext } from '../contexts/TabBarContext';
 import styles from './page.module.css';
-import { useLocomotiveScroll } from "@/components/LocomotiveScroll";
+import { useScrollSmoother } from "@/components/ScrollSmoother";
 
 export default function Search() {
   const [keyword, setKeyword] = useState("");
@@ -21,8 +21,7 @@ export default function Search() {
   // TabBarのrefを取得
   const tabBarRef = useContext(TabBarContext);
 
-  // LocomotiveScrollインスタンスを取得
-  useLocomotiveScroll();
+  useScrollSmoother();
 
   // 画面幅を監視
   useEffect(() => {
@@ -37,8 +36,7 @@ export default function Search() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // LocomotiveScrollの初期化
-  useLocomotiveScroll();
+
 
   const handleSearch = async (value: string) => {
     setKeyword(value);
@@ -131,32 +129,34 @@ export default function Search() {
   );
 
   return (
-    <div className={styles.main} data-scroll-container>
-      <h1 className={styles.title}>SEARCH</h1>
-      <SearchBar
-        value={keyword}
-        onSubmit={handleSearch}
-        onChange={setKeyword}
-      />
+    <div data-smooth-wrapper>
+      <div className={styles.main} data-scroll-container>
+        <h1 className={styles.title}>SEARCH</h1>
+        <SearchBar
+          value={keyword}
+          onSubmit={handleSearch}
+          onChange={setKeyword}
+        />
 
-      {isMobile ? (
-        // スマホサイズ用の構造
-        <div className={styles.mobileLayout}>
-          <section className={styles.selector}>
-            {renderTabContent()}
+        {isMobile ? (
+          // スマホサイズ用の構造
+          <div className={styles.mobileLayout}>
+            <section className={styles.selector}>
+              {renderTabContent()}
+              {renderResults()}
+            </section>
+          </div>
+        ) : (
+          // PCサイズ用の構造（現状維持）
+          <>
+            <section className={styles.selector}>
+              {renderTabContent()}
+            </section>
             {renderResults()}
-          </section>
-        </div>
-      ) : (
-        // PCサイズ用の構造（現状維持）
-        <>
-          <section className={styles.selector}>
-            {renderTabContent()}
-          </section>
-          {renderResults()}
-        </>
-      )}
+          </>
+        )}
 
+      </div>
     </div>
   );
 }

@@ -5,7 +5,8 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { getEventsBySort, EventsByLocation } from "./ServerAction";
 import Link from "next/link";
 import TimeTableContent from "./timetable_content";
-import { useLocomotiveScroll } from "@/components/LocomotiveScroll";
+import { useScrollSmoother } from "@/components/ScrollSmoother";
+import { div } from "framer-motion/client";
 
 // 日付・エリアボタン定義
 const dateOptions = [
@@ -34,7 +35,7 @@ export default function Timetable_Client() {
   const EVENT_MONTH = 9;
 
   // LocomotiveScrollの初期化（トップレベルで呼び出し）
-  useLocomotiveScroll();
+  useScrollSmoother();
 
   // レスポンシブ対応
   useEffect(() => {
@@ -186,95 +187,97 @@ export default function Timetable_Client() {
   };
 
   return (
-    <div className={styles.main} data-scroll-container>
-      <h2 className={styles.title} ref={title_Ref}>TIME TABLE</h2>
-      <div className={styles.selector}>
-        <div className={styles.dateSelector}>
-          {dateOptions.map(dateOpt => (
-            <button
-              key={dateOpt.label}
-              className={`${dateOpt.className} ${styles.button} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
-              onClick={() => setSelectedDate(dateOpt.value)}
-            >
-              {dateOpt.label}
-            </button>
-          ))}
-        </div>
-        <div className={styles.areaSelector}>
-          {areaOptions.map(areaOpt => (
-            <button
-              key={areaOpt.label}
-              className={`${areaOpt.className} ${styles.button} ${selectedArea.includes(areaOpt.value) ? styles.selected : ""}`}
-              onClick={() => {
-                setSelectedArea(prev => {
-                  const idx = prev.indexOf(areaOpt.value);
-                  const newSelected = [...prev];
-                  // 選択解除は、選択数がmaxSelectableAreasより大きい時だけ許可
-                  if (idx > -1) {
-                    if (newSelected.length > maxSelectableAreas) {
-                      newSelected.splice(idx, 1);
+    <div data-smooth-wrapper>
+      <div className={styles.main} data-scroll-container>
+        <h2 className={styles.title} ref={title_Ref}>TIME TABLE</h2>
+        <div className={styles.selector}>
+          <div className={styles.dateSelector}>
+            {dateOptions.map(dateOpt => (
+              <button
+                key={dateOpt.label}
+                className={`${dateOpt.className} ${styles.button} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
+                onClick={() => setSelectedDate(dateOpt.value)}
+              >
+                {dateOpt.label}
+              </button>
+            ))}
+          </div>
+          <div className={styles.areaSelector}>
+            {areaOptions.map(areaOpt => (
+              <button
+                key={areaOpt.label}
+                className={`${areaOpt.className} ${styles.button} ${selectedArea.includes(areaOpt.value) ? styles.selected : ""}`}
+                onClick={() => {
+                  setSelectedArea(prev => {
+                    const idx = prev.indexOf(areaOpt.value);
+                    const newSelected = [...prev];
+                    // 選択解除は、選択数がmaxSelectableAreasより大きい時だけ許可
+                    if (idx > -1) {
+                      if (newSelected.length > maxSelectableAreas) {
+                        newSelected.splice(idx, 1);
+                      }
+                      // それ未満の時は何もしない
+                    } else {
+                      if (newSelected.length >= maxSelectableAreas && maxSelectableAreas > 0) newSelected.shift();
+                      if (maxSelectableAreas > 0) newSelected.push(areaOpt.value);
                     }
-                    // それ未満の時は何もしない
-                  } else {
-                    if (newSelected.length >= maxSelectableAreas && maxSelectableAreas > 0) newSelected.shift();
-                    if (maxSelectableAreas > 0) newSelected.push(areaOpt.value);
-                  }
-                  return newSelected;
-                });
-              }}
-              disabled={maxSelectableAreas === 0 && !selectedArea.includes(areaOpt.value)}
-            >
-              {areaOpt.label}
-            </button>
-          ))}
+                    return newSelected;
+                  });
+                }}
+                disabled={maxSelectableAreas === 0 && !selectedArea.includes(areaOpt.value)}
+              >
+                {areaOpt.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className={styles.eventContentWrapper}>
-        {isInitialLoading && <div className={styles.loading}>タイムテーブルを読み込んでいます...</div>}
-        {errorLoading && <div className={styles.error}>{errorLoading}</div>}
-        {!isInitialLoading && !errorLoading && (
-          currentDisplayEvents.length > 0 && currentDisplayEvents.map(({ locationType, events }) => (
-            <div
-              key={`${selectedDate}-${locationType}`}
-              style={{ display: selectedArea.includes(locationType) ? 'grid' : 'none' }}
-              className={`${styles.eventLocationContainer} ${formatLocationToClassName(locationType)}`}
-            >
-              {/* 現在時刻バー */}
-              <div className={styles.bar} style={{ '--current-row': currentRow } as React.CSSProperties}></div>
-              {/* ラベル */}
-              <div className={styles.label}>
-                <Link href="">
-                  <div className={styles.label_inner}>
-                    {locationType}
-                  </div>
-                </Link>
+        <div className={styles.eventContentWrapper}>
+          {isInitialLoading && <div className={styles.loading}>タイムテーブルを読み込んでいます...</div>}
+          {errorLoading && <div className={styles.error}>{errorLoading}</div>}
+          {!isInitialLoading && !errorLoading && (
+            currentDisplayEvents.length > 0 && currentDisplayEvents.map(({ locationType, events }) => (
+              <div
+                key={`${selectedDate}-${locationType}`}
+                style={{ display: selectedArea.includes(locationType) ? 'grid' : 'none' }}
+                className={`${styles.eventLocationContainer} ${formatLocationToClassName(locationType)}`}
+              >
+                {/* 現在時刻バー */}
+                <div className={styles.bar} style={{ '--current-row': currentRow } as React.CSSProperties}></div>
+                {/* ラベル */}
+                <div className={styles.label}>
+                  <Link href="">
+                    <div className={styles.label_inner}>
+                      {locationType}
+                    </div>
+                  </Link>
+                </div>
+                <div className={styles.box}></div>
+                <div className={styles.background}></div>
+                {/* 時間ラベル */}
+                <div className={styles.timeText}>8:30</div>
+                <div className={styles.timeText}>9:00</div>
+                <div className={styles.timeText}>10:00</div>
+                <div className={styles.timeText}>11:00</div>
+                <div className={styles.timeText}>12:00</div>
+                <div className={styles.timeText}>13:00</div>
+                <div className={styles.timeText}>14:00</div>
+                <div className={styles.timeText}>15:00</div>
+                <div className={styles.timeText}>15:30</div>
+                {/* タイムバー（必要な数だけ） */}
+                {[...Array(17)].map((_, i) => (
+                  <div key={i} className={styles.timeBar}></div>
+                ))}
+                {/* イベント */}
+                {events.map(event => (
+                  <TimeTableContent key={event.id} eventData={event} />
+                ))}
               </div>
-              <div className={styles.box}></div>
-              <div className={styles.background}></div>
-              {/* 時間ラベル */}
-              <div className={styles.timeText}>8:30</div>
-              <div className={styles.timeText}>9:00</div>
-              <div className={styles.timeText}>10:00</div>
-              <div className={styles.timeText}>11:00</div>
-              <div className={styles.timeText}>12:00</div>
-              <div className={styles.timeText}>13:00</div>
-              <div className={styles.timeText}>14:00</div>
-              <div className={styles.timeText}>15:00</div>
-              <div className={styles.timeText}>15:30</div>
-              {/* タイムバー（必要な数だけ） */}
-              {[...Array(17)].map((_, i) => (
-                <div key={i} className={styles.timeBar}></div>
-              ))}
-              {/* イベント */}
-              {events.map(event => (
-                <TimeTableContent key={event.id} eventData={event} />
-              ))}
-            </div>
-          ))
-        )}
-        {isTransitioningDate && !isInitialLoading && <div className={styles.loadingOverlay}>情報を更新中...</div>}
+            ))
+          )}
+          {isTransitioningDate && !isInitialLoading && <div className={styles.loadingOverlay}>情報を更新中...</div>}
+        </div>
+        <div className={styles.wrapper}></div>
       </div>
-      <div className={styles.wrapper}></div>
     </div>
   );
 }

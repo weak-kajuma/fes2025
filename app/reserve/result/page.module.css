@@ -1,0 +1,50 @@
+/* result ページ固有の見た目のみ。共通は withlist の CSS を使用 */
+
+.top {
+  padding-bottom: 16px;
+  border-bottom: 2px solid #222426;
+}
+
+.card_list {
+  margin-top: 24px;
+  list-style: none;
+  padding: 0;
+}
+
+.card_item {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card_left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wish_label {
+  font-weight: 800;
+}
+
+.name {
+  font-size: 1.05rem;
+}
+
+.time {
+  color: #555;
+}
+
+.edit_button {
+  padding: 10px 14px;
+  border: 2px solid #222426;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+  color: inherit;
+}

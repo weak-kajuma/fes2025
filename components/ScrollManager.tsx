@@ -10,8 +10,13 @@ export function ScrollManager() {
   useEffect(() => {
     // パスが変更された場合のみ実行
     if (previousPathname.current !== pathname) {
-      // パスが変わったら即座にトップへスクロール
-      window.scrollTo(0, 0);
+      // ScrollSmoother があればそれを利用して先頭へ瞬間移動
+      const smoother = (window as any).scrollSmoother;
+      if (smoother && typeof smoother.scrollTo === 'function') {
+        smoother.scrollTo(0, false);
+      } else {
+        window.scrollTo(0, 0);
+      }
     }
 
     // 現在のパスを保存

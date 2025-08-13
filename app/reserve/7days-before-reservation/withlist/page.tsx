@@ -1,18 +1,200 @@
+"use client";
+import { useEffect, useState, useCallback } from "react";
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from './page.module.css';
+import { useRouter } from 'next/navigation';
+import { color } from "framer-motion";
 
-export default function Reserve7DaysBeforeWidhlistPage() {
+// public/data/events.json から読み込むイベントの型
+interface EventInfo {
+  id: number;
+  name: string;
+  time: string; // 仮。実際のjsonの構造に合わせてください
+  // その他必要なプロパティ
+}
+
+// 画面に表示する申し込み情報の型
+interface AppliedEvent {
+  id: number;
+  name: string;
+  time: string;
+}
+
+export default function Reserve7DaysBeforeWithlistPage() {
+  const [appliedList, setAppliedList] = useState<(AppliedEvent | null)[]>([]);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [userName, setUserName] = useState<string>("");
+  const router = useRouter();
+
+  const maxWishes = 5;
+
+  // ページ読み込み時にサーバーからデータを取得する関数
+  const loadAppliedData = useCallback(async () => {
+    setIsPageLoading(true);
+    setMessage(null);
+    try {
+      // 全イベント情報と、申込済みの情報を並行して取得
+      const [eventsRes, appliedRes] = await Promise.all([
+        fetch('/data/events.json'),
+        fetch('/api/lottely-applications')
+      ]);
+
+      if (!eventsRes.ok) throw new Error('イベント情報の取得に失敗しました。');
+      const allEvents: EventInfo[] = await eventsRes.json();
+
+      let appliedResult: { event_data?: { id: number; time?: string }[] | number[]; user_name?: string } | null = null;
+      if (appliedRes.status === 401) {
+        // 未ログイン時はDBの申込情報なしとして扱う
+        appliedResult = null;
+      } else if (!appliedRes.ok) {
+        throw new Error('申込情報の取得に失敗しました。');
+      } else {
+        appliedResult = await appliedRes.json();
+      }
+
+      // DBの形式に合わせて配列を正規化（[{id,time}] or [id]）
+      const normalizedFromDb: { id: number; time?: string }[] = Array.isArray(appliedResult?.event_data)
+        ? (appliedResult!.event_data as any[]).map((item: any) => {
+            return typeof item === 'number' ? { id: item } : { id: item.id, time: item.time };
+          })
+        : [];
+
+      // セッションの編集中リストを反映
+      const sessionListRaw = window.sessionStorage.getItem('appliedEventList');
+      const sessionList: ({ id: number; name?: string; time?: string } | null)[] = sessionListRaw ? JSON.parse(sessionListRaw) : [];
+
+      const newAppliedList: (AppliedEvent | null)[] = Array(maxWishes).fill(null);
+      for (let i = 0; i < maxWishes; i++) {
+        const fromSession = sessionList[i];
+        if (fromSession && fromSession.id) {
+          const eventDetail = allEvents.find(e => e.id === fromSession.id);
+          if (eventDetail) {
+            newAppliedList[i] = {
+              id: eventDetail.id,
+              name: eventDetail.name,
+              time: fromSession.time ?? (eventDetail as any).ImplementationTime?.split(',')[0] ?? ''
+            };
+            continue;
+          }
+        }
+        const fromDb = normalizedFromDb[i];
+        if (fromDb && fromDb.id) {
+          const eventDetail = allEvents.find(e => e.id === fromDb.id);
+          if (eventDetail) {
+            newAppliedList[i] = {
+              id: eventDetail.id,
+              name: eventDetail.name,
+              time: fromDb.time ?? (eventDetail as any).ImplementationTime?.split(',')[0] ?? ''
+            };
+          }
+        }
+      }
+
+      setAppliedList(newAppliedList);
+      // 既存の登録名があれば初期値として反映
+      if (appliedResult?.user_name && typeof appliedResult.user_name === 'string') {
+        setUserName(appliedResult.user_name);
+      }
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'データの読み込み中に予期せぬエラーが発生しました';
+      setMessage(`エラー: ${errorMessage}`);
+      console.error(error);
+    } finally {
+      setIsPageLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAppliedData();
+  }, [loadAppliedData]);
+
+  // 「この内容で抽選を申し込む」ボタンの処理
+  const handleApplyClick = async () => {
+    setIsLoading(true);
+    setMessage(null);
+
+    // APIに送る形式: [{id, time}]（timeは任意）
+    const eventData = appliedList
+      .filter((item): item is AppliedEvent => item !== null)
+      .map(item => ({ id: item.id, time: item.time }));
+
+    if (eventData.length === 0) {
+      setMessage("申し込むイベントがありません。");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/lottely-applications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_data: eventData, user_name: userName }),
+      });
+      if (response.status === 401) {
+        setMessage('申し込みにはログインが必要です。ログイン後に再度お試しください。');
+        setIsLoading(false);
+        return;
+      }
+      if (response.status === 409) {
+        const r = await response.json();
+        setMessage(r?.error || 'このニックネームは既に使用されています。別の名前を入力してください。');
+        setIsLoading(false);
+        return;
+      }
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || '申し込み処理でエラーが発生しました。');
+
+      setMessage(null);
+      // 申し込み完了後、リストを再読み込みして最新の状態を反映
+      await loadAppliedData();
+      // セッション上の編集中データはクリア
+      window.sessionStorage.removeItem('appliedEventList');
+      window.sessionStorage.removeItem('selectedWishIndex');
+      // 完了モーダルを表示
+      setShowCompleteModal(true);
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '予期せぬエラーが発生しました';
+      setMessage(`エラー: ${errorMessage}`);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 削除ボタンの処理 (API連携は未実装)
+  const handleDelete = (index: number) => {
+    const newList = [...appliedList];
+    newList[index] = null;
+    setAppliedList(newList);
+    // セッションの編集中リストも更新
+    const sessionListRaw = window.sessionStorage.getItem('appliedEventList');
+    const sessionList: (AppliedEvent | null)[] = sessionListRaw ? JSON.parse(sessionListRaw) : Array(maxWishes).fill(null);
+    while (sessionList.length < maxWishes) sessionList.push(null);
+    sessionList[index] = null;
+    window.sessionStorage.setItem('appliedEventList', JSON.stringify(sessionList));
+  };
+
+  if (isPageLoading) {
+    return <div className={styles.loading}>読み込み中...</div>;
+  }
+
   return (
     <div className={styles.wrapper}>
+      {/* Header and other static parts remain the same */}
       <div className={styles.header}>
         <div className={styles.header_main}>
-          <Image
-            className={styles.logo}
-            src="/images/logo.png"
+            <Image
+              className={styles.logo}
+              src="/images/sparkle_logo.png"
             width={209}
             height={108}
-            alt="OSAKA, KANSAI, JAPAN. EXPO 2025"
+              alt="Sparkle ロゴ"
           />
           <div className={styles.title}>
             <span>スパークル</span>
@@ -61,6 +243,7 @@ export default function Reserve7DaysBeforeWidhlistPage() {
 
       <div className={styles.main}>
         <div className={styles.main_inner}>
+          {/* ... top and middle sections ... */}
           <div className={styles.top}>
             <h1 className={styles.top_title}>7日前<br/>抽選申込</h1>
             <div className={styles.top_info}>来場予定日のパビリオン･イベントの抽選に、第5希望までお申し込みできます。</div>
@@ -87,149 +270,121 @@ export default function Reserve7DaysBeforeWidhlistPage() {
           </div>
 
           <div className={styles.reserve_selector}>
-            <div className={styles.selector}>
-              <div className={styles.circle}>
-                <span className={styles.circle_text}>第1希望</span>
-              </div>
-              <div className={styles.note}>
-                <div className={styles.note_inner_sp}>
-                  <div className={styles.infoArea}>
-                    <p className={styles.noteText}>未登録： 2025年8月2日(土) 23:59までに<br/>
-                    登録してください。</p>
-                  </div>
-                  <div className={styles.noteContent}>
-                    <Link href="/reserve/7days-before-reservation/reserveForm">
-                      <div className={styles.register_button}>登録する</div>
-                    </Link>
-                    <div className={styles.arrowIcon_up}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="上" />
-                    </div>
-                    <div className={styles.arrowIcon_down}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="下" />
-                    </div>
-                  </div>
+            {[...Array(maxWishes)].map((_, idx) => (
+              <div className={styles.selector} key={idx}>
+                <div className={`${styles.circle} ${appliedList[idx] ? styles.circle_registered : ""}`}>
+                  <span className={styles.circle_text}>第{idx + 1}希望</span>
                 </div>
-                <div className={styles.knob}></div>
-              </div>
-            </div>
-            <div className={styles.selector}>
-              <div className={styles.circle}>
-                <span className={styles.circle_text}>第2希望</span>
-              </div>
-              <div className={styles.note}>
-                <div className={styles.note_inner_sp}>
-                  <div className={styles.infoArea}>
-                    <p className={styles.noteText}>未登録： 2025年8月2日(土) 23:59までに<br/>
-                    登録してください。</p>
-                  </div>
-                  <div className={styles.noteContent}>
-                    <div className={styles.register_button}>登録する</div>
-                    <div className={styles.arrowIcon_up}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="上" />
+                <div className={`${styles.note} ${appliedList[idx] ? styles.note_registered : ""}`}>
+                  <div className={styles.note_inner_sp}>
+                    <div className={styles.infoArea}>
+                      {appliedList[idx] ? (
+                        <p className={styles.noteText_registered}>
+                          {appliedList[idx]!.name}<br />
+                          {appliedList[idx]!.time}
+                        </p>
+                      ) : (
+                        <p className={styles.noteText}>
+                          未登録： 2025年8月2日(土) 23:59までに<br />
+                          登録してください。
+                        </p>
+                      )}
                     </div>
-                    <div className={styles.arrowIcon_down}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="下" />
+                    <div className={styles.noteContent}>
+                      {appliedList[idx] ? (
+                        <div className={styles.actionButtonsArea}>
+                          <div className={styles.action_button}
+                            onClick={() => {
+                              // 変更ページへ遷移。wishIndexを渡して、どの枠の変更か知らせる
+                              router.push(`/reserve/7days-before-reservation/eventSelect?wishIndex=${idx}`);
+                            }}
+                          >
+                            変更
+                          </div>
+                          <div className={styles.action_button}
+                            onClick={() => handleDelete(idx)}
+                          >
+                            削除
+                          </div>
+                        </div>
+                      ) : (
+                        <Link
+                          href={`/reserve/7days-before-reservation/eventSelect?wishIndex=${idx}`}
+                        >
+                          <div className={styles.register_button}>登録する</div>
+                        </Link>
+                      )}
                     </div>
                   </div>
+                  <div className={`${styles.knob} ${appliedList[idx] ? styles.knob_registered : ""}`}></div>
                 </div>
-                <div className={styles.knob}></div>
               </div>
-            </div>
-            <div className={styles.selector}>
-              <div className={styles.circle}>
-                <span className={styles.circle_text}>第3希望</span>
-              </div>
-              <div className={styles.note}>
-                <div className={styles.note_inner_sp}>
-                  <div className={styles.infoArea}>
-                    <p className={styles.noteText}>未登録： 2025年8月2日(土) 23:59までに<br/>
-                    登録してください。</p>
-                  </div>
-                  <div className={styles.noteContent}>
-                    <div className={styles.register_button}>登録する</div>
-                    <div className={styles.arrowIcon_up}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="上" />
-                    </div>
-                    <div className={styles.arrowIcon_down}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="下" />
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.knob}></div>
-              </div>
-            </div>
-            <div className={styles.selector}>
-              <div className={styles.circle}>
-                <span className={styles.circle_text}>第4希望</span>
-              </div>
-              <div className={styles.note}>
-                <div className={styles.note_inner_sp}>
-                  <div className={styles.infoArea}>
-                    <p className={styles.noteText}>未登録： 2025年8月2日(土) 23:59までに<br/>
-                    登録してください。</p>
-                  </div>
-                  <div className={styles.noteContent}>
-                    <div className={styles.register_button}>登録する</div>
-                    <div className={styles.arrowIcon_up}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="上" />
-                    </div>
-                    <div className={styles.arrowIcon_down}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="下" />
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.knob}></div>
-              </div>
-            </div>
-            <div className={styles.selector}>
-              <div className={styles.circle}>
-                <span className={styles.circle_text}>第5希望</span>
-              </div>
-              <div className={styles.note}>
-                <div className={styles.note_inner_sp}>
-                  <div className={styles.infoArea}>
-                    <p className={styles.noteText}>未登録： 2025年8月2日(土) 23:59までに<br/>
-                    登録してください。</p>
-                  </div>
-                  <div className={styles.noteContent}>
-                    <div className={styles.register_button}>登録する</div>
-                    <div className={styles.arrowIcon_up}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="上" />
-                    </div>
-                    <div className={styles.arrowIcon_down}>
-                      <Image src="/images/arrow_gray.png" width={22} height={22} alt="下" />
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.knob}></div>
-              </div>
-            </div>
+            ))}
           </div>
 
           <div className={styles.buttons}>
-            <div className={styles.button_top}>
-              <div className={styles.button_more}>もっと見る　</div>
+            {/* 予約者名の入力欄 */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontWeight: 700, marginBottom: 8 }}>
+                予約者名
+              </label>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="例）山田 太郎"
+                style={{
+                  width: '100%',
+                  maxWidth: 480,
+                  padding: '10px 12px',
+                  border: '1px solid #ccc',
+                  borderRadius: 6,
+                }}
+              />
+              <div style={{ marginTop: 8, color: '#555', fontSize: 14 }}>
+                この名前で予約確認を行います。正確に入力してください。ニックネーム可。
+              </div>
             </div>
-            <div className={styles.button_message}>
-              <h2>表示されないチケットがある場合</h2>
-              <p>申込できるチケットを表示しています。<br/>
-                申込済みのチケットは表示されません。<br/>
-                変更取消はマイチケットのチケット詳細から行ってください。</p>
-            </div>
-            <div className={styles.bottom_summaryButton1}>他の方がお持ちのチケットも<br/>
-              まとめて申し込む<br/>
-              （チケットIDを入力）
-            </div>
-            <div className={styles.button_back}>マイチケットに戻る</div>
+            <button
+              className={`${styles.submit_button} ${appliedList.every(item => item === null) || isLoading ? styles.submit_button_disabled : ''}`}
+              onClick={handleApplyClick}
+              disabled={appliedList.every(item => item === null) || isLoading}
+            >
+              <span>{isLoading ? '処理中...' : 'この内容で抽選を申し込む'}</span>
+            </button>
           </div>
+
+          {message && (
+            <div className={styles.message_area}>
+              <p style={{ color: 'red' }}>{message}</p>
+            </div>
+          )}
         </div>
       </div>
 
       <div className={styles.footer}>
-        <div className={styles.footer_inner}>
-
-        </div>
+        <div className={styles.footer_inner}></div>
       </div>
+
+      {showCompleteModal && (
+        <div className={styles.modal_overlay}>
+          <div className={styles.modal_wrapper}>
+            <div className={styles.modal_inner}>
+              <div className={styles.modal_close} onClick={() => setShowCompleteModal(false)}>
+                <Image src="/images/close.png" alt="close" width={20} height={20} />
+              </div>
+              <div className={styles.modal_content}>
+                <p className={styles.modal_title}>申し込みが完了しました</p>
+                <p className={styles.modal_text}>抽選結果は後日ご案内します。マイチケットや申込内容をご確認ください。</p>
+                <div className={styles.modal_buttons}>
+                  <button className={styles.modal_button} onClick={() => setShowCompleteModal(false)}>閉じる</button>
+                  <button className={styles.modal_button} onClick={() => { setShowCompleteModal(false); router.push('/reserve/ticket'); }}>マイチケットへ</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

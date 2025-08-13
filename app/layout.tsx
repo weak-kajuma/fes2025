@@ -5,7 +5,7 @@ import { BIZ_UDMincho } from 'next/font/google'
 import "./globals.css"
 import MenuIcon from "../components/MenuIcon/MenuIcon"
 import TabBar from "../components/TabBar/TabBar"
-import { unstable_ViewTransition as ViewTransition } from "react"
+import ViewTransitionWrapper from "../components/ViewTransitionWrapper"
 import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
@@ -56,15 +56,15 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable}`}>
-        <ViewTransition>
-          <SessionProvider>
-            <TabBarProvider>
-              <ScrollManager />
-              <MenuIcon />
+        <SessionProvider>
+          <TabBarProvider>
+            <ScrollManager />
+            <MenuIcon />
+            <ViewTransitionWrapper>
               {children}
-            </TabBarProvider>
-          </SessionProvider>
-        </ViewTransition>
+            </ViewTransitionWrapper>
+          </TabBarProvider>
+        </SessionProvider>
       </body>
     </html>
   );

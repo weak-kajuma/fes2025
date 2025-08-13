@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.2",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@types/html2canvas": "^0.5.35",
     "framer-motion": "^12.23.6",
     "gsap": "^3.13.0",

@@ -69,6 +69,28 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
     })
     mapRef.current = map
 
+    // 安定したサイズ反映のためのリサイズ処理
+    const handleResize = () => {
+      if (mapRef.current) {
+        mapRef.current.resize()
+      }
+    }
+    // 初期レイアウト確定後に一度リサイズ
+    requestAnimationFrame(handleResize)
+    setTimeout(handleResize, 0)
+    setTimeout(handleResize, 300)
+    window.addEventListener('resize', handleResize)
+
+    // コンテナの ResizeObserver で高さが 0→有効 になったときに追従
+    let ro: ResizeObserver | null = null
+    const Rz = (window as any).ResizeObserver
+    if (typeof Rz === 'function') {
+      ro = new Rz(() => handleResize())
+    }
+    if (ro && mapContainerRef.current) {
+      ro.observe(mapContainerRef.current)
+    }
+
     // マップ操作時にポップアップ消す通知
     if (onMapInteraction) {
       ['move', 'zoom', 'pitch', 'rotate'].forEach(ev => {
@@ -79,6 +101,7 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
     }
 
     map.on('load', async () => {
+      handleResize()
       let allFeatures: any[] = []
       let allNames: string[] = []
 
@@ -171,6 +194,8 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
     })
 
     return () => {
+      if (ro && mapContainerRef.current) ro.unobserve(mapContainerRef.current)
+      window.removeEventListener('resize', handleResize)
       map.remove()
     }
   }, [geojsonUrls, onMapInteraction])

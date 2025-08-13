@@ -55,10 +55,10 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
         <div className={styles.header_main}>
           <Image
             className={styles.logo}
-            src="/images/logo.png"
+            src="/images/sparkle_logo.png"
             width={209}
             height={108}
-            alt="OSAKA, KANSAI, JAPAN. EXPO 2025"
+            alt="Sparkle ロゴ"
           />
           <div className={styles.title}>
             <span>スパークル</span>

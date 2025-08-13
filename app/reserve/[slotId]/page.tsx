@@ -5,7 +5,16 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { v4 as uuidv4 } from "uuid";
 
-export default function ReservationForm({ params }: { params: { slotId: string } }) {
+export default function ReservationForm({ params }: { params: Promise<{ slotId: string }> }) {
+  const [slotId, setSlotId] = useState<string>("");
+  useState(() => {
+    (async () => {
+      try {
+        const p = await params;
+        setSlotId(p.slotId);
+      } catch {}
+    })();
+  });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const router = useRouter();
@@ -14,7 +23,7 @@ export default function ReservationForm({ params }: { params: { slotId: string }
     e.preventDefault();
     const token = uuidv4();
     const { error } = await supabase.from('reservations').insert([{
-      slot_id: params.slotId,
+      slot_id: slotId,
       name,
       email,
       token,

@@ -2,7 +2,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 500;
+  z-index: 100000;
 }
 
 .menu_icon {
@@ -73,6 +73,9 @@
   user-select: none;
   transform-origin: center center;
 }
+
+/* Auto-invert vs underlying background/glass */
+/* removed ham_auto (auto-invert) */
 
 .hamRotate.active {
   transform: rotate(45deg);
