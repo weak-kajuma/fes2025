@@ -9,6 +9,7 @@ import ViewTransitionWrapper from "../components/ViewTransitionWrapper"
 import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
+import { Bebas_Neue } from 'next/font/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,11 @@ const mincho = BIZ_UDMincho({
   fallback: ['Hiragino Mincho ProN', 'serif'],
 })
 
+// const bebasNeue = Bebas_Neue({
+//   subsets: ['latin'],
+//   weight: '400',
+// });
+
 export const metadata: Metadata = {
   title: "school festival",
   description: "高槻文化祭のホームページです",
@@ -49,13 +55,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
+    <html lang="ja">
       <head>
         <meta charSet="utf-8" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=location_on" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable} `}>
         <SessionProvider>
           <TabBarProvider>
             <ScrollManager />
