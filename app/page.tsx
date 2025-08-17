@@ -27,6 +27,7 @@ export default function Home() {
   const [opening, setOpening] = useState(false);
   const [showSVG, setShowSVG] = useState(false);
   const [isFirstSession, setIsFirstSession] = useState(false);
+  const backRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const openingMaskRef = useRef<HTMLDivElement>(null);
   const maskPathRef = useRef<SVGPathElement>(null);
@@ -43,6 +44,7 @@ export default function Home() {
   const toolsRootRef = useRef<HTMLDivElement>(null);
   const itemBorderRefs = useRef<(SVGRectElement | null)[]>([]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   const fetchNews = useCallback(async () => {
     try {
       const data = await fetchLocalJson<Array<{ id: number; title: string; type: string; main: string; imgUrl: string }>>("/data/news.json");
@@ -150,6 +152,7 @@ export default function Home() {
     const textEls = mainRef.current?.querySelectorAll(`.${styles.line} p`) ?? [];
     const bgEls = mainRef.current?.querySelectorAll(`.${styles.background} .${styles.bg}`) ?? [];
     const titleEl = mainRef.current?.querySelector(`.${styles.title}`) as HTMLElement;
+    const backEl = backRef.current;
 
     if (logoEl && targetEl) {
       const logoRect = logoEl.getBoundingClientRect();
@@ -184,7 +187,8 @@ export default function Home() {
         .to(bgEls, { opacity: 1, stagger: { amount: 0.2, from: "end" }, ease: "none" }, "+=0.5")
         .to(textEls, { color: "rgb(203, 163, 115)" }, "<")
         .to(titleEl, { color: "rgb(203, 163, 115)" }, "<")
-        .to(ellipseTextPaths ? ellipseTextPaths : [], { fill: "rgb(203, 163, 115)" }, "<");
+        .to(ellipseTextPaths ? ellipseTextPaths : [], { fill: "rgb(203, 163, 115)" }, "<")
+        .to(backEl, { background: "rgb(53, 53, 53)" }, "<");
     }
   };
 
@@ -481,7 +485,7 @@ export default function Home() {
       )}
 
       {!showSVG && (
-        <div style={{ position: 'fixed', zIndex: 1, top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(34,34,34,1)', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}></div>
+        <div ref={backRef} style={{ position: 'fixed', zIndex: 1, top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(34,34,34,1)', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}></div>
       )}
 
 

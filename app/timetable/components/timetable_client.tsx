@@ -196,7 +196,9 @@ export default function Timetable_Client() {
   return (
     <div data-smooth-wrapper>
       <div className={styles.main} data-scroll-container>
-        <h2 className={styles.title} ref={title_Ref}>TIME TABLE</h2>
+        <div className={styles.title_wrapper}>
+          <h2 className={styles.title} ref={title_Ref}>Time Table</h2>
+        </div>
         <div className={styles.selector}>
           <div className={styles.dateSelector}>
             {dateOptions.map(dateOpt => (
