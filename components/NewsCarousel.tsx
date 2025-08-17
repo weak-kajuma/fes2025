@@ -10,83 +10,120 @@ interface NewsSliderProps {
 
 const NewsSlider = ({ items }: NewsSliderProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const list1Ref = useRef<HTMLUListElement>(null);
-  const list2Ref = useRef<HTMLUListElement>(null);
+  const listRefs = [useRef<HTMLUListElement>(null), useRef<HTMLUListElement>(null), useRef<HTMLUListElement>(null)];
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
-    const list1 = list1Ref.current;
-    const list2 = list2Ref.current;
-    if (!wrapper || !list1 || !list2) return;
+    const lists = listRefs.map(ref => ref.current);
+    if (!wrapper || lists.some(l => !l)) return;
 
-    // 高さをlist1の高さに合わせる
-    // const setHeight = () => {
-    //   wrapper.style.height = list1.offsetHeight + "px";
-    // };
-    // setHeight();
-    // window.addEventListener("resize", setHeight);
-
-    const listWidth = list1.offsetWidth;
-    let x1 = 0;
-    let x2 = listWidth;
-
+    const listWidth = lists[0]!.scrollWidth;
+    let xs = [0, listWidth, listWidth * 2];
     let running = true;
-    const animate = () => {
-      if (!running) return;
-      x1 -= 2;
-      x2 -= 2;
+    const speed = 1;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragLastX = 0;
+    let rafId: number | null = null;
+    let grabTimer: number | null = null;
+    let isGrabActive = false;
 
-      // 後ろのul（x2）が画面左端に到達したら、先頭ul（x1）を後ろに並び替え
-      if (x2 <= 0) {
-        x1 = x2 + listWidth / 2;
-      }
-      // 逆も同様
-      if (x1 <= 0) {
-        x2 = x1 + listWidth / 2;
-      }
-
-      gsap.set(list1, { x: x1 });
-      gsap.set(list2, { x: x2 });
-      requestAnimationFrame(animate);
+    const setLists = () => {
+      lists.forEach((list, i) => {
+        gsap.set(list, { x: xs[i] });
+      });
     };
-    animate();
+
+    const animate = () => {
+      if (!running || isDragging) return;
+      xs = xs.map(x => x - speed);
+      for (let i = 0; i < xs.length; i++) {
+        if (xs[i] <= -listWidth * 1.5) {
+          const maxX = Math.max(...xs);
+          xs[i] = maxX + listWidth;
+        }
+      }
+      setLists();
+      rafId = requestAnimationFrame(animate);
+    };
+    rafId = requestAnimationFrame(animate);
+
+    // 長押しでgrab状態に
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      if (grabTimer) clearTimeout(grabTimer);
+      grabTimer = window.setTimeout(() => {
+        isGrabActive = true;
+        lists.forEach(list => list?.classList.add('grabbing'));
+        isDragging = true;
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+        running = false;
+        dragStartX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+        dragLastX = dragStartX;
+      }, 5); // 500ms長押しでgrab
+    };
+    const onPointerUp = () => {
+      if (grabTimer) clearTimeout(grabTimer);
+      if (isGrabActive) {
+        isGrabActive = false;
+        lists.forEach(list => list?.classList.remove('grabbing'));
+        isDragging = false;
+        running = true;
+        if (rafId === null) {
+          rafId = requestAnimationFrame(animate);
+        }
+      }
+    };
+    const onPointerMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDragging) return;
+      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const delta = clientX - dragLastX;
+      xs = xs.map(x => x + delta);
+      setLists();
+      dragLastX = clientX;
+    };
+
+    // イベントリスナー登録
+    wrapper.addEventListener('mousedown', onPointerDown);
+    wrapper.addEventListener('touchstart', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('touchmove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+    window.addEventListener('touchend', onPointerUp);
 
     return () => {
       running = false;
-      // window.removeEventListener("resize", setHeight);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      if (grabTimer) clearTimeout(grabTimer);
+      wrapper.removeEventListener('mousedown', onPointerDown);
+      wrapper.removeEventListener('touchstart', onPointerDown);
+      window.removeEventListener('mousemove', onPointerMove);
+      window.removeEventListener('touchmove', onPointerMove);
+      window.removeEventListener('mouseup', onPointerUp);
+      window.removeEventListener('touchend', onPointerUp);
     };
   }, [items]);
 
   return (
     <div ref={wrapperRef} className={styles.news_list_wrapper} style={{ position: "relative" }}>
-      <ul ref={list1Ref} className={styles.list}>
-        {items.map(item => (
-          <li key={item.id} className={styles.list_item}>
-            <div className={styles.image}>
-              {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-            </div>
-            <p className={styles.type_text}>{item.type}</p>
-            <div className={styles.main_text}>
-              <h4 className={styles.title}>{item.title}</h4>
-              <div className={styles.button}>詳細</div>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <ul ref={list2Ref} className={styles.list} >
-        {items.map(item => (
-          <li key={item.id + "_2"} className={styles.list_item}>
-            <div className={styles.image}>
-              {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-            </div>
-            <p className={styles.type_text}>{item.type}</p>
-            <div className={styles.main_text}>
-              <h4 className={styles.title}>{item.title}</h4>
-              <div className={styles.button}>詳細</div>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {[0, 1, 2].map(idx => (
+        <ul ref={listRefs[idx]} className={styles.list} key={"list" + idx}>
+          {items.map(item => (
+            <li key={item.id + "_" + idx} className={styles.list_item}>
+              <div className={styles.image}>
+                {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              </div>
+              <p className={styles.type_text}>{item.type}</p>
+              <div className={styles.main_text}>
+                <h4 className={styles.title}>{item.title}</h4>
+                <div className={styles.button}>詳細</div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ))}
     </div>
   );
 };

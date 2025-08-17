@@ -171,3 +171,7 @@ a {
   from { opacity: 1; }
   to   { opacity: 0; }
 }
+
+[data-smooth-wrapper], [data-scroll-container], body {
+  pointer-events: auto !important;
+}
