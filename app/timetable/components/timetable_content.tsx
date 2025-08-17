@@ -29,23 +29,41 @@ export default function TimeTableContent ({ eventData }: { eventData: EventData 
   const locationClassName = formatLocationToClassName(eventData.location);
 
   // Date型からgridRowを計算
-  const getGridRowFromDate = (date: Date | null) => {
-    if (!date) return 2;
-    const h = date.getHours();
-    const m = date.getMinutes();
-    const baseMinutes = 8 * 60 + 30; // 8:30基準
-    const eventMinutes = h * 60 + m;
-    return 2 + (eventMinutes - baseMinutes);
-  };
+    const getGridRow = (timeStr?: string | null) => {
+      if (!timeStr) return 2;
+      // "2025-09-20 08:40:00" → "2025-09-20T08:40:00" に変換
+      const dateObj = new Date(timeStr.replace(' ', 'T'));
+      const baseMinutes = 8 * 60 + 30;
+      const eventMinutes = dateObj.getHours() * 60 + dateObj.getMinutes();
+      return 2 + (eventMinutes - baseMinutes);
+    };
 
-  const gridRowStart = getGridRowFromDate(eventData.startDate);
-  const gridRowEnd = getGridRowFromDate(eventData.endDate);
+  const gridRowStart = getGridRow(
+    typeof eventData.startDate === "string"
+      ? eventData.startDate
+      : eventData.startDate
+      ? eventData.startDate.toISOString().replace("T", " ").slice(0, 19)
+      : undefined
+  );
+  const gridRowEnd = getGridRow(
+    typeof eventData.endDate === "string"
+      ? eventData.endDate
+      : eventData.endDate
+      ? eventData.endDate.toISOString().replace("T", " ").slice(0, 19)
+      : undefined
+  );
 
   // 表示用時刻（サーバーで生成されていない場合はここで生成）
-  const formatTime = (date: Date | null) => {
+  const formatTime = (date: Date | string | null | undefined) => {
     if (!date) return '--:--';
-    const h = date.getHours().toString().padStart(2, '0');
-    const m = date.getMinutes().toString().padStart(2, '0');
+    let d: Date;
+    if (typeof date === 'string') {
+      d = new Date(date.replace(' ', 'T'));
+    } else {
+      d = date;
+    }
+    const h = d.getHours().toString().padStart(2, '0');
+    const m = d.getMinutes().toString().padStart(2, '0');
     return `${h}:${m}`;
   };
 

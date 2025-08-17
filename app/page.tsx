@@ -1,6 +1,7 @@
 "use client"
 
 import gsap from "gsap";
+import { useCallback } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { useEffect, useRef, useState } from "react";
@@ -9,6 +10,8 @@ import { usePathname, useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { useScrollSmoother } from "@/components/ScrollSmoother";
 import AnimatedEllipse from "@/components/Ellipse/Ellipse";
+import { fetchLocalJson } from "@/lib/fetchLocalJson";
+import NewsSlider from "@/components/NewsCarousel";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -38,6 +41,17 @@ export default function Home() {
   const toolsRootRef = useRef<HTMLDivElement>(null);
   const itemBorderRefs = useRef<(SVGRectElement | null)[]>([]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const fetchNews = useCallback(async () => {
+    try {
+      const data = await fetchLocalJson<Array<{ id: number; title: string; type: string; main: string; imgUrl: string }>>("/data/news.json");
+      setNewsItems(data);
+    } catch (e) {
+      setNewsItems([]);
+    }
+  }, []);
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
 
   useScrollSmoother();
 
@@ -288,20 +302,23 @@ export default function Home() {
         if (!root) return;
         const title = root.querySelector(`.${styles.tools_title}`) as HTMLElement | null;
         const subtitle = root.querySelector('#tools-subtitle') as HTMLElement | null;
-        if (!title || !subtitle) return;
+        const items = root.querySelectorAll(`.${styles.item}`);
+        if (!title || !subtitle || !items.length) return;
 
         gsap.set([title, subtitle], { y: '100%', opacity: 0 });
+        gsap.set(items, { y: '100%', opacity: 0 });
 
-        gsap.timeline({
+        const tl = gsap.timeline({
           defaults: { ease: 'power2.out' },
           scrollTrigger: {
             trigger: root,
             start: 'top 50%',
             toggleActions: 'play none none none',
           },
-        })
-        .to(title,   { y: 0, opacity: 1 })
-        .to(subtitle,{ y: 0, opacity: 1 }, '-=0.2');
+        });
+        tl.to(title,   { y: 0, opacity: 1 })
+          .to(subtitle,{ y: 0, opacity: 1 }, '-=0.2')
+          .to(items,   { y: 0, opacity: 1, stagger: 0.18 }, '-=0.1');
       }, toolsRootRef);
 
       toolsInited.current = true;
@@ -360,6 +377,36 @@ export default function Home() {
       });
     });
   };
+
+  // ニュースデータ
+  const [newsItems, setNewsItems] = useState<Array<{ id: number; title: string; type: string; main: string; imgUrl: string }>>([]);
+
+
+
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (!listRef.current) return;
+    const list = listRef.current;
+
+    const anim = gsap.to(list, {
+      x: `-=${list.scrollWidth / 2}`,
+      duration: 2,
+      ease: "linear",
+      repeat: -1,
+      modifiers: {
+        x: (x) => {
+          const width = list.scrollWidth / 2;
+          return (parseFloat(x) % width) + "px";
+        },
+      },
+    });
+
+    // クリーンアップ関数は副作用の後始末のみを行う
+    return () => {
+      anim.kill();
+    };
+  }, []);
 
 
 
@@ -493,6 +540,57 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            <div className={styles.news}>
+              <div className={styles.news_inner}>
+
+                <div className={styles.title}>
+                  <h2 className={styles.news_title}>News</h2>
+                  <p id="news-subtitle">最新情報をお届けします</p>
+                </div>
+
+                <div className={styles.news_list_wrapper}>
+                  {/* <ul ref={listRef} className={styles.list}>
+                    {[...newsItems, ...newsItems].map((item, index) => (
+                      <li key={item.id} className={styles.list_item}>
+                        <div className={styles.image}>
+                          {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                        </div>
+                        <p className={styles.type_text}>{item.type}</p>
+                        <div className={styles.main_text}>
+                          <h4 className={styles.title}>{item.title}</h4>
+                          <div className={styles.button}>詳細</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul> */}
+
+                  <NewsSlider items={newsItems} />
+
+                  <div className={styles.controller}>
+                    <nav className={styles.nav}>
+                      <div className={styles.prev}>
+                        <span className={styles.button_inner}>
+                          <svg className={styles.icon}>
+                            <use xlinkHref="/sprite.svg#icon-arrow-left"></use>
+                          </svg>
+                        </span>
+                      </div>
+                      <div className={styles.next}>
+                        <span className={styles.button_inner}>
+                          <svg className={styles.icon}>
+                            <use xlinkHref="/sprite.svg#icon-arrow-right"></use>
+                          </svg>
+                        </span>
+                      </div>
+                      <div className={styles.pagination}></div>
+                    </nav>
+                    <div className={styles.toNews_button}></div>
+                  </div>
+                </div>
+
               </div>
             </div>
 

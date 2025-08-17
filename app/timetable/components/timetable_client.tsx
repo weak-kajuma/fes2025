@@ -2,7 +2,8 @@
 
 import styles from "./timetable_client.module.css";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { getEventsBySort, EventsByLocation } from "./ServerAction";
+import { EventsByLocation } from "./ServerAction";
+import { fetchLocalJson } from "@/lib/fetchLocalJson";
 import Link from "next/link";
 import TimeTableContent from "./timetable_content";
 import { useScrollSmoother } from "@/components/ScrollSmoother";
@@ -59,14 +60,20 @@ export default function Timetable_Client() {
       setIsInitialLoading(true);
       setErrorLoading(null);
       try {
-        const dataPromises = dateOptions.map(dateOpt =>
-          getEventsBySort(dateOpt.value, areaOptions.map(opt => opt.value), EVENT_YEAR, EVENT_MONTH)
-        );
-        const results = await Promise.all(dataPromises);
+        // ローカルJSON（配列）から全データ取得
+        const timetableData = await fetchLocalJson<Array<any>>("/data/timetable.json");
+        console.log("timetableData", timetableData);
+        // 日付ごと・エリアごとにEventsByLocation型へ変換
         const newData: { [date: string]: EventsByLocation[] } = {};
-        dateOptions.forEach((dateOpt, idx) => {
-          newData[dateOpt.value] = results[idx];
+        dateOptions.forEach(dateOpt => {
+          const dateStr = `2025-09-${dateOpt.value}`;
+          const filtered = timetableData.filter(ev => ev.startDate.startsWith(dateStr));
+          newData[dateOpt.value] = areaOptions.map(opt => {
+            const events = filtered.filter(ev => ev.locationType === opt.value);
+            return { locationType: opt.value, events };
+          });
         });
+        console.log("newData", newData);
         if (mounted) {
           setAllEventsData(prev => JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData);
           if (areaOptions.length > 0 && maxSelectableAreas > 0) {

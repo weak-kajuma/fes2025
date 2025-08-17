@@ -1,4 +1,5 @@
-import { supabase } from '../../../lib/supabaseClient';
+// import { supabase } from '../../../lib/supabaseClient';
+import { fetchLocalJson } from '@/lib/fetchLocalJson';
 
 export type EventDataForClient = {
   id: number;
@@ -18,6 +19,7 @@ type EventRow = {
   brief_intro: string | null;
   locationType: string | null;
   tags: string[] | null;
+  startDate?: string;
 };
 
 export async function getEventsWithFilters(
@@ -27,7 +29,8 @@ export async function getEventsWithFilters(
   // year: number,
   // month: number
 ): Promise<EventDataForClient[]> {
-  let query;
+  // ローカルJSONから全件取得
+  const allData = await fetchLocalJson<EventRow[]>("/data/search.json");
 
   // ① 日付絞り込み（startDateがその日の範囲）
   // if (targetDate) {
@@ -41,34 +44,41 @@ export async function getEventsWithFilters(
   //     .lte('startDate', dateEnd.toISOString());
   // }
 
-  // ③ キーワード検索: RPC関数を呼び出す
-  if (keyword) {
-    query = supabase.rpc('search_events', { search_keyword: keyword });
-  } else {
-    // キーワードがない場合は全件取得
-    query = supabase.from('Event_all').select('*');
-  }
+  // 日付絞り込み（startDateがその日の範囲）
+  let filtered = allData;
+    if (targetDate) {
+      filtered = filtered.filter((ev: EventRow) => {
+        if (!('startDate' in ev) || !ev.startDate) return false;
+        return ev.startDate.startsWith(`2025-09-${targetDate}`);
+      });
+    }
 
   // ② エリアでの絞り込み (RPCの結果に対してさらに絞り込み)
   if (selectedAreas.length > 0) {
     // The RPC function returns a query builder, so we can chain filters.
-    query = query.in('locationType', selectedAreas);
+    filtered = filtered.filter((ev: EventRow) => selectedAreas.includes(ev.locationType ?? ""));
   }
 
-  const { data, error } = await query;
-
-  if (error) {
-    console.error('Supabase fetch error:', error.message);
-    return [];
+  // キーワード絞り込み
+  if (keyword) {
+    const kw = keyword.toLowerCase();
+      filtered = filtered.filter((ev: EventRow) =>
+        (ev.title?.toLowerCase().includes(kw) || "") ||
+        (ev.host?.toLowerCase().includes(kw) || "") ||
+        (ev.intro?.toLowerCase().includes(kw) || "") ||
+        (ev.brief_intro?.toLowerCase().includes(kw) || "")
+      );
   }
 
-  return (data as EventRow[]).map(event => ({
-    id: event.id,
-    title: event.title,
-    host: event.host,
-    intro: event.intro,
-    brief_intro: event.brief_intro,
-    locationType: event.locationType,
-    tags: event.tags ?? [],
-  }));
+
+  // 型変換
+    return filtered.map((row: EventRow) => ({
+      id: row.id,
+      title: row.title,
+      host: row.host,
+      intro: row.intro,
+      brief_intro: row.brief_intro,
+      locationType: row.locationType,
+      tags: row.tags ?? [],
+    }));
 }

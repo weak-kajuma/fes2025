@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
 .main[data-scroll-container] {
   overflow: hidden;
 }
@@ -155,7 +157,7 @@
   .tools {
     margin-top: -1px;
     width: 100%;
-    height: 300vh;
+    height: 120vh;
     padding: 10vh 5vw;
     position: relative;
     z-index: 20;
@@ -177,7 +179,8 @@
         align-items: start;
 
         .tools_title {
-          font-size: 2.5rem;
+          font-size: 3rem;
+          font-weight: 400;
           color: #cba373;
           font-family: auto;
           will-change: transform;
@@ -288,6 +291,8 @@
                     font-size: .75rem;
                     opacity: 0;
                     color: white;
+                    font-family: "Bebas Neue", sans-serif;
+                    /* margin-top: .5rem; */
                     transform: translateY(-50%);
                   }
                 }
@@ -296,83 +301,168 @@
           }
         }
       }
+    }
 
-      /* .items {
-        margin: 15vh 5vw 0;
+  }
+
+  .news {
+    margin-top: -1px;
+    width: 100%;
+    height: 120vh;
+    padding: 10vh 5vw;
+    position: relative;
+    z-index: 20;
+    background-color: #141414;
+
+    .news_inner {
+      /* border: solid 1px white; */
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .title{
         width: 100%;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
 
-        .item {
-          width: 100%;
-          height: 60vh;
-          margin: 0 auto;
-          padding: 5% 12%;
-          border-radius: calc(50vh / 2 * .7);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          z-index: 21;
+        .news_title {
+          font-size: 3rem;
+          font-weight: 400;
           color: #cba373;
-          transition: border-radius 1ms cubic-bezier(0.22, 1, 0.36, 1);
+          font-family: auto;
+          will-change: transform;
+        }
 
-          .item_inner {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
+        p {
+          font-size: .9rem;
+          color: #fff;
+          margin-top: 1rem;
+          line-height: 1.5;
+          max-width: 600px;
+        }
+      }
 
-            .text_wrapper {
+      .news_list_wrapper {
+        padding-block: 6.875rem 11.25rem;
+        padding-inline: 10.9375rem 3.125rem;
+        width: 100%;
+
+        .list {
+          cursor: grab;
+          display: flex;
+          list-style-type: none;
+          will-change: transform;
+          user-select: none;
+
+          &:active {
+            cursor: grabbing;
+          }
+
+          .list_item {
+            width: 30rem;
+            margin-right: 1.25rem;
+            flex-shrink: 0;
+
+            .image {
+              height: 20rem;
+              border-radius: .625rem;
               width: 100%;
+              object-fit: cover;
+              position: relative;
+              overflow: hidden;
+              transition: scale .6s cubic-bezier(.16,1,.3,1);
+              background-color: #fff;
+            }
+
+            .type_text {
+              font-size: .8125rem;
+              margin-top: 1.0625rem;
+              font-weight: 600;
+              color: #fff;
+              font-family: var(--mincho);
+            }
+
+            .main_text {
               display: flex;
-              flex-direction: column;
-              align-items: start;
-              justify-content: start;
+              margin-top: .875rem;
 
-              .text {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
+              .title {
                 font-size: 1.5rem;
-                color: #fff;
-                transform: translateX(-10%);
-              }
-
-              p {
+                line-height: 1.5;
+                letter-spacing: -.02em;
+                font-weight: 600;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+                overflow: hidden;
+                flex: 1;
                 color: #fff;
                 font-family: var(--mincho);
               }
+
+              .button {
+                flex-shrink: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid rgba(40, 40, 40, .2);
+                border-radius: 50%;
+                width: 2.5rem;
+                height: 2.5rem;
+                margin-top: .375rem;
+                margin-inline: .625rem .8125rem;
+                overflow: hidden;
+                transition: .2s;
+                transition-property: background, color;
+              }
             }
-
-            .content_wrapper {
-              width: 100%;
-              height: 100%;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-            }
-
-            .button_wrapper {
-              width: 100%;
-              display: flex;
-              justify-content: flex-end;
-            }
-
-          }
-
-          .text {
-            height: 5vw;
           }
         }
-      } */
-    }
 
+        .controller {
+          margin-top: 2.8125rem;
+          margin-right: .125rem;
+          display: flex;
+          justify-content: space-between;
+          color: #fff;
+
+          .nav {
+            margin-left: .125rem;
+            margin-top: -.25rem;
+            display: flex;
+            align-items: center;
+
+            .prev,
+            .next {
+              width: 3.125rem;
+              height: 3.125rem;
+              margin-right: 1rem;
+
+              .button_inner {
+                border: #cba373 solid 1px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                transition: scale .6s cubic-bezier(.16,1,.3,1);
+
+                .icon {
+                  transform: scaleX(-1);
+                  width: .4375rem;
+                  height: .75rem;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
