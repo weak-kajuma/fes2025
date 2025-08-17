@@ -15,18 +15,25 @@ interface EventData {
   displayTimeEndTime?: string;   // 追加: サーバーで生成された表示用時刻
 }
 
-// location文字列をCSSクラス名に適した形式に変換するヘルパー関数
+
+// 日本語→英語変換テーブル（キャメルケース）
+const locationTypeMap: Record<string, string> = {
+  '野外ステージ': 'Stage',
+  '中庭': 'Yard',
+  'コナコピアホール': 'Hole',
+  '体育館': 'Gym',
+};
+
+// locationTypeを英語キャメルケースに変換しCSSクラス名に
 const formatLocationToClassName = (location: string | null): string => {
-  if (!location) {
-    return styles.locationDefault; // ここは必ずCSS Modulesのクラス名
-  }
-  const sanitized = location.replace(/\s+/g, '');
-  return styles[`location${sanitized}`] || styles.locationDefault;
+  if (!location) return styles.locationDefault;
+  const eng = locationTypeMap[location] || 'Default';
+  return styles[`location${eng}`] || styles.locationDefault;
 };
 
 export default function TimeTableContent ({ eventData }: { eventData: EventData }) {
 
-  const locationClassName = formatLocationToClassName(eventData.location);
+  const locationClassName = formatLocationToClassName((eventData as any).locationType ?? eventData.location);
 
   // Date型からgridRowを計算
     const getGridRow = (timeStr?: string | null) => {
@@ -78,7 +85,16 @@ export default function TimeTableContent ({ eventData }: { eventData: EventData 
       <p className={styles.time}>
         {formatTime(eventData.startDate) + ' - ' + formatTime(eventData.endDate)}
       </p>
-      <p className={styles.title}>{eventData.title ?? 'タイトルなし'}</p>
+      <p className={styles.title}>
+        {(eventData.title ?? 'タイトルなし')
+          .split('\n')
+          .map((line, i) => (
+            <span key={i}>
+              {line}
+              {i !== (eventData.title ?? 'タイトルなし').split('\n').length - 1 && <br />}
+            </span>
+          ))}
+      </p>
     </div>
   )
 }
