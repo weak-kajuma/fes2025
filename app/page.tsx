@@ -23,10 +23,10 @@ declare global {
 
 export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  // セッション初回判定
-  const isFirstSession = typeof window !== 'undefined' && !sessionStorage.getItem('seikasai_opened');
-  const [opening, setOpening] = useState(isFirstSession);
-  const [showSVG, setShowSVG] = useState(isFirstSession);
+  // SSR/CSR不一致防止: 初期値は必ずfalse
+  const [opening, setOpening] = useState(false);
+  const [showSVG, setShowSVG] = useState(false);
+  const [isFirstSession, setIsFirstSession] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
   const openingMaskRef = useRef<HTMLDivElement>(null);
   const maskPathRef = useRef<SVGPathElement>(null);
@@ -55,9 +55,17 @@ export default function Home() {
     fetchNews();
   }, [fetchNews]);
 
-  // セッション初回フラグセット
+  // セッション初回判定・フラグセット
   useEffect(() => {
-    sessionStorage.setItem('seikasai_opened', '1');
+    if (typeof window !== 'undefined') {
+      const first = !sessionStorage.getItem('seikasai_opened');
+      setIsFirstSession(first);
+      if (first) {
+        setOpening(true);
+        setShowSVG(true);
+        sessionStorage.setItem('seikasai_opened', '1');
+      }
+    }
   }, []);
 
   useScrollSmoother();
@@ -71,8 +79,15 @@ export default function Home() {
     const tl = gsap.timeline({
       onComplete: () => {
         setOpening(false);
+        // マスク解除とスクロール初期化を完全同期
+        if (mainEl) mainEl.style.overflow = 'auto';
+        if (maskEl) {
+          maskEl.style.transform = 'none';
+          maskEl.style.pointerEvents = 'none';
+        }
+        ScrollTrigger.refresh();
+        if (window.scrollSmoother) window.scrollSmoother.refresh();
         setTimeout(() => {
-          ScrollTrigger.refresh();
           const menu = document.querySelector('[data-menu-icon-wrapper]') as HTMLElement | null;
           const tabbar = document.querySelector('[data-tabbar-wrapper]') as HTMLElement | null;
           if (menu) {

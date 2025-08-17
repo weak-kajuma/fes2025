@@ -176,7 +176,7 @@ a {
   pointer-events: auto !important;
 }
 
-:global(svg) {
+svg {
   user-select: none !important;
   -webkit-user-select: none !important;
   -webkit-touch-callout: none !important;
