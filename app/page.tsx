@@ -23,8 +23,10 @@ declare global {
 
 export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [opening, setOpening] = useState(true);
-  const [showSVG, setShowSVG] = useState(true);
+  // セッション初回判定
+  const isFirstSession = typeof window !== 'undefined' && !sessionStorage.getItem('seikasai_opened');
+  const [opening, setOpening] = useState(isFirstSession);
+  const [showSVG, setShowSVG] = useState(isFirstSession);
   const mainRef = useRef<HTMLDivElement>(null);
   const openingMaskRef = useRef<HTMLDivElement>(null);
   const maskPathRef = useRef<SVGPathElement>(null);
@@ -53,6 +55,11 @@ export default function Home() {
     fetchNews();
   }, [fetchNews]);
 
+  // セッション初回フラグセット
+  useEffect(() => {
+    sessionStorage.setItem('seikasai_opened', '1');
+  }, []);
+
   useScrollSmoother();
 
   // オープニングのマスクアニメーション
@@ -79,7 +86,10 @@ export default function Home() {
     });
 
     tl
-      .fromTo(maskEl, { y: '100vh' }, { y: '0', zIndex: 10, duration: 1.5, ease: 'power2.out' })
+      .fromTo(maskEl,
+        { y: '100vh', clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)' },
+        { y: '0', zIndex: 10, clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)', duration: 1.5, ease: 'power2.out' }
+      )
       .fromTo(maskEl,
         { clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)' },
         { clipPath: 'inset(0% 0% 0% 0% round 24px)', webkitClipPath: 'inset(0% 0% 0% 0% round 24px)', duration: 1.8, ease: 'power2.inOut' },
@@ -164,7 +174,16 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (opening) return;
+    // openingがfalseかつトップページのときのみ初期化
+    if (opening || pathname !== '/') return;
+
+    // 前ページのScrollTrigger/ScrollSmoother状態を必ずリセット
+    try {
+      ScrollTrigger.killAll();
+      const smoother = ScrollSmoother.get();
+      if (smoother) smoother.kill();
+      window.scrollSmoother = undefined;
+    } catch {}
 
     const ensureSmoother = () => {
       const smoother = window.scrollSmoother || ScrollSmoother.get();
@@ -183,7 +202,7 @@ export default function Home() {
 
     const cleanup = ensureSmoother();
     return typeof cleanup === 'function' ? cleanup : undefined;
-  }, [opening]);
+  }, [opening, pathname]);
 
   // ellipseのなんか
   useEffect(() => {
@@ -201,7 +220,19 @@ export default function Home() {
 
   // オープニングアニメーション
   useEffect(() => {
-    if (!showSVG) return;
+    if (!showSVG) {
+      // 2回目以降のみ即座に展開済み状態
+      if (!isFirstSession && openingMaskRef.current) {
+        openingMaskRef.current.style.transform = 'none';
+        openingMaskRef.current.style.clipPath = 'inset(0% 0% 0% 0% round 24px)';
+        openingMaskRef.current.style.setProperty('-webkit-clip-path', 'inset(0% 0% 0% 0% round 24px)');
+        openingMaskRef.current.style.pointerEvents = 'none';
+        if (mainRef.current) mainRef.current.style.overflow = 'auto';
+        setOpening(false);
+      }
+      return;
+    }
+    // 初回のみアニメーション
     const pathEl = maskPathRef.current;
     if (!pathEl) return;
 
@@ -217,11 +248,13 @@ export default function Home() {
       duration: 2.6,
       ease: 'power2.inOut',
       onComplete: () => {
-        setTimeout(() => setShowSVG(false), 800);
+        setTimeout(() => {
+          setShowSVG(false);
+          // 初回のみマスクアニメーション
+          if (isFirstSession) startOpeningMaskAnimation();
+        }, 800);
       }
     });
-
-    svgTl.add(() => startOpeningMaskAnimation(), 2.6);
   }, [showSVG]);
 
   // 枠線アニメーション（context化）
@@ -382,7 +415,7 @@ export default function Home() {
   const [newsItems, setNewsItems] = useState<Array<{ id: number; title: string; type: string; main: string; imgUrl: string }>>([]);
 
 
-
+  // ニュースリストのスクロールアニメーション
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
@@ -552,25 +585,13 @@ export default function Home() {
                 </div>
 
                 <div className={styles.news_list_wrapper}>
-                  {/* <ul ref={listRef} className={styles.list}>
-                    {[...newsItems, ...newsItems].map((item, index) => (
-                      <li key={item.id} className={styles.list_item}>
-                        <div className={styles.image}>
-                          {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                        </div>
-                        <p className={styles.type_text}>{item.type}</p>
-                        <div className={styles.main_text}>
-                          <h4 className={styles.title}>{item.title}</h4>
-                          <div className={styles.button}>詳細</div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul> */}
 
                   <NewsSlider items={newsItems} />
 
                   <div className={styles.controller}>
+
                     <nav className={styles.nav}>
+
                       <div className={styles.prev}>
                         <span className={styles.button_inner}>
                           <svg className={styles.icon}>
@@ -578,6 +599,7 @@ export default function Home() {
                           </svg>
                         </span>
                       </div>
+
                       <div className={styles.next}>
                         <span className={styles.button_inner}>
                           <svg className={styles.icon}>
@@ -585,9 +607,13 @@ export default function Home() {
                           </svg>
                         </span>
                       </div>
+
                       <div className={styles.pagination}></div>
+
                     </nav>
+
                     <div className={styles.toNews_button}></div>
+
                   </div>
                 </div>
 

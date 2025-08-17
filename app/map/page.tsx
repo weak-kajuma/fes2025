@@ -57,7 +57,7 @@ export default function MapPage() {
   }, [selectedFloor])
 
   // フロアごとのディレクトリ
-  const dir = selectedFloor === 1 ? '/data/1F/' : selectedFloor === 2 ? '/data/2F/' : selectedFloor === 3 ? '/data/3F/' : '/data/4F/'
+  const dir = selectedFloor === 1 ? '/data/map/1F/' : selectedFloor === 2 ? '/data/map/2F/' : selectedFloor === 3 ? '/data/map/3F/' : '/data/map/4F/'
 
   // ディレクトリ内の.geojsonファイルを昇順で取得
   useEffect(() => {
