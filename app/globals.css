@@ -1,7 +1,186 @@
 :root {
-  --font-noto-sans-jp: var(--font-noto-sans-jp);
+  --background: #ffffff;
+  --foreground: #171717;
+  --deepblue: #272A56;
+  --mincho: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "HGS明朝E", "MS P明朝", "MS Mincho", serif;
+
+
+  --location-primary-color-stage: #FFA09D;
+  --location-secondary-color-stage: #FFE2E2;
+  --location-primary-color-yard: #91C4FF;
+  --location-secondary-color-yard: #E2F1FF;
+  --location-primary-color-gym: #D9AEFF;
+  --location-secondary-color-gym: #E6E6FA;
+  --location-primary-color-hole: #89FF8D;
+  --location-secondary-color-hole: #E2FFEE;
+
+  /* Liquid Glass Effect Variables */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(20px);
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+html,
+body {
+  max-width: 100vw;
+  height: auto;
+  /* overflow-x: hidden; */
+  /* hide scrollbar (IE/Edge + Firefox) */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* hide scrollbar (WebKit) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Locomotive Scroll用の設定 */
+html.has-scroll-smooth {
+  overflow: hidden;
+}
+
+html.has-scroll-dragging {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Locomotive Scrollが有効な場合は通常のスクロール動作を無効化 */
+html.has-scroll-smooth body {
+  overflow: hidden;
+}
+
+html {
+  scroll-behavior: auto; /* Locomotive Scroll使用時はautoに変更 */
 }
 
 body {
-  font-family: var(--font-noto-sans-jp);
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Ensure ScrollSmoother content never shows a scrollbar */
+[data-scroll-container] {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+[data-scroll-container]::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+  /* outline: 1px solid red !important; */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+.mincho {
+  font-family: var(--font-biz-ud-mincho), serif;
+}
+
+/* Liquid Glass Effect Animations */
+@keyframes liquid-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes glass-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes glass-glow {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.8s;
+  animation-timing-function: ease;
+}
+
+::view-transition-old(root) {
+  animation-name: fade-out;
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  animation-name: fade-in;
+  z-index: 2;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+[data-smooth-wrapper], [data-scroll-container], body {
+  pointer-events: auto !important;
+}
+
+svg {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  pointer-events: none !important;
 }

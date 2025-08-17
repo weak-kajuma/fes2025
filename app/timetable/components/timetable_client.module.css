@@ -1,0 +1,364 @@
+.location野外ステージ {
+  --location-primary-color: var(--location-primary-color-stage);
+  --location-secondary-color: var(--location-secondary-color-stage);
+}
+
+.location中庭 {
+  --location-primary-color: var(--location-primary-color-yard);
+  --location-secondary-color: var(--location-secondary-color-yard);
+}
+
+.locationコナコピアホール {
+  --location-primary-color: var(--location-primary-color-hole);
+  --location-secondary-color: var(--location-secondary-color-hole);
+}
+
+.location体育館 {
+  --location-primary-color: var(--location-primary-color-gym);
+  --location-secondary-color: var(--location-secondary-color-gym);
+}
+
+.main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 100vh;
+
+  .title {
+    font-size: 5vw;
+    color: var(--deepblue);
+    margin-top: 20vh;
+    user-select: none;
+
+    @media screen and (max-width: 1200px) {
+      font-size: 7vw;
+    }
+
+    @media screen and (max-width: 768px) {
+      font-size: 10vw;
+    }
+  }
+
+  .selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4つの均等なカラム */
+    row-gap: 1rem; /* dateSelector と areaSelector の間の縦の隙間 */
+    column-gap: .5rem; /* ボタン間の横の隙間 */
+    margin: 2rem auto; /* 上下マージン2rem、左右autoで中央寄せ */
+    width: 90%; /* コンテナの幅を画面の90%に */
+
+    .button {
+      text-align: center;
+      padding: 1rem;
+      border: none;
+      border-radius: 1rem;
+      display: block;
+      letter-spacing: .04em;
+      line-height: 2;
+      width: 100%;
+      cursor: pointer;
+
+      background-color: #f2f2f2;
+      color: black;
+    }
+
+    .dateSelector {
+      grid-column: 2 / span 2; /* 2番目のカラムから2カラム分を占有 */
+      grid-row: 1; /* グリッドの1行目に配置 */
+      display: grid;
+      gap: .5rem;
+      grid-template-columns: repeat(2, 1fr); /* 占有したスペースをさらに2分割 */
+      /* margin: 1rem 0; は親グリッドのrow-gapで代替 */
+
+      .button.selected {
+        background-color: var(--deepblue);
+        color: white;
+      }
+    }
+
+    .areaSelector {
+      grid-column: 1 / span 4; /* 1番目のカラムから4カラム分を占有 (全幅) */
+      grid-row: 2; /* グリッドの2行目に配置 */
+      display: grid;
+      gap: .5rem;
+      grid-template-columns: repeat(4, 1fr); /* 占有したスペースを4分割 */
+      /* margin: 2rem 0; は親要素 .selector の margin で代替 */
+
+      .button.selected {
+        color: white;
+
+        &.stage {
+          background-color: var(--location-primary-color-stage);
+        }
+
+        &.yard {
+          background-color: var(--location-primary-color-yard);
+        }
+
+        &.gym {
+          background-color: var(--location-primary-color-gym);
+        }
+
+        &.hole {
+          background-color: var(--location-primary-color-hole);
+        }
+      }
+    }
+  }
+
+  .serverPart {
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .eventContentWrapper {
+    margin-top: 100px;
+    margin-bottom: 80vh;
+    width: 95%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+
+    @media screen and (max-width: 1200px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .eventLocationContainer {
+      display: grid;
+      grid-template-columns: 35px 25px 1fr;
+      grid-template-rows: 60px repeat(422, 2px);
+      position: relative;
+      width: 100%;
+
+      .bar {
+        grid-column-start: 2;
+        grid-column-end: 4; /* 左側のバーは1列目から2列目まで */
+        grid-row: var(--current-row); /* JSから渡された行番号を開始位置とし、高さは1行分 */
+        background-color: rgb(107 114 128); /* 半透明の赤色 */
+        height: 3px; /* バーの太さ */
+        z-index: 5; /* イベントより手前に表示 */
+        pointer-events: none; /* クリックイベントを透過させる */
+      }
+
+      .label {
+        position: sticky;
+        top: 88px;
+        grid-row: 1;
+        grid-column: 3 / 4;
+        z-index: 8;
+        align-self: start;
+        height: 60px;
+        background-color: white;
+
+        &::before {
+          content: "";
+          position: absolute;
+          top: -88px;
+          left: -60px;
+          height: 88px;
+          width: calc(100% + 60px);
+          background-color: white;
+        }
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: -60px;
+          top: 0px;
+          height: 60px;
+          width: 60px;
+          background-image: linear-gradient(to bottom, white, transparent);
+        }
+
+        a {
+          background-color: var(--location-primary-color);
+          padding: .5rem;
+          border-top-left-radius: 1rem;
+          border-top-right-radius: 1rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          inset: 0;
+          position: absolute;
+
+          .label_inner {
+            color: white;
+          }
+        }
+      }
+
+      .box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        grid-row: 1 / 2;
+        grid-column-start: 2 / 3;
+        left: 0;
+        position: sticky;
+        width: 100%;
+      }
+
+      .background {
+        grid-row-start: 1;
+        grid-row-end: 691;
+        grid-column-start: 3;
+        border-radius: 1rem;
+        background-color: var(--location-secondary-color);
+        width: 100%;
+      }
+
+      .timeText {
+        color: gray;
+        font-size: .75rem;
+        line-height: 1rem;
+        transform: translateY(-6.75px);
+        grid-column-start: 1;
+
+        &:nth-child(5) {
+          grid-row: 2;
+        }
+
+        &:nth-child(6) {
+          grid-row: 32;
+        }
+        &:nth-child(7) {
+          grid-row: 92;
+        }
+        &:nth-child(8) {
+          grid-row: 152;
+        }
+        &:nth-child(9) {
+          grid-row: 212;
+        }
+        &:nth-child(10) {
+          grid-row: 272;
+        }
+        &:nth-child(11) {
+          grid-row: 332;
+        }
+        &:nth-child(12) {
+          grid-row: 392;
+        }
+        &:nth-child(13) {
+          grid-row: 422;
+        }
+        /* &:nth-child(13) {
+          grid-row: 452;
+        } */
+        /* &:nth-child(14) {
+          grid-row: 512;
+        }
+        &:nth-child(15) {
+          grid-row: 572;
+        }
+        &:nth-child(16) {
+          grid-row: 632;
+        } */
+      }
+
+      .event {
+        position: absolute;
+        left: 60px;
+        right: 10px;
+        min-height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+        z-index: 2;
+      }
+
+      .timeBar {
+        display: flex;
+        justify-content: flex-end;
+        grid-column-start: 2;
+        background-color: gray;
+
+        &:nth-of-type(14) {
+          grid-row: 2;
+          height: 2.5px;
+        }
+        &:nth-of-type(15) {
+          grid-row: 32;
+          height: 2.5px;
+        }
+        &:nth-of-type(16) {
+          grid-row: 62;
+        }
+        &:nth-of-type(17) {
+          grid-row: 32;
+          height: 2.5px;
+        }
+        &:nth-of-type(18) {
+          grid-row: 62;
+        }
+        &:nth-of-type(19) {
+          grid-row: 92;
+          height: 2.5px;
+        }
+        &:nth-of-type(20) {
+          grid-row: 122;
+        }
+        &:nth-of-type(21) {
+          grid-row: 152;
+          height: 2.5px;
+        }
+        &:nth-of-type(22) {
+          grid-row: 182;
+        }
+        &:nth-of-type(23) {
+          grid-row: 212;
+          height: 2.5px;
+        }
+        &:nth-of-type(24) {
+          grid-row: 242;
+        }
+        &:nth-of-type(25) {
+          grid-row: 272;
+          height: 2.5px;
+        }
+        &:nth-of-type(26) {
+          grid-row: 302;
+        }
+        &:nth-of-type(27) {
+          grid-row: 332;
+          height: 2.5px;
+        }
+        &:nth-of-type(28) {
+          grid-row: 362;
+        }
+        &:nth-of-type(29) {
+          grid-row: 392;
+          height: 2.5px;
+        }
+        &:nth-of-type(30) {
+          grid-row: 422;
+        }
+      }
+
+      .loading, .error, .loadingOverlay {
+        text-align: center;
+        margin: 2rem;
+        font-size: 1.2rem;
+      }
+
+      @media screen and (max-width: 1200px) {
+        .eventContentWrapper {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media screen and (max-width: 768px) {
+        .eventContentWrapper {
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+      }
+    }
+  }
+}

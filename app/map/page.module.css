@@ -1,0 +1,208 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  .mapContainer {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+  }
+}
+
+
+.floorButtons {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 5;
+  border-radius: 50px;
+
+  .floorButtonsContent {
+    margin: .5rem 2rem;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
+    .floorButtonContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50px;
+
+      .floorButton {
+        padding: 12px 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        color: #333;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        min-width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+  }
+}
+
+
+.floorButton.active {
+  background: rgba(244, 67, 54, 0.3) !important;
+  color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+/* ポリゴンメニュー */
+.polygonMenuWrapper {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 500;
+}
+
+.polygonMenuIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50px;
+  box-shadow: inset -2px -2px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transform-origin: bottom right;
+}
+
+.polygonMenuContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  padding: 1rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.polygonMenuItem {
+  width: 90%;
+  height: auto;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+
+  &:hover {
+    font-size: 1.1rem;
+    transform: scale(1.05);
+  }
+}
+
+.polygonMenuButton {
+  font-size: 1rem;
+  font-weight: 450;
+  display: inline-block;
+  text-align: center;
+  margin: 0 auto;
+  text-decoration: none;
+  color: #000000;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  transition: all 0.2s ease;
+}
+
+/* ハンバーガーメニュー */
+.ham {
+  position: fixed;
+  bottom: 105px;
+  right: 25px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 400ms;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  transform-origin: center center;
+  z-index: 501;
+}
+
+.hamRotate.active {
+  transform: rotate(45deg);
+}
+
+.hamRotate180.active {
+  transform: rotate(180deg);
+}
+
+.line {
+  fill: none;
+  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  stroke: #000;
+  stroke-width: 5.5;
+  stroke-linecap: round;
+}
+
+.ham1 .top {
+  stroke-dasharray: 40 139;
+}
+
+.ham1 .bottom {
+  stroke-dasharray: 40 180;
+}
+
+.ham1.active .top {
+  stroke-dashoffset: -98px;
+}
+
+.ham1.active .bottom {
+  stroke-dashoffset: -138px;
+}
+
+.polygonButton {
+  margin: 4px;
+  padding: 6px 12px;
+  background: #fff;
+  color: #333;
+  border: 1px solid #888;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.selectedAreaInfo {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  max-width: 300px;
+  z-index: 9000;
+}

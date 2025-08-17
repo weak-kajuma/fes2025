@@ -1,0 +1,24 @@
+[
+  {
+    "idx": 0,
+    "id": 1,
+    "title": "中3舞台発表",
+    "subtitle": "∞Infinity",
+    "description": "説明1",
+    "startDate": "2025-09-20 08:50:00",
+    "endDate": "2025-09-20 10:30:00",
+    "locationType": "体育館",
+    "imageUrl": "url1"
+  },
+  {
+    "idx": 1,
+    "id": 2,
+    "title": "ミュージックコンサート",
+    "subtitle": "サブタイトル",
+    "description": "説明2",
+    "startDate": "2025-09-20 10:50:00",
+    "endDate": "2025-09-20 11:30:00",
+    "locationType": "体育館",
+    "imageUrl": "url2"
+  }
+]
