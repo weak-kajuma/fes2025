@@ -173,7 +173,7 @@
           font-size: 3rem;
           font-weight: 400;
           color: #cba373;
-          font-family: auto;
+          font-family: var(--workSans);
           will-change: transform;
         }
 
@@ -183,6 +183,7 @@
           margin-top: 1rem;
           line-height: 1.5;
           max-width: 600px;
+          font-family: var(--mincho);
         }
       }
 
@@ -324,7 +325,7 @@
           font-size: 3rem;
           font-weight: 400;
           color: #cba373;
-          font-family: auto;
+          font-family: var(--workSans);
           will-change: transform;
         }
 
@@ -334,6 +335,7 @@
           margin-top: 1rem;
           line-height: 1.5;
           max-width: 600px;
+          font-family: var(--mincho);
         }
       }
 

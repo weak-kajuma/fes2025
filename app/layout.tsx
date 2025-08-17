@@ -66,9 +66,7 @@ export default function RootLayout({
           <TabBarProvider>
             <ScrollManager />
             <MenuIcon />
-            <ViewTransitionWrapper>
               {children}
-            </ViewTransitionWrapper>
           </TabBarProvider>
         </SessionProvider>
       </body>

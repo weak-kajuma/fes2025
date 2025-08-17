@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap');
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -5,7 +7,17 @@
   --bg: #141414;
   --text: #cba373;
   --mincho: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "HGS明朝E", "MS P明朝", "MS Mincho", serif;
+  --workSans: 'Work Sans', 'Arial', 'Helvetica', sans-serif;
 
+
+  /* --location-primary-color-stage: #FFA09D;
+  --location-secondary-color-stage: #FFE2E2;
+  --location-primary-color-yard: #91C4FF;
+  --location-secondary-color-yard: #E2F1FF;
+  --location-primary-color-gym: #D9AEFF;
+  --location-secondary-color-gym: #E6E6FA;
+  --location-primary-color-hole: #89FF8D;
+  --location-secondary-color-hole: #E2FFEE; */
 
   --location-primary-color-stage: #FFA09D;
   --location-secondary-color-stage: #FFE2E2;
