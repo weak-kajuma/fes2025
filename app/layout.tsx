@@ -8,7 +8,7 @@ import TabBar from "../components/TabBar/TabBar"
 import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
-import { Bebas_Neue } from 'next/font/google';
+import TransitionProvider from "../components/Transition/TransitionProvider"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,7 +65,9 @@ export default function RootLayout({
           {/* <TabBarProvider> */}
             <ScrollManager />
             {/* <MenuIcon /> */}
+            <TransitionProvider>
               {children}
+            </TransitionProvider>
           {/* </TabBarProvider> */}
         </SessionProvider>
       </body>

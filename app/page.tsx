@@ -13,6 +13,9 @@ import AnimatedEllipse from "@/components/Ellipse/Ellipse";
 import { fetchLocalJson } from "@/lib/fetchLocalJson";
 import NewsSlider from "@/components/NewsSlider/NewsSlider";
 
+import { useContext } from 'react';
+import { TransitionContext } from '@/components/Transition/TransitionContext';
+
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 declare global {
@@ -22,6 +25,9 @@ declare global {
 }
 
 export default function Home() {
+
+  const { navigateWithAnimation, isTransitioning } = useContext(TransitionContext);
+
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   // SSR/CSR不一致防止: 初期値は必ずfalse
   const [opening, setOpening] = useState(false);
@@ -509,6 +515,16 @@ export default function Home() {
 
   return (
     <>
+
+      <button
+        onClick={() => navigateWithAnimation('/timetable')}
+        disabled={isTransitioning}
+        style={{ width: '100px', height: '50px', position: 'fixed', top: '10px', left: '10px', zIndex: 1000, backgroundColor: '#f10808', border: 'none', borderRadius: '8px' }}
+      >
+
+      </button>
+
+
       {/* Opening SVG */}
       {showSVG && (
         <div style={{ position: 'fixed', zIndex: 2, top: 0, left: 0, width: '100vw', height: '100dvh', background: 'rgba(34,34,34,1)', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}>
