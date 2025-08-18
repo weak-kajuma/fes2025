@@ -112,7 +112,7 @@ export default function Home() {
 
     tl
       .fromTo(maskEl,
-        { y: '100vh', clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)' },
+        { y: '100dvh', clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)' },
         { y: '0', zIndex: 10, clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)', duration: 1.5, ease: 'power2.out' }
       )
       .fromTo(maskEl,
@@ -141,8 +141,8 @@ export default function Home() {
       start: "top top",
       end: "bottom bottom",
       pin: `.${styles.top_inner}`,
-  onLeave: () => gsap.set(`.${styles.bg}`, { marginTop: -1 }),
-  onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: isMobile ? '-.7px' : 0 })
+      onLeave: () => gsap.set(`.${styles.bg}`, { marginTop: -1 }),
+      onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: isMobile ? '-.7px' : 0 })
     });
 
     const ellipseTextPaths = ellipseRef.current?.querySelectorAll('textPath');
@@ -511,8 +511,8 @@ export default function Home() {
     <>
       {/* Opening SVG */}
       {showSVG && (
-        <div style={{ position: 'fixed', zIndex: 2, top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(34,34,34,1)', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}>
-          <svg width={500} height={200} viewBox="0 0 500 200" style={{ display: 'block', maxWidth: '80vw', maxHeight: '40vh', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }} onDragStart={(e) => e.preventDefault()}>
+        <div style={{ position: 'fixed', zIndex: 2, top: 0, left: 0, width: '100vw', height: '100dvh', background: 'rgba(34,34,34,1)', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}>
+          <svg width={500} height={200} viewBox="0 0 500 200" style={{ display: 'block', maxWidth: '80vw', maxHeight: '40dvh', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }} onDragStart={(e) => e.preventDefault()}>
             <defs>
               <mask id="handwrite-mask"> <rect x="0" y="0" width="500" height="200" fill="#000" />
                 <path ref={maskPathRef} d="M 85.158784,63.945946 C 154.63851,32.89527 131.27365,-4.3040541 77.472973,33.817568 c 0,0 -36.277027,29.206081 -5.533784,55.952702 0,0 34.432431,33.51014 -13.219594,47.03716 0,0 -22.75,6.14865 -34.739865,-9.83784 0,0 -9.530406,-15.06418 14.756757,-22.13513 L 137.11486,73.783784 c 0,0 -43.347968,59.949326 -64.560806,117.131756 l 40.888516,-81.16216 c 0,0 32.58784,-38.121623 38.42905,-19.368245 0,0 -16.29392,59.027025 -47.95946,37.506755 0,0 182.9223,-195.219593 106.67906,-36.584458 0,0 -2.7669,-27.054054 -33.20271,6.456082 0,0 -30.43581,68.864866 15.37163,20.290536 l 16.90878,-24.287158 c 0,0 -22.44257,50.111488 -4.91892,43.040538 0,0 59.64189,-181.385133 44.88514,-52.263511 0,0 -22.75,19.368241 -30.43582,53.493241 0,0 25.82433,-43.655403 58.41217,-54.722971 0,0 -44.27027,39.351351 10.4527,14.449325 l 25.51689,-8.300676 c 3.07433,-0.922297 62.10135,-35.969595 63.63851,-64.560811 -5.53378,4.611487 -8.6081,-24.59459457 -63.94594,63.638514 l -23.36487,43.962839 c 0,0 30.43581,-44.270272 61.17906,-47.037164 l -26.43919,12.297298 c 2.76689,2.766896 -24.28716,75.320946 37.81419,12.604726 l 22.13513,-12.297294 c 0,0 51.64865,-28.898649 62.40879,-75.628378 0,0 -28.28379,0 -62.10135,73.476351 0,0 -34.73987,74.091221 18.44594,12.912161 l 16.29392,6.76351 c 0,0 39.65878,-11.06756 35.66216,-29.513509 v 0 C 420.875,72.861487 387.6723,179.54054 468.21959,110.67568" stroke="#fff" strokeWidth={16.7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -528,7 +528,7 @@ export default function Home() {
       )}
 
       {!showSVG && (
-        <div ref={backRef} style={{ position: 'fixed', zIndex: 1, top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(34,34,34,1)', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}></div>
+        <div ref={backRef} style={{ position: 'fixed', zIndex: 1, top: 0, left: 0, width: '100vw', height: '100dvh', background: 'rgba(34,34,34,1)', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}></div>
       )}
 
 

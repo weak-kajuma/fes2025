@@ -1,9 +1,9 @@
 /* 横スクロールテキスト用 */
 .scrolling_text {
-  margin-top: 10vh;
+  margin-top: 10dvh;
   width: 100%;
   overflow: hidden;
-  height: 40vh;
+  height: 40dvh;
   display: flex;
   align-items: center;
   background: var(--color-just-black);
@@ -48,7 +48,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 100vh;
+  padding-bottom: 100dvh;
   background-color: #ddd9d5;
 
   .title_wrapper {
@@ -91,8 +91,23 @@
       font-family: var(--mincho);
       width: 100%;
 
+      @media screen and (max-width: 768px) {
+        padding: 1.4rem 0;
+        gap: 20px;
+      }
+
       &:nth-child(2) {
         border-top: 0px solid #000;
+      }
+
+      .nav_item_back_wrapper {
+        display: flex;
+        gap: 80px;
+
+        @media screen and (max-width: 768px) {
+          transform: translateX(-2rem);
+          gap: 25px;
+        }
       }
 
       .nav_item {
@@ -172,6 +187,30 @@
           white-space: nowrap;
           text-align: center;
           font-family: var(--workSans);
+        }
+
+        @media screen and (max-width: 768px) {
+          font-size: 1rem;
+          word-break: keep-all;
+          white-space: nowrap;
+
+          &.pre {
+            font-size: 1.2rem;
+            width: 6rem;
+            word-break: none;
+            white-space: normal;
+            transform: rotate(90deg) translateY(60%);
+          }
+
+          &.nav_item_back::before {
+            right: calc(100% + 7px);
+            width: 10px;
+          }
+
+          &:not(.pre) {
+            word-break: none;
+            white-space: normal;
+          }
         }
       }
     }
@@ -253,7 +292,7 @@
 
   .eventContentWrapper {
     margin-top: 100px;
-    margin-bottom: 80vh;
+    margin-bottom: 80dvh;
     width: 95%;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

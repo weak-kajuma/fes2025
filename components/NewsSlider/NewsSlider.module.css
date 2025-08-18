@@ -24,11 +24,11 @@
 .news_list_wrapper {
 	width: auto;
   /* display: flex; */
-  height: 50vh;
+  height: 50dvh;
   position: relative;
 
 	@media screen and (max-width: 768px) {
-		height: 100vh;
+		height: 100dvh;
 	}
 }
 

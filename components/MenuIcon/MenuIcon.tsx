@@ -63,7 +63,7 @@ export default function MenuIcon() {
         gsap.to(iconRef.current, {
           borderRadius: "30px",
           width: isDesktop ? "30vw" : "90vw",
-          height: isDesktop ? "60vh" : "60vh",
+          height: isDesktop ? "60dvh" : "60dvh",
           duration: 0.5,
           ease: "power2.out"
         });

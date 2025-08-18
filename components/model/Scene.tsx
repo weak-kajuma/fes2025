@@ -7,7 +7,7 @@ import { Environment } from "@react-three/drei";
 
 export default function Scene() {
   return (
-    <div style={{ width: '100%', height: '100vh', background: 'transparent' }}>
+    <div style={{ width: '100%', height: '100dvh', background: 'transparent' }}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 75 }}
         style={{ width: '100%', height: '100%' }}

@@ -8,7 +8,7 @@
 } */
 
 .ellipse {
-  width: min(63vw, 63vh);
+  width: min(63vw, 63dvh);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -56,8 +56,8 @@ export const useScrollSmoother = () => {
 			const smoother = SmootherMod.create({
 				wrapper: wrapperEl!,
 				content: contentEl,
-				smooth: isMobile ? 1 : 2,
-				smoothTouch: 0.1,
+				smooth: isMobile ? 0 : 2,
+				smoothTouch: isMobile ? 0.01 : 0.1,
 				effects: true,
 				normalizeScroll: true,
 			});

@@ -1,6 +1,6 @@
 .wrapper {
   position: fixed;
-  bottom: 2vh;
+  bottom: 2dvh;
   left: 50%;
   transform: translateX(-50%);
   width: 90vw;

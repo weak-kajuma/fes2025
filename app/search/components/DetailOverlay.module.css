@@ -105,7 +105,7 @@
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  max-height: calc(100vh - 200px); /* 固定の高さを設定 */
+  max-height: calc(100dvh - 200px); /* 固定の高さを設定 */
 }
 
 .event_info::-webkit-scrollbar {

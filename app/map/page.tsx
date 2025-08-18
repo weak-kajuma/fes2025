@@ -127,7 +127,7 @@ export default function MapPage() {
         // 開くアニメーション（レスポンシブ対応）
         const isMobile = window.innerWidth < 768;
         const targetWidth = isMobile ? "80vw" : "30vw";
-        const targetHeight = isMobile ? "70vh" : "50vh";
+        const targetHeight = isMobile ? "70dvh" : "50dvh";
 
         gsap.to(polygonMenuRef.current, {
           borderRadius: "30px",

@@ -62,11 +62,11 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable} `}>
         <SessionProvider>
-          <TabBarProvider>
+          {/* <TabBarProvider> */}
             <ScrollManager />
-            <MenuIcon />
+            {/* <MenuIcon /> */}
               {children}
-          </TabBarProvider>
+          {/* </TabBarProvider> */}
         </SessionProvider>
       </body>
     </html>

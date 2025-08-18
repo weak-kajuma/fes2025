@@ -14,8 +14,8 @@ const dateOptions = [
   { label: "21(Sun)", value: "21", className: styles.secondDate },
 ];
 const areaOptions = [
-  { label: "野外ステージ", value: "野外ステージ", className: styles.stage },
-  { label: "コナコピアホール", value: "コナコピアホール", className: styles.hole },
+  { label: "ステージ", value: "野外ステージ", className: styles.stage },
+  { label: "コナコピア", value: "コナコピアホール", className: styles.hole },
   { label: "中庭", value: "中庭", className: styles.yard },
   { label: "体育館", value: "体育館", className: styles.gym },
 ];
@@ -34,6 +34,13 @@ export default function Timetable_Client() {
 
   const EVENT_YEAR = 2025;
   const EVENT_MONTH = 9;
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.matchMedia('(max-width: 768px)').matches);
+    }
+  }, []);
 
   // LocomotiveScrollの初期化（トップレベルで呼び出し）
   useScrollSmoother();
@@ -301,18 +308,21 @@ export default function Timetable_Client() {
         <div className={styles.nav}>
           <div className={styles.nav_content}>
             <div className={`${styles.nav_item} ${styles.pre}`}>Date</div>
-              {dateOptions.map(dateOpt => (
-                <div
-                  key={dateOpt.label}
-                  className={`${dateOpt.className} ${styles.nav_item} ${styles.nav_item_back} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
-                  onClick={() => setSelectedDate(dateOpt.value)}
-                >
-                  {dateOpt.label}
-                </div>
-              ))}
+            <div className={styles.nav_item_back_wrapper}>
+                {dateOptions.map(dateOpt => (
+                  <div
+                    key={dateOpt.label}
+                    className={`${dateOpt.className} ${styles.nav_item} ${styles.nav_item_back} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
+                    onClick={() => setSelectedDate(dateOpt.value)}
+                  >
+                    {dateOpt.label}
+                  </div>
+                ))}
+            </div>
           </div>
           <div className={styles.nav_content}>
             <div className={`${styles.nav_item} ${styles.pre}`}>Location</div>
+            <div className={styles.nav_item_back_wrapper}>
               {areaOptions.map(areaOpt => (
                 <div
                   key={areaOpt.label}
@@ -339,6 +349,7 @@ export default function Timetable_Client() {
                   {areaOpt.label}
                 </div>
               ))}
+            </div>
           </div>
         </div>
 

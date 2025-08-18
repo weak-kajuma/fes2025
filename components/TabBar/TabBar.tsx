@@ -70,7 +70,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
         left: '50%',
         transform: 'translateX(-50%)',
         width: '90vw',
-        height: '80vh',
+        height: '80dvh',
         bottom: 0,
         top: 'auto',
         borderRadius: '2rem 2rem 0 0',

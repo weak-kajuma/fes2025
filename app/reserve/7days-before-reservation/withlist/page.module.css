@@ -169,7 +169,7 @@
 
 .main {
   margin-top: calc(77px);
-  /* margin-bottom: 30vh; */
+  /* margin-bottom: 30dvh; */
 
   .main_inner {
     max-width: 1200px;
@@ -520,7 +520,7 @@
     max-width: 880px;
     margin: 0 auto;
     position: relative;
-    height: 50vh;
+    height: 50dvh;
   }
 }
 
