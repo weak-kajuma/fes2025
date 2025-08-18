@@ -13,6 +13,8 @@ import AnimatedEllipse from "@/components/Ellipse/Ellipse";
 import { fetchLocalJson } from "@/lib/fetchLocalJson";
 import NewsSlider from "@/components/NewsSlider/NewsSlider";
 
+import AnimatedLink from "@/components/AnimatedLink";
+
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 declare global {
@@ -35,11 +37,11 @@ export default function Home() {
   const mapPathRef = useRef<SVGPathElement>(null);
   const searchPathRef = useRef<SVGPathElement>(null);
   const reservePathRef = useRef<SVGPathElement>(null);
-  const ellipseRef = useRef<SVGSVGElement>(null);
-  const pathname = usePathname();
-  const router = useRouter();
+  const ellipseRef = useRef<SVGSVGElement>(null);;
   const [ellipseKey, setEllipseKey] = useState(0);
   const [timetableStart, setTimetableStart] = useState(false);
+  const pathname = usePathname();
+
 
   const toolsRootRef = useRef<HTMLDivElement>(null);
   const itemBorderRefs = useRef<(SVGRectElement | null)[]>([]);
@@ -509,6 +511,8 @@ export default function Home() {
 
   return (
     <>
+      <div className={styles.revealer} data-reveal></div>
+
       {/* Opening SVG */}
       {showSVG && (
         <div style={{ position: 'fixed', zIndex: 2, top: 0, left: 0, width: '100vw', height: '100dvh', background: 'rgba(34,34,34,1)', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}>
@@ -603,12 +607,6 @@ export default function Home() {
                     >
                       <div
                         className={styles.item_grid}
-                        onClick={() => {
-                          if (i === 0) router.push("/timetable");
-                          else if (i === 1) router.push("/map");
-                          else if (i === 2) router.push("/search");
-                          else if (i === 3) router.push("/reserve");
-                        }}
                       >
                         <div className={styles.img}>
                           <div className={styles.img_inner}></div>
@@ -620,6 +618,7 @@ export default function Home() {
                         )}
                         <div className={styles.text_wrapper}>
                           <div className={styles.text_inner}>
+                            <AnimatedLink to={i === 0 ? "/timetable" : i === 1 ? "/map" : i === 2 ? "/search" : i === 3 ? "/reserve" : ""}>
                             <h2
                               className={styles.text}
                               onMouseEnter={() => {
@@ -628,18 +627,13 @@ export default function Home() {
                               onMouseLeave={() => {
                                 if (!isMobile) handleTextWrapperHover(i, false)
                               }}
-                              onClick={() => {
-                                if (i === 0) router.push("/timetable");
-                                else if (i === 1) router.push("/map");
-                                else if (i === 2) router.push("/search");
-                                else if (i === 3) router.push("/reserve");
-                              }}
                             >
-                              {i === 0 && "TIME TABLE"}
-                              {i === 1 && "MAP"}
-                              {i === 2 && "SEARCH"}
-                              {i === 3 && "RESERVE"}
+                                {i === 0 && "TIME TABLE"}
+                                {i === 1 && "MAP"}
+                                {i === 2 && "SEARCH"}
+                                {i === 3 && "RESERVE"}
                             </h2>
+                              </AnimatedLink>
                             <div className={styles.info}>
                               {i === 0 && <><div className={styles.tag}>timetable</div><div className={styles.tag}>aaa</div></>}
                               {i === 1 && <><div className={styles.tag}>map</div><div className={styles.tag}>bbb</div></>}

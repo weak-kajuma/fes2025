@@ -92,7 +92,7 @@ html {
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: #141414;
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -171,18 +171,21 @@ a {
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.8s;
-  animation-timing-function: ease;
+  animation: none !important;
+}
+
+::view-transition-group(root) {
+  z-index: auto !important;
 }
 
 ::view-transition-old(root) {
-  animation-name: fade-out;
   z-index: 1;
+  animation: none !important;
 }
 
 ::view-transition-new(root) {
-  animation-name: fade-in;
-  z-index: 2;
+  z-index: 10000;
+  animation: none !important;
 }
 
 @keyframes fade-in {
@@ -206,4 +209,16 @@ svg {
   -moz-user-select: none !important;
   -ms-user-select: none !important;
   pointer-events: none !important;
+}
+
+.revealer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  transform-origin: center top;
+  background-color: var(--bg);
+  pointer-events: none;
+  z-index: 100000000;
 }

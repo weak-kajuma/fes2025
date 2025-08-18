@@ -4,9 +4,11 @@ import { useEffect, useRef, forwardRef, useCallback, useState } from "react";
 import gsap from "gsap";
 import styles from "./TabBar.module.css";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import DetailOverlay from "../../app/search/components/DetailOverlay";
+
+import { useTransitionRouter } from "next-view-transitions";
+import { usePathname } from "next/navigation"
 
 type EventDataForClient = {
   id: number;
@@ -40,10 +42,39 @@ function useDeviceDetection() {
 export default forwardRef<HTMLDivElement>((props, ref) => {
   const tabBar_Ref = useRef<HTMLDivElement>(null);
   const wrapperInitRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventDataForClient | null>(null);
   const { isDesktop } = useDeviceDetection();
+
+  const router = useTransitionRouter();
+  const pathname = usePathname();
+
+  function triggerPageTransition() {
+    document.documentElement.animate([
+      {
+        clipPath: 'polygon(25% 75%, 75% 75%, 75% 75%, 25% 75%)',
+      },
+      {
+        clipPath: 'polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)',
+      }
+    ], {
+      duration: 2000,
+      easing: 'cubic-bezier(0.9, 0, 0.1, 1)',
+      pseudoElement: '::view-transition-new(root)'
+    })
+  }
+
+  const handleNavigation = (path: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (path === pathname) {
+      e.preventDefault();
+      return;
+    }
+
+    router.push(path, {
+      onTransitionReady: triggerPageTransition
+    })
+  }
 
   // 外部refと内部refを結合
   const combinedRef = (node: HTMLDivElement) => {
@@ -172,19 +203,19 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
       <LiquidGlass>
         {!isExpanded ? (
           <div className={styles.items}>
-            <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false}>
+            <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false} onClick={handleNavigation('/pamphlet')}>
               <img src="/icon/pamphlet.svg" alt="pamphlet" className={`${styles.icon_svg}`} />
             </Link>
-            <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false}>
+            <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false} onClick={handleNavigation('/timetable')}>
               <img src="/icon/timetable.svg" alt="timetable" className={`${styles.icon_svg}`} />
             </Link>
-            <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false}>
+            <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false} onClick={handleNavigation('/search')}>
               <img src="/icon/search.svg" alt="search" className={`${styles.icon_svg}`} />
             </Link>
             <Link className={`${styles.item} ${styles.user}`} href="" scroll={false}>
               <img src="/icon/user.svg" alt="user" className={`${styles.icon_svg}`} />
             </Link>
-            <Link className={`${styles.item} ${styles.allEvents}`} href="/allEvents" scroll={false}>
+            <Link className={`${styles.item} ${styles.allEvents}`} href="/allEvents" scroll={false} onClick={handleNavigation('/allEvents')}>
               <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={`${styles.icon_svg}`} />
             </Link>
           </div>
