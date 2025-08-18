@@ -5,7 +5,6 @@ import { BIZ_UDMincho } from 'next/font/google'
 import "./globals.css"
 import MenuIcon from "../components/MenuIcon/MenuIcon"
 import TabBar from "../components/TabBar/TabBar"
-import ViewTransitionWrapper from "../components/ViewTransitionWrapper"
 import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
