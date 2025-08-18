@@ -1,7 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap');
 
+
+@font-face {
+  font-family: 'Freestyle Script';
+  src: url('/fonts/FREESCPT.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
-  --background: #ffffff;
+  --background: #000000;
   --foreground: #171717;
   --deepblue: #272A56;
   --bg: #141414;
@@ -91,6 +99,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: -webkit-fill-available;
 }
 
 /* Ensure ScrollSmoother content never shows a scrollbar */

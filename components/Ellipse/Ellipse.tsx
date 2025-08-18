@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, forwardRef } from 'react';
 import gsap from 'gsap';
 import styles from './Ellipse.module.css';
+import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
 
 interface Props {
   text: string;
@@ -49,13 +50,15 @@ const AnimatedEllipse = forwardRef<SVGSVGElement, Props>((
       </text>`
     );
 
-    const textPaths = target.querySelectorAll('textPath');
-    gsap.set(textPaths, {
-      fontSize: /iPhone/.test(navigator.userAgent) ? '19px' : '17px',
-      fontFamily: `"Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "HGS明朝E", "MS P明朝", "MS Mincho", serif`,
-      fill: '#020202',
-      fontWeight: 700,
-    });
+      const textPaths = target.querySelectorAll('textPath');
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+      gsap.set(textPaths, {
+        fontSize: isMobile ? '19px' : '17px',
+        letterSpacing: isMobile ? '0.13em' : '0.07em',
+        fontFamily: `"Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "HGS明朝E", "MS P明朝", "MS Mincho", serif`,
+        fill: '#020202',
+        fontWeight: 700,
+      });
 
     const tween1 = gsap.to(textPaths[0], { attr: { startOffset: reversed ? '-100%' : '100%' }, ...props });
     const tween2 = gsap.fromTo(

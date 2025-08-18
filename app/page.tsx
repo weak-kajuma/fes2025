@@ -11,7 +11,7 @@ import styles from "./page.module.css";
 import { useScrollSmoother } from "@/components/ScrollSmoother";
 import AnimatedEllipse from "@/components/Ellipse/Ellipse";
 import { fetchLocalJson } from "@/lib/fetchLocalJson";
-import NewsSlider from "@/components/NewsCarousel";
+import NewsSlider from "@/components/NewsSlider/NewsSlider";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -44,6 +44,14 @@ export default function Home() {
   const toolsRootRef = useRef<HTMLDivElement>(null);
   const itemBorderRefs = useRef<(SVGRectElement | null)[]>([]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // SSR対応: isMobile判定はuseEffectで
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.matchMedia('(max-width: 768px)').matches);
+    }
+  }, []);
 
   const fetchNews = useCallback(async () => {
     try {
@@ -123,6 +131,9 @@ export default function Home() {
   // トップのスクロールアニメーション（context化）
   const topCtx = useRef<gsap.Context | null>(null);
   const initTopScrollAnimations = () => {
+
+  // isMobileはuseStateで管理
+
     ScrollTrigger.refresh();
 
     ScrollTrigger.create({
@@ -130,11 +141,12 @@ export default function Home() {
       start: "top top",
       end: "bottom bottom",
       pin: `.${styles.top_inner}`,
-      onLeave: () => gsap.set(`.${styles.bg}`, { marginTop: -1 }),
-      onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: 0 })
+  onLeave: () => gsap.set(`.${styles.bg}`, { marginTop: -1 }),
+  onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: isMobile ? '-.7px' : 0 })
     });
 
     const ellipseTextPaths = ellipseRef.current?.querySelectorAll('textPath');
+
 
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
@@ -169,6 +181,7 @@ export default function Home() {
       const x = targetCenterX - logoCenterX;
       const y = targetCenterY - logoCenterY;
 
+      const logoScale = isMobile ? 2.3 : 1; // スマホ時は縮小倍率を小さく（大きく表示）
       tl
         .to(logoEl, { x, y, scaleX: scaleX * 1.5, scaleY: scaleY * 1.5, ease: 'none' })
         .fromTo(textEls, {
@@ -183,7 +196,7 @@ export default function Home() {
           ease: 'power1.out',
           stagger: 0.2,
         })
-        .to(logoEl, { x, y, scaleX, scaleY, ease: 'none' }, "<")
+        .to(logoEl, { x, y, scaleX: scaleX * logoScale, scaleY: scaleY * logoScale, ease: 'none' }, "<")
         .to(bgEls, { opacity: 1, stagger: { amount: 0.2, from: "end" }, ease: "none" }, "+=0.5")
         .to(textEls, { color: "rgb(203, 163, 115)" }, "<")
         .to(titleEl, { color: "rgb(203, 163, 115)" }, "<")
@@ -221,7 +234,7 @@ export default function Home() {
 
     const cleanup = ensureSmoother();
     return typeof cleanup === 'function' ? cleanup : undefined;
-  }, [opening, pathname]);
+  }, [opening, pathname, isMobile]);
 
   // ellipseのなんか
   useEffect(() => {
@@ -357,6 +370,25 @@ export default function Home() {
         const items = root.querySelectorAll(`.${styles.item}`);
         if (!title || !subtitle || !items.length) return;
 
+
+        const allItems = Array.from(itemRefs.current).filter(Boolean);
+
+        // すべてのitemのtext, tags, imgsを取得
+        const allTexts = Array.from(itemRefs.current)
+          .map(item => item?.querySelector(`.${styles.text}`))
+          .filter(Boolean);
+
+        const allTags = Array.from(itemRefs.current)
+          .flatMap(item => Array.from(item?.querySelectorAll(`.${styles.tag}`) ?? []))
+          .filter(Boolean);
+
+        const allImgs = Array.from(itemRefs.current)
+          .flatMap(item => Array.from(item?.querySelectorAll(`.${styles.img}`) ?? []))
+          .filter(Boolean);
+
+        // 必要ならconsole.logで確認
+        // console.log(allTexts, allTags, allImgs);
+
         gsap.set([title, subtitle], { y: '100%', opacity: 0 });
         gsap.set(items, { y: '100%', opacity: 0 });
 
@@ -368,9 +400,20 @@ export default function Home() {
             toggleActions: 'play none none none',
           },
         });
-        tl.to(title,   { y: 0, opacity: 1 })
-          .to(subtitle,{ y: 0, opacity: 1 }, '-=0.2')
-          .to(items,   { y: 0, opacity: 1, stagger: 0.18 }, '-=0.1');
+          tl.to(title,   { y: 0, opacity: 1 })
+            .to(subtitle,{ y: 0, opacity: 1 }, '-=0.2')
+            .to(items,   { y: 0, opacity: 1, stagger: 0.18 }, '-=0.3');
+          if (isMobile) {
+            tl.to(allTexts, { fontSize: '5rem' }, '+=0.1')
+              .to(allItems, { marginBottom: '2rem' }, '<');
+            allTags.forEach(tag => {
+              tl.to(tag, { opacity: 1, ease: 'power2.out' }, '<');
+            });
+            allImgs.forEach(img => {
+              tl.to(img, { opacity: 1, transform: 'scale(1)', ease: 'power2.out' }, '<');
+            });
+          }
+
       }, toolsRootRef);
 
       toolsInited.current = true;
@@ -379,7 +422,7 @@ export default function Home() {
 
     const cleanup = ensureSmoother();
     return typeof cleanup === 'function' ? cleanup : undefined;
-  }, [opening]);
+  }, [opening, isMobile]);
 
   // functionItemホバーアニメーション（stateは使うが他エフェクトに影響しない）
   const handleTextWrapperHover = (index: number, hover: boolean) => {
@@ -405,13 +448,13 @@ export default function Home() {
     const imgs = itemEl.querySelectorAll(`.${styles.img}`);
 
     gsap.to(text, {
-      fontSize: hover ? '10rem' : '8rem',
+      fontSize: isMobile ? (hover ? '5rem' : '4rem') : (hover ? '10rem' : '8rem'),
       // color: hover ? 'rgb(203, 163, 115)' : '#fff',
       duration: 0.4,
       ease: "power2.out",
     });
     gsap.to(itemEl, {
-      marginBottom: hover ? 0 : '-2.2rem',
+      marginBottom: isMobile ? (hover ? 0 : '-10rem') : (hover ? 0 : '-2.2rem'),
     });
     tags.forEach((tag) => {
       gsap.to(tag, {
@@ -501,7 +544,13 @@ export default function Home() {
                   <div className={styles.top_logo}>
                     <h1 className={styles.title}>青霞祭</h1>
                     <div className={styles.animatedCircle} key={`ellipse-${ellipseKey}`}>
-                      <AnimatedEllipse ref={ellipseRef} text="Seikasai 2025 Seikasai 2025 Seikasai 2025 Seikasai 2025 " />
+                      <AnimatedEllipse
+                        ref={ellipseRef}
+                        text={isMobile
+                          ? "Seikasai 2025 Seikasai 2025 Seikasai 2025 "
+                          : "Seikasai 2025 Seikasai 2025 Seikasai 2025 Seikasai 2025 "
+                        }
+                      />
                     </div>
                   </div>
 
@@ -552,19 +601,33 @@ export default function Home() {
                       ref={el => { itemRefs.current[i] = el; }}
                       key={i}
                     >
-                      <div className={styles.item_grid}>
+                      <div
+                        className={styles.item_grid}
+                        onClick={() => {
+                          if (i === 0) router.push("/timetable");
+                          else if (i === 1) router.push("/map");
+                          else if (i === 2) router.push("/search");
+                          else if (i === 3) router.push("/reserve");
+                        }}
+                      >
                         <div className={styles.img}>
                           <div className={styles.img_inner}></div>
                         </div>
-                        <div className={styles.img}>
-                          <div className={styles.img_inner}></div>
-                        </div>
+                        {!isMobile && (
+                          <div className={styles.img}>
+                            <div className={styles.img_inner}></div>
+                          </div>
+                        )}
                         <div className={styles.text_wrapper}>
                           <div className={styles.text_inner}>
                             <h2
                               className={styles.text}
-                              onMouseEnter={() => handleTextWrapperHover(i, true)}
-                              onMouseLeave={() => handleTextWrapperHover(i, false)}
+                              onMouseEnter={() => {
+                                if (!isMobile) handleTextWrapperHover(i, true)
+                              }}
+                              onMouseLeave={() => {
+                                if (!isMobile) handleTextWrapperHover(i, false)
+                              }}
                               onClick={() => {
                                 if (i === 0) router.push("/timetable");
                                 else if (i === 1) router.push("/map");
@@ -585,9 +648,11 @@ export default function Home() {
                             </div>
                           </div>
                         </div>
-                        <div className={styles.img}>
-                          <div className={styles.img_inner}></div>
-                        </div>
+                        {!isMobile && (
+                          <div className={styles.img}>
+                            <div className={styles.img_inner}></div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -605,35 +670,37 @@ export default function Home() {
 
                 <div className={styles.news_list_wrapper}>
 
-                  <NewsSlider items={newsItems} />
+                  <NewsSlider items={newsItems} isMobile={isMobile} />
 
-                  <div className={styles.controller}>
+                  {!isMobile && (
+                    <div className={styles.controller}>
 
-                    <nav className={styles.nav}>
+                      <nav className={styles.nav}>
 
-                      <div className={styles.prev}>
-                        <span className={styles.button_inner}>
-                          <svg className={styles.icon}>
-                            <use xlinkHref="/sprite.svg#icon-arrow-left"></use>
-                          </svg>
-                        </span>
-                      </div>
+                        <div className={styles.prev}>
+                          <span className={styles.button_inner}>
+                            <svg className={styles.icon}>
+                              <use xlinkHref="/sprite.svg#icon-arrow-left"></use>
+                            </svg>
+                          </span>
+                        </div>
 
-                      <div className={styles.next}>
-                        <span className={styles.button_inner}>
-                          <svg className={styles.icon}>
-                            <use xlinkHref="/sprite.svg#icon-arrow-right"></use>
-                          </svg>
-                        </span>
-                      </div>
+                        <div className={styles.next}>
+                          <span className={styles.button_inner}>
+                            <svg className={styles.icon}>
+                              <use xlinkHref="/sprite.svg#icon-arrow-right"></use>
+                            </svg>
+                          </span>
+                        </div>
 
-                      <div className={styles.pagination}></div>
+                        <div className={styles.pagination}></div>
 
-                    </nav>
+                      </nav>
 
-                    <div className={styles.toNews_button}></div>
+                      <div className={styles.toNews_button}></div>
 
-                  </div>
+                    </div>
+                  )}
                 </div>
 
               </div>
