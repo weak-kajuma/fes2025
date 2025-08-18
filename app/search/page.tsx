@@ -129,7 +129,7 @@ export default function Search() {
   );
 
   return (
-    <div data-smooth-wrapper>
+    <div data-smooth-wrapper className={styles.wrapper}>
       <div className={styles.main} data-scroll-container>
         <h1 className={styles.title}>SEARCH</h1>
         <SearchBar

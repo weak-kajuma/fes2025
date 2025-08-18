@@ -26,12 +26,17 @@
 }
 
 
+.wrapper {
+  overflow: auto;
+}
+
 .main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   overflow-x: hidden;
+  width: 100%;
 }
 
 .title {
@@ -53,7 +58,6 @@
   display: flex;
   flex-direction: row;
   gap: 2vw;
-  height: 60dvh;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
@@ -206,7 +210,7 @@
 
 .results {
   width: 80%;
-  height: 300dvh;
+  min-height: 50vh;
   margin-top: 5rem;
   padding-bottom: 10rem;
 
