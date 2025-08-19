@@ -17,6 +17,7 @@ export default function Search() {
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [results, setResults] = useState<EventDataForClient[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const railRef = useRef<HTMLDivElement>(null);
 
   // TabBarのrefを取得
   const tabBarRef = useContext(TabBarContext);
@@ -128,10 +129,114 @@ export default function Search() {
     </div>
   );
 
+
+  // GSAP横スクロールテキスト
+  useEffect(() => {
+    if (!railRef.current) return;
+    // 動的importでSSR回避
+    (async () => {
+      const gsap = (await import("gsap")).default;
+      const { Observer } = await import("gsap/Observer");
+      gsap.registerPlugin(Observer);
+
+      // horizontalLoop関数
+      function horizontalLoop(items: Element[], config: any = {}) {
+        items = Array.from(items);
+        let tl = gsap.timeline({
+          repeat: config.repeat,
+          paused: config.paused,
+          defaults: { ease: "none" },
+          onReverseComplete: () => { tl.totalTime(tl.rawTime() + tl.duration() * 100); return; }
+        });
+        let length = items.length,
+          startX = (items[0] as HTMLElement).offsetLeft,
+          times: number[] = [],
+          widths: number[] = [],
+          xPercents: number[] = [],
+          curIndex = 0,
+          pixelsPerSecond = (config.speed || 1) * 100,
+          snap = config.snap === false ? (v: number) => v : gsap.utils.snap(config.snap || 1),
+          totalWidth, curX, distanceToStart, distanceToLoop, item, i;
+        gsap.set(items, {
+          xPercent: (i: number, el: Element) => {
+            let w = widths[i] = parseFloat(gsap.getProperty(el, "width", "px") as string);
+            xPercents[i] = snap(parseFloat(gsap.getProperty(el, "x", "px") as string) / w * 100 + (gsap.getProperty(el, "xPercent") as number));
+            return xPercents[i];
+          }
+        });
+        gsap.set(items, { x: 0 });
+        totalWidth = (items[length - 1] as HTMLElement).offsetLeft + xPercents[length - 1] / 100 * widths[length - 1] - startX + (items[length - 1] as HTMLElement).offsetWidth * (gsap.getProperty(items[length - 1], "scaleX") as number) + (parseFloat(config.paddingRight) || 0);
+        for (i = 0; i < length; i++) {
+          item = items[i];
+          curX = xPercents[i] / 100 * widths[i];
+          distanceToStart = (item as HTMLElement).offsetLeft + curX - startX;
+          distanceToLoop = distanceToStart + widths[i] * (gsap.getProperty(item, "scaleX") as number);
+          tl.to(item, { xPercent: snap((curX - distanceToLoop) / widths[i] * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
+            .fromTo(item, { xPercent: snap((curX - distanceToLoop + totalWidth) / widths[i] * 100) }, { xPercent: xPercents[i], duration: (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond, immediateRender: false }, distanceToLoop / pixelsPerSecond)
+            .add("label" + i, distanceToStart / pixelsPerSecond);
+          times[i] = distanceToStart / pixelsPerSecond;
+        }
+        function toIndex(index: number, vars: any = {}) {
+          (Math.abs(index - curIndex) > length / 2) && (index += index > curIndex ? -length : length);
+          let newIndex = gsap.utils.wrap(0, length, index),
+            time = times[newIndex];
+          if ((time > tl.time()) !== (index > curIndex)) {
+            vars.modifiers = { time: gsap.utils.wrap(0, tl.duration()) };
+            time += tl.duration() * (index > curIndex ? 1 : -1);
+          }
+          curIndex = newIndex;
+          vars.overwrite = true;
+          return tl.tweenTo(time, vars);
+        }
+        tl.next = (vars: any) => toIndex(curIndex + 1, vars);
+        tl.previous = (vars: any) => toIndex(curIndex - 1, vars);
+        tl.current = () => curIndex;
+        tl.toIndex = (index: number, vars: any) => toIndex(index, vars);
+        tl.times = times;
+        tl.progress(1, true).progress(0, true);
+        if (config.reversed) {
+          tl.reverse();
+        }
+        return tl;
+      }
+
+      if (!railRef.current) return;
+      const scrollingText = Array.from(railRef.current.querySelectorAll("h4"));
+      const tl = horizontalLoop(scrollingText, {
+        repeat: -1,
+        paddingRight: 80,
+      });
+
+      Observer.create({
+        target: railRef.current,
+        type: "wheel,touch",
+        onChangeY(self) {
+          let factor = 2.5;
+          if (self.deltaY < 0) {
+            factor *= -1;
+          }
+          gsap.timeline({ defaults: { ease: "none" } })
+            .to(tl, { timeScale: factor * 2.5, duration: 0.2, overwrite: true })
+            .to(tl, { timeScale: factor / 2.5, duration: 1 }, "+=0.3");
+        }
+      });
+    })();
+  }, []);
+
+
   return (
     <div data-smooth-wrapper className={styles.wrapper}>
       <div className={styles.main} data-scroll-container>
-        <h1 className={styles.title}>SEARCH</h1>
+
+        <div className={styles.scrolling_text}>
+          <div className={styles.rail} ref={railRef}>
+            <h4 className={styles.rail_text}>Search</h4>
+            <h4 className={styles.rail_text}>Search</h4>
+            <h4 className={styles.rail_text}>Search</h4>
+            <h4 className={styles.rail_text}>Search</h4>
+          </div>
+        </div>
+
         <SearchBar
           value={keyword}
           onSubmit={handleSearch}

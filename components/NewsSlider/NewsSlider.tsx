@@ -65,7 +65,7 @@ const NewsSlider = ({ items, isMobile }: NewsSliderProps) => {
         running = false;
         dragStartX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
         dragLastX = dragStartX;
-      }, 5); // 500ms長押しでgrab
+      }, 100); // 500ms長押しでgrab
     };
     const onPointerUp = () => {
       if (grabTimer) clearTimeout(grabTimer);

@@ -7,6 +7,10 @@
   display: flex;
   align-items: center;
   background: var(--color-just-black);
+
+  @media screen and (max-width: 600px) {
+    height: 20dvh;
+  }
 }
 
 .rail {
@@ -20,6 +24,10 @@
   color: #000;
   margin-right: 30px;
   font-family: var(--mincho);
+
+  @media screen and (max-width: 600px) {
+    font-size: 10rem;
+  }
 }
 
 /* bgName */
