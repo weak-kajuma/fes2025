@@ -107,7 +107,7 @@ export default function Home() {
             gsap.fromTo(menu, { x: '80px', opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' });
           }
           if (tabbar) {
-            tabbar.style.transform = 'none'; // 初期位置リセット
+            tabbar.style.transform = ''; // 初期位置リセット
             gsap.fromTo(tabbar, { y: '80px', opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.1 });
           }
         }, 100);
