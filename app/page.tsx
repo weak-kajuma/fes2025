@@ -700,7 +700,7 @@ export default function Home() {
                         <div className={styles.prev}>
                           <span className={styles.button_inner}>
                             <svg className={styles.icon}>
-                              <use xlinkHref="/sprite.svg#icon-arrow-left"></use>
+                              {/* <use xlinkHref="/sprite.svg#icon-arrow-left"></use> */}
                             </svg>
                           </span>
                         </div>
@@ -708,7 +708,7 @@ export default function Home() {
                         <div className={styles.next}>
                           <span className={styles.button_inner}>
                             <svg className={styles.icon}>
-                              <use xlinkHref="/sprite.svg#icon-arrow-right"></use>
+                              {/* <use xlinkHref="/sprite.svg#icon-arrow-right"></use> */}
                             </svg>
                           </span>
                         </div>
