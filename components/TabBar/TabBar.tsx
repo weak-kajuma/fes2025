@@ -20,6 +20,13 @@ type EventDataForClient = {
   tags: string[] | null;
 };
 
+// window.showSVG 型エラー対策
+declare global {
+  interface Window {
+    showSVG?: boolean;
+  }
+}
+
 // デバイス判定フック
 function useDeviceDetection() {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -40,6 +47,26 @@ function useDeviceDetection() {
 }
 
 export default forwardRef<HTMLDivElement>((props, ref) => {
+  // TabBarの表示制御はCSSで行う
+  useEffect(() => {
+    const updateTabBarVisibility = () => {
+      const tabbar = tabBar_Ref.current;
+      if (!tabbar) return;
+      if (typeof window !== "undefined" && window.showSVG) {
+        tabbar.style.opacity = "0";
+        tabbar.style.pointerEvents = "none";
+      } else {
+        tabbar.style.opacity = "1";
+        tabbar.style.pointerEvents = "";
+        tabbar.style.transform = "translateX(-50%)";
+      }
+    };
+    updateTabBarVisibility();
+    window.addEventListener("showSVGChange", updateTabBarVisibility);
+    return () => {
+      window.removeEventListener("showSVGChange", updateTabBarVisibility);
+    };
+  }, []);
   const tabBar_Ref = useRef<HTMLDivElement>(null);
   const wrapperInitRef = useRef<HTMLDivElement>(null);
   // const pathname = usePathname();

@@ -103,10 +103,12 @@ export default function Home() {
           const menu = document.querySelector('[data-menu-icon-wrapper]') as HTMLElement | null;
           const tabbar = document.querySelector('[data-tabbar-wrapper]') as HTMLElement | null;
           if (menu) {
-            gsap.fromTo(menu, { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' });
+            menu.style.transform = 'none'; // 初期位置リセット
+            gsap.fromTo(menu, { x: '80px', opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' });
           }
           if (tabbar) {
-            gsap.fromTo(tabbar, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.1 });
+            tabbar.style.transform = 'none'; // 初期位置リセット
+            gsap.fromTo(tabbar, { y: '80px', opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.1 });
           }
         }, 100);
       }
@@ -126,6 +128,13 @@ export default function Home() {
         if (maskEl) {
           maskEl.style.transform = 'none';
           maskEl.style.pointerEvents = 'none';
+        }
+        // clippathアニメーション完了後にTabBar表示復帰
+        const tabbar = document.querySelector('[data-tabbar-wrapper]') as HTMLElement | null;
+        if (tabbar) {
+          tabbar.style.opacity = '1';
+          tabbar.style.pointerEvents = '';
+          tabbar.style.transform = 'translateX(-50%) translateY(100px)';
         }
       }, '+=0.1');
   };
@@ -254,7 +263,18 @@ export default function Home() {
 
   // オープニングアニメーション
   useEffect(() => {
-    if (!showSVG) {
+    const tabbar = document.querySelector('[data-tabbar-wrapper]') as HTMLElement | null;
+    if (showSVG) {
+      window.showSVG = true;
+      window.dispatchEvent(new Event("showSVGChange"));
+      if (tabbar) {
+        tabbar.style.opacity = '0';
+        tabbar.style.pointerEvents = 'none';
+        tabbar.style.transform = 'translateX(-50%)';
+      }
+    } else {
+      window.showSVG = false;
+      window.dispatchEvent(new Event("showSVGChange"));
       // 2回目以降のみ即座に展開済み状態
       if (!isFirstSession && openingMaskRef.current) {
         openingMaskRef.current.style.transform = 'none';
@@ -263,6 +283,12 @@ export default function Home() {
         openingMaskRef.current.style.pointerEvents = 'none';
         if (mainRef.current) mainRef.current.style.overflow = 'auto';
         setOpening(false);
+        // menuiconも通常位置・opacityに
+        const menu = document.querySelector('[data-menu-icon-wrapper]') as HTMLElement | null;
+        if (menu) {
+          menu.style.transform = 'none';
+          menu.style.opacity = '1';
+        }
       }
       return;
     }
