@@ -5,7 +5,7 @@ import styles from "./page.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { serializeEvent } from "../eventReserve/eventReserveUtils";
+import { serializeEvent } from "../eventReserveUtils";
 
 type Event = {
   id: number;
@@ -51,22 +51,13 @@ function EventSelectInner() {
   }, []);
 
   const handleEventSelect = (event: Event) => {
-    const wishIndex = searchParams.get('wishIndex');
-    if (wishIndex === null) {
-      alert("エラー: 対象の希望枠が不明です。前のページからやり直してください。");
-      return;
-    }
-
-    // 選択したイベントと希望インデックスを保存して、時間選択画面へ
-    const fullEvent = {
-      ...event,
-    };
+    // 先着順なのでwishIndexは不要。選択イベントのみ保存して遷移。
+    const fullEvent = { ...event };
     try {
       window.localStorage.setItem('selectedEvent', JSON.stringify(fullEvent));
     } catch {}
-    window.sessionStorage.setItem('selectedWishIndex', String(Number(wishIndex)));
     const eventParam = serializeEvent(fullEvent);
-    router.push(`/reserve/7days-before-reservation/eventReserve?event=${eventParam}`);
+    router.push(`/reserve/first-come-served/eventReserve?event=${eventParam}`);
   };
 
   const filteredEvents = events.filter((event) => {
@@ -184,14 +175,14 @@ function EventSelectInner() {
       <div className={styles.main}>
         <div className={styles.main_inner}>
           <div className={styles.top}>
-            <h1 className={styles.top_title}><span>＜７日前抽選申込＞</span><br/>
+            <h1 className={styles.top_title}><span>＜空き枠先着＞</span><br/>
             パビリオン･イベントを選択する</h1>
             <div className={styles.entrance_date}>来場日時：2025年8月10日(日)<br/>
             <span>追加で申込可能な時間帯</span></div>
             <div className={styles.search}>
               <div className={styles.search_inner}>
                 <span className={styles.search_label}>パビリオン・イベントを検索</span>
-                <input aria-labelledby="event_search_input" placeholder="入力せず検索ですべて表示 " value="" readOnly/>
+                <input aria-labelledby="event_search_input" placeholder="入力せず検索ですべて表示 " value=""/>
                 <button>
                   <span>検索</span>
                 </button>
@@ -216,7 +207,10 @@ function EventSelectInner() {
                     className={styles.event_button}
                     onClick={() => handleEventSelect(event)}
                   >
-                    {event.name || `イベントID: ${event.id}`}
+                    <Image src="/images/mark_full.png" width={17} height={18} alt="" />
+                    <div className={styles.txt}>
+                      {event.name || `イベントID: ${event.id}`}
+                    </div>
                   </button>
                   <Link className={styles.detail_link} href="">
                     <div className={styles.detail_box}>
@@ -239,11 +233,42 @@ function EventSelectInner() {
               <div className={styles.button_more}>もっと見る　</div>
               <p>チケットの購入履歴はこちら</p>
             </div>
-            <ul className={styles.button_bottom}>
+
+            <table className={styles.availability}>
+              <tr>
+                <th className={styles.description}>空き状況</th>
+                <td>
+                  <div>
+                    <div className={styles.icon}>
+                      <Image src="/images/mark_vacant.png" width={24} height={23} alt="" />
+                    </div>
+                    <p>空いています</p>
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <div className={styles.icon}>
+                      <Image src="/images/mark_middle.png" width={24} height={23} alt="" />
+                    </div>
+                    <p>混雑が<br/>予想されます</p>
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    <div className={styles.icon}>
+                      <Image src="/images/mark_full.png" width={24} height={23} alt="" />
+                    </div>
+                    <p>満員です<br/>(予約不可)</p>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            {/* <ul className={styles.button_bottom}>
               <li>
                 <div className={styles.button_other}>抽選申込へ戻る</div>
               </li>
-            </ul>
+            </ul> */}
           </div>
         </div>
       </div>

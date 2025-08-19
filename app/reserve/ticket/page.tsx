@@ -7,24 +7,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-// export default async function RservePage() {
-//   const { data: events, error } = await supabase
-//     .from("reserveEvents")
-//     .select("*")
-//     // .gte("reserved_count", 0);
-
-//   if (error || !events) {
-//     return <div>イベントの取得に失敗しました。</div>;
-//   }
-
-//   return (
-//     <main className="p-4">
-//       <h1 className="text-2xl font-bold mb-4">予約可能なイベント</h1>
-//       <ReserveForm events={events} />
-//     </main>
-//   );
-// }
-
 
 export default function TicketPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,7 +14,8 @@ export default function TicketPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { data: session, status } = useSession();
-  const [alreadyApplied, setAlreadyApplied] = useState<boolean>(false);
+  const [alreadyApplied, setAlreadyApplied] = useState(false);
+  const [appliedEvents, setAppliedEvents] = useState<{ event_id: number; event_time: string; user_name?: string }[]>([]);
 
   // データ取得をuseEffectで行う
   useEffect(() => {
@@ -59,24 +42,28 @@ export default function TicketPage() {
 
   // 7日前抽選 申込済みかをチェック
   useEffect(() => {
-    const checkApplied = async () => {
+    const fetchAppliedEvents = async () => {
       try {
         const res = await fetch('/api/lottely-applications');
         if (!res.ok) {
           setAlreadyApplied(false);
+          setAppliedEvents([]);
           return;
         }
         const data = await res.json();
-        const eventData = (data?.event_data ?? []) as unknown[];
-        setAlreadyApplied(Array.isArray(eventData) && eventData.length > 0);
+        const results = Array.isArray(data?.results) ? data.results as { event_id: number; event_time: string; user_name?: string }[] : [];
+        setAlreadyApplied(results.length > 0);
+        setAppliedEvents(results);
       } catch {
         setAlreadyApplied(false);
+        setAppliedEvents([]);
       }
     };
     if (status === 'authenticated') {
-      void checkApplied();
+      void fetchAppliedEvents();
     } else {
       setAlreadyApplied(false);
+      setAppliedEvents([]);
     }
   }, [status]);
 
@@ -262,6 +249,7 @@ export default function TicketPage() {
                         />
                       </div>
                     </div>
+
                     <div className={styles.arrows_event}>
                       <div className={styles.arrows_title}>
                         <span>■</span>
@@ -319,6 +307,74 @@ export default function TicketPage() {
                             />
                           </>
                         )}
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.arrows_event}>
+                      <div className={styles.arrows_title}>
+                        <span>■</span>
+                        イベントの予約
+                      </div>
+                      <div className={styles.arrow}>
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                          <>
+                            <Image
+                              src="/images/arrow_red_left.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                            <Link className={styles.arrow_middle} href="/reserve/first-come-served/ticketselect">
+                              <div>空き枠先着申込<br/>(受付中)</div>
+                            </Link>
+                            <Image
+                              src="/images/arrow_red_right.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                          </>
                         <Image
                           className={styles.arrow_gray_left}
                           src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
@@ -422,7 +478,7 @@ export default function TicketPage() {
                     <div className={styles.age}>来場者</div>
                     <div className={styles.qrcode}>
                       <Image
-                        src="/images/qr-ex.png"
+                        src="/images/qrcode.png"
                         width={200}
                         height={200}
                         alt="QRコード"

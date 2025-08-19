@@ -1,3 +1,30 @@
+export async function DELETE(request: Request) {
+  const userCtx = await getUserContext();
+  if (!userCtx) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const { userId, client } = userCtx;
+  try {
+    const body = await request.json();
+    const event_id = body.event_id;
+    const event_time = body.event_time;
+    if (typeof event_id !== 'number' || typeof event_time !== 'string') {
+      return NextResponse.json({ error: 'event_idとevent_timeは必須です' }, { status: 400 });
+    }
+    const { error } = await client
+      .from('lottery_applications')
+      .delete()
+      .eq('user_id', userId)
+      .eq('event_id', event_id)
+      .eq('event_time', event_time);
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
@@ -43,25 +70,24 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { userId, client } = userCtx;
-
   try {
     const { data, error } = await client
       .from('lottery_applications')
       .select('*')
-      .eq('user_id', userId)
-      .single();
+      .eq('user_id', userId);
 
-    if (error && error.code !== 'PGRST116') { // 行が見つからないエラーは無視
+    if (error) {
       console.error('Error fetching lottery application:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data || null);
+    return NextResponse.json({ results: data ?? [] });
   } catch (error) {
     console.error('Unexpected error in GET /api/lottery-applications:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
-}
+  }
+
 
 export async function POST(request: Request) {
   const userCtx = await getUserContext();
@@ -71,47 +97,53 @@ export async function POST(request: Request) {
   const { userId, client } = userCtx;
 
   const body = await request.json();
-  const event_data = body.event_data ?? body.event_ids; // 後方互換: 旧形式event_idsにも対応
+  const event_ids = body.event_id;
+  const event_times = body.event_time;
   const user_name: string | undefined = typeof body.user_name === 'string' ? body.user_name : undefined;
 
-  if (!Array.isArray(event_data)) {
-    return NextResponse.json({ error: 'event_data must be an array' }, { status: 400 });
+  if (!Array.isArray(event_ids) || !Array.isArray(event_times) || event_ids.length !== event_times.length) {
+    return NextResponse.json({ error: 'event_idとevent_timeは同じ長さの配列である必要があります。' }, { status: 400 });
   }
 
   try {
-    // ユーザー名のユニークチェック（他ユーザーが同じニックネームを使用していないか）
+    // 同じuser_idで異なるuser_nameが登録できないようにチェック
     if (user_name && user_name.trim().length > 0) {
-      const { count, error: dupError } = await client
+      const { data: existing, error: dupError } = await client
         .from('lottery_applications')
-        .select('user_id', { head: true, count: 'exact' })
-        .eq('user_name', user_name)
-        .neq('user_id', userId);
+        .select('user_name')
+        .eq('user_id', userId);
       if (dupError) {
         return NextResponse.json({ error: '名前の重複チェックに失敗しました。' }, { status: 500 });
       }
-      if ((count ?? 0) > 0) {
-        return NextResponse.json({ error: 'このニックネームは既に使用されています。別の名前を入力してください。' }, { status: 409 });
+      // 既存user_idのuser_nameが異なる場合はエラー
+      if (existing && existing.length > 0) {
+        // user_nameカラムが存在しない場合は型安全にスキップ
+        const registeredName = typeof existing[0].user_name === 'string' ? existing[0].user_name : undefined;
+        if (registeredName && registeredName !== user_name) {
+          return NextResponse.json({ error: '同じユーザーIDで異なる名前は登録できません。' }, { status: 409 });
+        }
       }
     }
 
-    const upsertPayload: any = { user_id: userId, event_data };
-    if (user_name) upsertPayload.user_name = user_name;
-
-    const { data, error } = await client
-      .from('lottery_applications')
-      .upsert(
-        upsertPayload,
-        { onConflict: 'user_id' }
-      )
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error saving lottery application:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    // event_idとevent_timeの組み合わせごとに1レコードずつ追加
+    let allResults: any[] = [];
+    for (let i = 0; i < event_ids.length; i++) {
+      const payload: any = {
+        user_id: userId,
+        event_id: event_ids[i],
+        event_time: event_times[i],
+      };
+      if (user_name) payload.user_name = user_name;
+      const { data, error } = await client
+        .from('lottery_applications')
+        .insert(payload)
+        .select();
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+      }
+      allResults.push(data);
     }
-
-    return NextResponse.json(data);
+    return NextResponse.json({ results: allResults });
   } catch (error) {
     console.error('Unexpected error in POST /api/lottery-applications:', error);
     const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
