@@ -4,7 +4,8 @@
     "name": "イベントA",
     "description": "説明A",
     "date": "20",
-    "ImplementationTime": "11:00-11:20,11:25-11:45,12:00-12:30,14:00-14:40"
+    "ImplementationTime": "11:00-11:20,11:25-11:45,12:00-12:30,14:00-14:40",
+    "capacity": 2
   },
   {
     "id": 2,
@@ -12,6 +13,7 @@
     "description": "説明B",
     "date": "21",
     "ImplementationTime": "10:00-11:00,13:00-14:00",
-    "duration": "01:00"
+    "duration": "01:00",
+    "capacity": 2
   }
 ]

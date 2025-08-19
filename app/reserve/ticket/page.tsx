@@ -1,5 +1,12 @@
 'use client';
 
+// Extend the Window interface to include supabase
+declare global {
+  interface Window {
+    supabase?: typeof supabase;
+  }
+}
+
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import styles from "./page.module.css";
@@ -17,34 +24,19 @@ export default function TicketPage() {
   const [alreadyApplied, setAlreadyApplied] = useState(false);
   const [appliedEvents, setAppliedEvents] = useState<{ event_id: number; event_time: string; user_name?: string }[]>([]);
 
-  // データ取得をuseEffectで行う
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("reserveEvents")
-          .select("*");
 
-        if (error) {
-          setError("イベントの取得に失敗しました。");
-        } else {
-          setEvents(data || []);
-        }
-      } catch (err) {
-        setError("イベントの取得に失敗しました。");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
 
   // 7日前抽選 申込済みかをチェック
   useEffect(() => {
     const fetchAppliedEvents = async () => {
+      const userId = window.localStorage.getItem('user_id');
+      if (!userId) {
+        setAlreadyApplied(false);
+        setAppliedEvents([]);
+        return;
+      }
       try {
-        const res = await fetch('/api/lottely-applications');
+        const res = await fetch(`/api/lottely-applications?user_id=${userId}`);
         if (!res.ok) {
           setAlreadyApplied(false);
           setAppliedEvents([]);
@@ -60,12 +52,42 @@ export default function TicketPage() {
       }
     };
     if (status === 'authenticated') {
+      // user_uuidsテーブルに登録されたuuidのみをlocalStorageに保存
+      const saveUserId = async () => {
+        const email = session?.user?.email;
+        if (!email) return;
+        const { data, error } = await supabase
+          .from('user_uuids')
+          .select('uuid')
+          .eq('email', email)
+          .single();
+        if (data?.uuid) {
+          window.localStorage.setItem('user_id', data.uuid);
+        } else {
+          // 未登録なら新規登録
+          const newUuid = crypto.randomUUID();
+          const { data: insertData, error: insertError } = await supabase
+            .from('user_uuids')
+            .insert({ email, uuid: newUuid })
+            .select('uuid')
+            .single();
+          if (insertData?.uuid) {
+            window.localStorage.setItem('user_id', insertData.uuid);
+          } else {
+            window.localStorage.removeItem('user_id');
+          }
+        }
+        if (session?.user?.name) {
+          window.localStorage.setItem('google_user_name', session.user.name);
+        }
+      };
+      saveUserId();
       void fetchAppliedEvents();
     } else {
       setAlreadyApplied(false);
       setAppliedEvents([]);
     }
-  }, [status]);
+  }, [status, session]);
 
   const handleQRClick = () => {
     setIsModalOpen(true);
@@ -75,9 +97,6 @@ export default function TicketPage() {
     setIsModalOpen(false);
   };
 
-  if (loading || status === "loading") {
-    return <div>読み込み中...</div>;
-  }
 
   if (error || !events) {
     return <div>{error || "イベントの取得に失敗しました。"}</div>;

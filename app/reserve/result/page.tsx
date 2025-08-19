@@ -16,9 +16,10 @@ export default function ReserveResultPage() {
   useEffect(() => {
     const load = async () => {
       try {
+        const userId = window.localStorage.getItem('user_id');
         const [eventsRes, appliedRes] = await Promise.all([
           fetch('/data/events_7days.json'),
-          fetch('/api/lottely-applications')
+          userId ? fetch(`/api/lottely-applications?user_id=${userId}`) : Promise.resolve({ ok: false, status: 400, json: async () => ({}) })
         ]);
         const allEvents: any[] = await eventsRes.json();
         if (!appliedRes.ok) {

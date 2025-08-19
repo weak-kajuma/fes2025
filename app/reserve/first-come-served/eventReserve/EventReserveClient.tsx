@@ -6,11 +6,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { deserializeEvent } from "./eventReserveUtils";
 import { useEventContext } from "../EventContext";
+import { supabase } from "@/lib/supabaseClient";
 import styles from "./page.module.css";
+import { update } from "three/examples/jsm/libs/tween.module.js";
 
 type HourFilter = "all" | "11" | "12" | "13" | "14";
 
 export default function EventReserveClient() {
+  // 予約者名
+  const [userName, setUserName] = useState<string>("");
+  const [reservedUserName, setReservedUserName] = useState<string>("");
   const { event, setEvent } = useEventContext();
   const searchParams = useSearchParams();
   const eventStr = searchParams.get("event");
@@ -62,8 +67,32 @@ export default function EventReserveClient() {
         setEvent(parsed);
       } catch {}
     }
+    // 7days抽選申込で登録した名前があれば初期値に
+    const reservedName = window.localStorage.getItem("reserved_user_name");
+    if (reservedName) {
+      setUserName(reservedName);
+      setReservedUserName(reservedName);
+    } else {
+      // Googleアカウント名があれば初期値に
+      const googleName = window.localStorage.getItem("google_user_name");
+      if (googleName) setUserName(googleName);
+    }
     initRef.current = true;
   }, [deserializedEvent, setEvent]);
+
+  // localStorageのgoogle_user_nameが変化した場合にもuserNameを反映
+  useEffect(() => {
+    const reservedName = window.localStorage.getItem("reserved_user_name");
+    if (reservedName && reservedName !== userName) {
+      setUserName(reservedName);
+      setReservedUserName(reservedName);
+    } else {
+      const googleName = window.localStorage.getItem("google_user_name");
+      if (googleName && googleName !== userName) {
+        setUserName(googleName);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const idxStr = window.sessionStorage.getItem("selectedWishIndex");
@@ -73,38 +102,70 @@ export default function EventReserveClient() {
   const hasSelectedTime = !!selectedTime;
 
   // eventReserveの登録処理例
-  const handleApply = () => {
+  // 先着順予約ロジック
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const handleApply = async () => {
+    setErrorMsg("");
     if (!event || !selectedTime) return;
-    const wishIndex = Number(window.sessionStorage.getItem("selectedWishIndex") ?? "0");
-    const appliedListRaw = window.sessionStorage.getItem("appliedEventList");
-    const appliedList: ({ id: number; name: string; time: string } | null)[] = appliedListRaw ? JSON.parse(appliedListRaw) : [];
-    const maxWishes = 5;
-    // 配列長をmaxWishesに合わせる
-    while (appliedList.length < maxWishes) appliedList.push(null);
-    // 該当枠に上書き
-    appliedList[wishIndex] = {
-      id: event.id,
-      name: event.name,
-      time: selectedTime,
-    };
-    window.sessionStorage.setItem("appliedEventList", JSON.stringify(appliedList));
-    setShowModal(true);
+    // 1. reservationsから該当event_id+event_timeの予約数取得
+    const { data: reservations, error } = await supabase
+      .from('reservations')
+      .select('*')
+      .eq('event_id', event.id)
+      .eq('event_time', selectedTime);
+    if (error) {
+      setErrorMsg('予約状況の取得に失敗しました');
+      return;
+    }
+    const reservedCount = reservations ? reservations.length : 0;
+    // 2. capacity取得（events_7days.jsonから厳密に取得）
+    let capacity = event.capacity;
+    try {
+      const res = await fetch('/data/events_7days.json');
+      const eventsJson = await res.json();
+      const eventObj = eventsJson.find((e: any) => String(e.id) === String(event.id));
+      if (eventObj && typeof eventObj.capacity === 'number') {
+        capacity = eventObj.capacity;
+      }
+    } catch {}
+    // 3. 予約数 < capacity ならPOST
+    if (reservedCount < capacity) {
+      // 予約登録
+      const user_id = window.localStorage.getItem('user_id');
+      // UUID形式か判定（36文字のハイフン区切り）
+      const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+      if (!user_id || !uuidRegex.test(user_id)) {
+        setErrorMsg('Googleアカウントでログインしてください（IDが不正です）');
+        return;
+      }
+      const user_name = userName;
+      const id = window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+      const { error: postError } = await supabase
+        .from('reservations')
+        .insert([
+          {
+            id,
+            event_id: Number(event.id),
+            event_time: selectedTime,
+            user_id,
+            user_name,
+            updated_at: new Date().toISOString(),
+          }
+        ]);
+      if (postError) {
+        setErrorMsg('予約登録に失敗しました');
+        return;
+      }
+      setShowModal(true);
+    } else {
+      setErrorMsg('この枠は満員です');
+    }
   };
+
+
+
+
   return (
-    // <div style={{ padding: 32 }}>
-    //   <h1>イベント予約画面</h1>
-    //   {event ? (
-    //     <div>
-    //       <h2>{event.name}</h2>
-    //       <p>ID: {event.id}</p>
-    //       <p>日付: {event.date}</p>
-    //       <p>説明: {event.description}</p>
-    //       {/* 必要に応じて他の情報も表示 */}
-    //     </div>
-    //   ) : (
-    //     <p>イベント情報がありません</p>
-    //   )}
-    // </div>
 
     <div className={styles.wrapper}>
       <div className={styles.header}>
@@ -286,6 +347,38 @@ export default function EventReserveClient() {
 
             <ul className={styles.time_register}>
               <li>
+                {/* 予約者名の入力欄（7days抽選申込で登録済みなら変更不可） */}
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', fontWeight: 700, marginBottom: 8 }}>
+                    予約者名
+                  </label>
+                  <input
+                    type="text"
+                    value={userName}
+                    onChange={e => setUserName(e.target.value)}
+                    placeholder="例）山田 太郎"
+                    disabled={!!reservedUserName}
+                    style={{
+                      width: '100%',
+                      maxWidth: 480,
+                      padding: '10px 12px',
+                      border: '1px solid #ccc',
+                      borderRadius: 6,
+                      background: reservedUserName ? '#f5f5f5' : 'white',
+                      color: reservedUserName ? '#888' : 'black',
+                    }}
+                  />
+                  {!reservedUserName && (
+                    <div style={{ marginTop: 8, color: '#555', fontSize: 14 }}>
+                      この名前で予約確認を行います。正確に入力してください。ニックネーム可。
+                    </div>
+                  )}
+                  {reservedUserName && (
+                    <div style={{ marginTop: 8, color: '#888', fontSize: 13 }}>
+                      この名前は7日前抽選申込で登録されたため変更できません。
+                    </div>
+                  )}
+                </div>
                 <div className={styles.time_register_info}>
                   <p>{event ? event.name : ""}<br/>
                   {hasSelectedTime ? selectedTime : "時間帯を選択してください"}</p>
@@ -304,6 +397,9 @@ export default function EventReserveClient() {
                   <div className={`${styles.time_register_link} ${styles.time_register_link_disabled}`}>
                     選択したチケットで申し込む
                   </div>
+                )}
+                {errorMsg && (
+                  <div style={{ color: 'red', marginTop: '8px' }}>{errorMsg}</div>
                 )}
               </li>
             </ul>
@@ -372,7 +468,7 @@ export default function EventReserveClient() {
           <div className={styles.buttons}>
             <ul className={styles.button_bottom}>
               <li>
-                <Link href={`/reserve/7days-before-reservation/eventSelect?wishIndex=${currentWishIndex}`}>
+                <Link href={`/reserve/first-come-served/eventSelect`}>
                   <div className={styles.button_other}>パビリオン･イベントの選択にもどる</div>
                 </Link>
               </li>

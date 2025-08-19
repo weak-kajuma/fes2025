@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { serializeEvent } from "../eventReserveUtils";
+import { supabase } from "@/lib/supabaseClient";
 
 type Event = {
   id: number;
@@ -15,6 +16,7 @@ type Event = {
   reserved_count: number;
   reservation_type: "first-come" | "lottery";
   date?: string | number;
+  ImplementationTime?: string;
 };
 
 type DayFilter = "all" | "20" | "21";
@@ -32,6 +34,7 @@ function EventSelectInner() {
   const [loading, setLoading] = useState(true);
   const [dayFilter, setDayFilter] = useState<DayFilter>("all");
   const [showDayMenu, setShowDayMenu] = useState(false);
+  const [reservationCounts, setReservationCounts] = useState<Record<number, number>>({});
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -50,6 +53,29 @@ function EventSelectInner() {
     fetchEvents();
   }, []);
 
+  // Supabaseから予約数を取得
+  useEffect(() => {
+    const fetchReservationCounts = async () => {
+      if (events.length === 0) return;
+      const eventIds = events.map(e => e.id);
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('event_id')
+        .in('event_id', eventIds);
+      if (error) {
+        console.error('Error fetching reservations:', error);
+        return;
+      }
+      // data: [{ event_id: 1, ... }, ...]
+      const counts: Record<number, number> = {};
+      data?.forEach((row: any) => {
+        counts[row.event_id] = (counts[row.event_id] || 0) + 1;
+      });
+      setReservationCounts(counts);
+    };
+    fetchReservationCounts();
+  }, [events]);
+
   const handleEventSelect = (event: Event) => {
     // 先着順なのでwishIndexは不要。選択イベントのみ保存して遷移。
     const fullEvent = { ...event };
@@ -64,6 +90,20 @@ function EventSelectInner() {
     if (dayFilter === "all") return true;
     return String((event as any).date) === dayFilter;
   });
+
+  // capacityを枠数（ImplementationTimeの数）にする
+  const getMarkImage = (event: Event) => {
+    const reserved = reservationCounts[event.id] || 0;
+    // ImplementationTimeがカンマ区切りで複数枠
+    const timeCount = event.ImplementationTime ? event.ImplementationTime.split(',').length : 1;
+    const capacityPerTime = event.capacity || 1;
+    const totalCapacity = timeCount * capacityPerTime;
+    const ratio = totalCapacity > 0 ? reserved / totalCapacity : 0;
+    if (ratio < 0.5) return "/images/mark_vacant.png";
+    if (ratio < 0.8) return "/images/mark_middle.png";
+    if (ratio >= 0.8) return "/images/mark_full.png";
+    else return "/images/mark_full.png";
+  };
 
   if (loading) {
     return <div>読み込み中...</div>;
@@ -182,7 +222,7 @@ function EventSelectInner() {
             <div className={styles.search}>
               <div className={styles.search_inner}>
                 <span className={styles.search_label}>パビリオン・イベントを検索</span>
-                <input aria-labelledby="event_search_input" placeholder="入力せず検索ですべて表示 " value=""/>
+                <input aria-labelledby="event_search_input" placeholder="入力せず検索ですべて表示 " defaultValue=""/>
                 <button>
                   <span>検索</span>
                 </button>
@@ -207,7 +247,7 @@ function EventSelectInner() {
                     className={styles.event_button}
                     onClick={() => handleEventSelect(event)}
                   >
-                    <Image src="/images/mark_full.png" width={17} height={18} alt="" />
+                    <Image src={getMarkImage(event)} width={20} height={18} alt="" />
                     <div className={styles.txt}>
                       {event.name || `イベントID: ${event.id}`}
                     </div>
@@ -235,33 +275,35 @@ function EventSelectInner() {
             </div>
 
             <table className={styles.availability}>
-              <tr>
-                <th className={styles.description}>空き状況</th>
-                <td>
-                  <div>
-                    <div className={styles.icon}>
-                      <Image src="/images/mark_vacant.png" width={24} height={23} alt="" />
+              <tbody>
+                <tr>
+                  <th className={styles.description}>空き状況</th>
+                  <td>
+                    <div>
+                      <div className={styles.icon}>
+                        <Image src="/images/mark_vacant.png" width={24} height={23} alt="" />
+                      </div>
+                      <p>空いています</p>
                     </div>
-                    <p>空いています</p>
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    <div className={styles.icon}>
-                      <Image src="/images/mark_middle.png" width={24} height={23} alt="" />
+                  </td>
+                  <td>
+                    <div>
+                      <div className={styles.icon}>
+                        <Image src="/images/mark_middle.png" width={24} height={23} alt="" />
+                      </div>
+                      <p>混雑が<br/>予想されます</p>
                     </div>
-                    <p>混雑が<br/>予想されます</p>
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    <div className={styles.icon}>
-                      <Image src="/images/mark_full.png" width={24} height={23} alt="" />
+                  </td>
+                  <td>
+                    <div>
+                      <div className={styles.icon}>
+                        <Image src="/images/mark_full.png" width={24} height={23} alt="" />
+                      </div>
+                      <p>満員です<br/>(予約不可)</p>
                     </div>
-                    <p>満員です<br/>(予約不可)</p>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              </tbody>
             </table>
 
             {/* <ul className={styles.button_bottom}>

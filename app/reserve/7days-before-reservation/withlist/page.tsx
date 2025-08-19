@@ -39,9 +39,10 @@ export default function Reserve7DaysBeforeWithlistPage() {
     setMessage(null);
     try {
       // 全イベント情報と、申込済みの情報を並行して取得
+      const userId = window.localStorage.getItem('user_id');
       const [eventsRes, appliedRes] = await Promise.all([
         fetch('/data/events_7days.json'),
-        fetch('/api/lottely-applications')
+        userId ? fetch(`/api/lottely-applications?user_id=${userId}`) : Promise.resolve({ ok: false, status: 400, json: async () => ({}) })
       ]);
 
       if (!eventsRes.ok) throw new Error('イベント情報の取得に失敗しました。');
@@ -58,6 +59,7 @@ export default function Reserve7DaysBeforeWithlistPage() {
         // 既存の登録名があれば初期値として反映
         if (appliedEventsFromApi.length > 0 && appliedEventsFromApi[0].user_name) {
           setUserName(appliedEventsFromApi[0].user_name);
+          window.localStorage.setItem("google_user_name", appliedEventsFromApi[0].user_name);
         }
       }
       setAppliedEvents(appliedEventsFromApi);
@@ -121,6 +123,7 @@ export default function Reserve7DaysBeforeWithlistPage() {
     const filteredList = appliedList.filter((item): item is AppliedEvent => item !== null);
     const eventIds = filteredList.map(item => item.id);
     const eventTimes = filteredList.map(item => item.time ?? null);
+    const user_id = window.localStorage.getItem('user_id');
 
     if (eventIds.length === 0) {
       setMessage("申し込むイベントがありません。");
@@ -137,7 +140,7 @@ export default function Reserve7DaysBeforeWithlistPage() {
           await fetch('/api/lottely-applications', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ event_id: ev.event_id, event_time: ev.event_time }),
+            body: JSON.stringify({ event_id: ev.event_id, event_time: ev.event_time, user_id }),
           });
         }
       }
@@ -146,8 +149,12 @@ export default function Reserve7DaysBeforeWithlistPage() {
       const response = await fetch('/api/lottely-applications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ event_id: eventIds, event_time: eventTimes, user_name: userName }),
+        body: JSON.stringify({ event_id: eventIds, event_time: eventTimes, user_name: userName, user_id }),
       });
+      // 名前をlocalStorageに保存
+      if (userName) {
+        window.localStorage.setItem('reserved_user_name', userName);
+      }
       if (response.status === 401) {
         setMessage('申し込みにはログインが必要です。ログイン後に再度お試しください。');
         setIsLoading(false);
