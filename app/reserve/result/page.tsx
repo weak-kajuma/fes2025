@@ -96,7 +96,7 @@ export default function ReserveResultPage() {
         <div className={baseStyles.main_inner}>
           <div className={baseStyles.top}>
             <h1 className={baseStyles.top_title}>7日前 抽選申込 結果</h1>
-            <div className={baseStyles.top_info}>申し込んだパビリオン・イベントの一覧です。</div>
+            <div className={baseStyles.top_info}>申し込んだイベントの一覧です。</div>
           </div>
 
           <div className={baseStyles.middle}>

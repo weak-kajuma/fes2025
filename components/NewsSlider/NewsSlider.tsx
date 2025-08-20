@@ -1,17 +1,23 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import styles from "./NewsSlider.module.css";
+import { useRouter } from "next/navigation";
+import AnimatedLink from "../AnimatedLink";
 
 type NewsItem = { id: string | number; title: string; imgUrl?: string; type?: string };
 
 interface NewsSliderProps {
   items: NewsItem[];
   isMobile?: boolean;
+  onItemClick?: (item: NewsItem) => void;
 }
 
-const NewsSlider = ({ items, isMobile }: NewsSliderProps) => {
+const NewsSlider = ({ items, isMobile, onItemClick }: NewsSliderProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listRefs = [useRef<HTMLUListElement>(null), useRef<HTMLUListElement>(null), useRef<HTMLUListElement>(null)];
+  const router = useRouter();
+  // ドラッグ解除直後のクリック無効フラグ
+  const clickDisabledRef = useRef(false);
 
   // PCのみ自動スクロール
   useEffect(() => {
@@ -23,7 +29,7 @@ const NewsSlider = ({ items, isMobile }: NewsSliderProps) => {
     const listWidth = lists[0]!.scrollWidth;
     let xs = [0, listWidth, listWidth * 2];
     let running = true;
-    const speed = 1;
+    const speed = .5;
     let isDragging = false;
     let dragStartX = 0;
     let dragLastX = 0;
@@ -74,6 +80,9 @@ const NewsSlider = ({ items, isMobile }: NewsSliderProps) => {
         lists.forEach(list => list?.classList.remove('grabbing'));
         isDragging = false;
         running = true;
+        // ドラッグ解除直後はクリック無効
+        clickDisabledRef.current = true;
+        setTimeout(() => { clickDisabledRef.current = false; }, 120);
         if (rafId === null) {
           rafId = requestAnimationFrame(animate);
         }
@@ -114,7 +123,16 @@ const NewsSlider = ({ items, isMobile }: NewsSliderProps) => {
       {isMobile ? (
         <ul className={styles.list} style={{ display: 'flex', flexDirection: 'column' }}>
           {items.map(item => (
-            <li key={item.id} className={styles.list_item}>
+            <li
+              key={item.id}
+              className={styles.list_item}
+              onClick={e => {
+                if (clickDisabledRef.current) return;
+                if (onItemClick) onItemClick(item);
+                else router.push(`/news/${item.id}`);
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               <div className={styles.image}>
                 {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
               </div>
@@ -129,7 +147,16 @@ const NewsSlider = ({ items, isMobile }: NewsSliderProps) => {
         [0, 1, 2].map(idx => (
           <ul ref={listRefs[idx]} className={styles.list} key={"list" + idx}>
             {items.map(item => (
-              <li key={item.id + "_" + idx} className={styles.list_item}>
+              <li
+                key={item.id + "_" + idx}
+                className={styles.list_item}
+                onClick={e => {
+                  if (clickDisabledRef.current) return;
+                  if (onItemClick) onItemClick(item);
+                  else router.push(`/news/${item.id}`);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className={styles.image}>
                   {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                 </div>

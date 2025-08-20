@@ -57,16 +57,12 @@ function EventSelectInner() {
       return;
     }
 
-    // 選択したイベントと希望インデックスを保存して、時間選択画面へ
-    const fullEvent = {
-      ...event,
-    };
+    // 選択したイベントIDと希望インデックスを保存して、時間選択画面へ
     try {
-      window.localStorage.setItem('selectedEvent', JSON.stringify(fullEvent));
+      window.localStorage.setItem('selectedEventId', String(event.id));
     } catch {}
     window.sessionStorage.setItem('selectedWishIndex', String(Number(wishIndex)));
-    const eventParam = serializeEvent(fullEvent);
-    router.push(`/reserve/7days-before-reservation/eventReserve?event=${eventParam}`);
+    router.push(`/reserve/7days-before-reservation/eventReserve?eventId=${event.id}`);
   };
 
   const filteredEvents = events.filter((event) => {
@@ -141,7 +137,7 @@ function EventSelectInner() {
             <dt>1</dt>
             <dd>
               <span>
-                パビリオン/イベント<br />を選択
+                イベント<br />を選択
               </span>
             </dd>
           </dl>
@@ -185,15 +181,14 @@ function EventSelectInner() {
         <div className={styles.main_inner}>
           <div className={styles.top}>
             <h1 className={styles.top_title}><span>＜７日前抽選申込＞</span><br/>
-            パビリオン･イベントを選択する</h1>
-            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)<br/>
-            <span>追加で申込可能な時間帯</span></div>
+            イベントを選択する</h1>
+            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)</div>
             <div className={styles.search}>
               <div className={styles.search_inner}>
-                <span className={styles.search_label}>パビリオン・イベントを検索</span>
-                <input aria-labelledby="event_search_input" placeholder="入力せず検索ですべて表示 " value="" readOnly/>
+                <span className={styles.search_label}>イベントを検索</span>
+                <input aria-labelledby="event_search_input" placeholder="入力できません。あるだけです。" value="" readOnly/>
                 <button>
-                  <span>検索</span>
+                  <span>検索できません</span>
                 </button>
               </div>
             </div>
@@ -236,12 +231,13 @@ function EventSelectInner() {
 
           <div className={styles.buttons}>
             <div className={styles.button_top}>
-              <div className={styles.button_more}>もっと見る　</div>
-              <p>チケットの購入履歴はこちら</p>
+              <div className={styles.button_more}>　　　　　　</div>
             </div>
             <ul className={styles.button_bottom}>
               <li>
-                <div className={styles.button_other}>抽選申込へ戻る</div>
+                <div className={styles.button_other}>
+                  <Link href="/reserve/7days-before-reservation/withlist">抽選申込へ戻る</Link>
+                </div>
               </li>
             </ul>
           </div>

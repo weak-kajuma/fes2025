@@ -281,10 +281,10 @@ export default function Reserve7DaysBeforeWithlistPage() {
           {/* ... top and middle sections ... */}
           <div className={styles.top}>
             <h1 className={styles.top_title}>7日前<br/>抽選申込</h1>
-            <div className={styles.top_info}>来場予定日のパビリオン･イベントの抽選に、第5希望までお申し込みできます。</div>
+            <div className={styles.top_info}>来場予定日のイベントの抽選に、第5希望までお申し込みできます。</div>
             <div className={styles.top_info}>当選は1回の抽選で1つです。<br/>
             第1希望が落選の場合に第2希望、第2希望が落選の場合に第3希望と順番に抽選を行います。</div>
-            <div className={styles.top_info}>対象のパビリオン･イベントは、以下の登録操作の中で検索して調べることができます。</div>
+            <div className={styles.top_info}>対象のイベントは、以下の登録操作の中で検索して調べることができます。</div>
             <div className={styles.term}>
               <div className={styles.title}>申込期間：</div>
               <div className={styles.values}><span>　2025年7月10日(木) 0:00</span><span>　-　</span><span>2025年8月2日(土) 23:59</span></div>

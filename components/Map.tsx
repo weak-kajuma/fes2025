@@ -71,9 +71,9 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
 
     // 安定したサイズ反映のためのリサイズ処理
     const handleResize = () => {
-      if (mapRef.current) {
-        mapRef.current.resize()
-      }
+      if (!mapRef.current) return;
+      if ((mapRef.current as any)._removed) return;
+      mapRef.current.resize();
     }
     // 初期レイアウト確定後に一度リサイズ
     requestAnimationFrame(handleResize)
@@ -124,8 +124,8 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
           type: 'fill',
           source: sourceId,
           paint: {
-            'fill-color': ['get', 'fill'],
-            'fill-opacity': ['get', 'fill-opacity'],
+            'fill-color': ['coalesce', ['get', 'fill'], '#ffffff'],
+            'fill-opacity': ['coalesce', ['get', 'fill-opacity'], 1],
           },
           filter: ['all', ['==', '$type', 'Polygon']],
         })
@@ -136,9 +136,9 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
           type: 'line',
           source: sourceId,
           paint: {
-            'line-color': ['get', 'stroke'],
-            'line-width': ['get', 'stroke-width'],
-            'line-opacity': ['get', 'stroke-opacity'],
+            'line-color': ['coalesce', ['get', 'stroke'], '#000000'],
+            'line-width': ['coalesce', ['get', 'stroke-width'], 2],
+            'line-opacity': ['coalesce', ['get', 'stroke-opacity'], 1],
           },
           filter: ['all', ['==', '$type', 'Polygon']],
         })
@@ -188,6 +188,45 @@ const Map = forwardRef<any, AreaProps>(({ onAreaClick, geojsonUrls, onPolygonsUp
           map.getCanvas().style.cursor = ''
         })
       }
+
+      // --- 1Fポイント画像レイヤー追加 ---
+      const pointsUrl = geojsonUrls.find(url => /7_points_\d+F\.geojson$/.test(url));
+      if (pointsUrl) {
+        const res = await fetch(pointsUrl);
+        const geojson = await res.json();
+
+        const iconMap: Record<string, string> = {
+          wc: '/data/map/wc.png',
+          stair: '/data/map/stair.png',
+        };
+
+        for (const key of Object.keys(iconMap)) {
+          if (!map.hasImage(key)) {
+            await new Promise((resolve, reject) => {
+              map.loadImage(iconMap[key], (err, img) => {
+                if (err) return reject(err);
+                if (!map.hasImage(key) && img) map.addImage(key, img);
+                resolve(true);
+              });
+            });
+          }
+        }
+
+        map.addSource('points_icons', { type: 'geojson', data: geojson });
+        map.addLayer({
+          id: 'points_icons_layer',
+          type: 'symbol',
+          source: 'points_icons',
+          filter: ['==', '$type', 'Point'],
+          layout: {
+            'icon-image': ['get', 'style'],
+            'icon-size': 1.2,
+            'icon-allow-overlap': true,
+          },
+        });
+        map.moveLayer('points_icons_layer');
+      }
+      // --- 1Fポイント画像レイヤー追加ここまで ---
 
       setPolygonFeatures(allFeatures)
       if (onPolygonsUpdate) onPolygonsUpdate(allNames)

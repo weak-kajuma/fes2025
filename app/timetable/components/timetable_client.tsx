@@ -360,48 +360,6 @@ export default function Timetable_Client() {
             </div>
           </div>
 
-          {/* <div className={styles.selector}>
-            <div className={styles.dateSelector}>
-              {dateOptions.map(dateOpt => (
-                <button
-                  key={dateOpt.label}
-                  className={`${dateOpt.className} ${styles.button} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
-                  onClick={() => setSelectedDate(dateOpt.value)}
-                >
-                  {dateOpt.label}
-                </button>
-              ))}
-            </div>
-            <div className={styles.areaSelector}>
-              {areaOptions.map(areaOpt => (
-                <button
-                  key={areaOpt.label}
-                  className={`${areaOpt.className} ${styles.button} ${selectedArea.includes(areaOpt.value) ? styles.selected : ""}`}
-                  onClick={() => {
-                    setSelectedArea(prev => {
-                      const idx = prev.indexOf(areaOpt.value);
-                      const newSelected = [...prev];
-                      // 選択解除は、選択数がmaxSelectableAreasより大きい時だけ許可
-                      if (idx > -1) {
-                        if (newSelected.length > maxSelectableAreas) {
-                          newSelected.splice(idx, 1);
-                        }
-                        // それ未満の時は何もしない
-                      } else {
-                        if (newSelected.length >= maxSelectableAreas && maxSelectableAreas > 0) newSelected.shift();
-                        if (maxSelectableAreas > 0) newSelected.push(areaOpt.value);
-                      }
-                      return newSelected;
-                    });
-                  }}
-                  disabled={maxSelectableAreas === 0 && !selectedArea.includes(areaOpt.value)}
-                >
-                  {areaOpt.label}
-                </button>
-              ))}
-            </div>
-          </div> */}
-
           <div className={styles.eventContentWrapper}>
             {isInitialLoading && <div className={styles.loading}>タイムテーブルを読み込んでいます...</div>}
             {errorLoading && <div className={styles.error}>{errorLoading}</div>}

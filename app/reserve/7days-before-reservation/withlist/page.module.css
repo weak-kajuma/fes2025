@@ -587,3 +587,22 @@
   color: #fff;
   cursor: pointer;
 }
+
+
+
+.selector_current,
+.selector_list,
+.cart,
+.menu > li{
+  /* position: relative; */
+  text-decoration: line-through;
+
+  /* &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    z-index: 10;
+    pointer-events: none;
+  } */
+}

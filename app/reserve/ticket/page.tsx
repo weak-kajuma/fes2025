@@ -165,7 +165,7 @@ export default function TicketPage() {
             <div className={styles.top_info}>お持ちのチケットを確認できます。<br />
               複数のチケットにまとめて予約･抽選を<br />
               申し込むことができます。<br />
-              入場および予約したパビリオン･イベントに入館する際には、QRコード表示ボタンを押してQRコードを提示してください。<br />
+              入場および予約したイベントに入館する際には、QRコード表示ボタンを押してQRコードを提示してください。<br />
               予約･抽選の確認や変更･取消は、チケットを選択して1枚ずつ行ってください。<br />
               まとめて申し込んだ内容を変更する場合は<br />
               チケット毎に取り消し、再度まとめてお申し込みください。</div>
@@ -451,16 +451,15 @@ export default function TicketPage() {
           </div>
           <div className={styles.buttons}>
             <div className={styles.button_top}>
-              <div className={styles.button_more}>もっと見る　</div>
-              <p>チケットの購入履歴はこちら</p>
+              <div className={styles.button_more}>　　　　　　　</div>
             </div>
             <ul className={styles.button_bottom}>
               <li>
-                <div className={styles.button_other}>チケットの追加購入</div>
+                <div className={styles.button_other}><p>チケットの追加購入</p></div>
                 <p>※ 入場後の登録、使用済みチケットの登録はできませんのでご注意ください。</p>
               </li>
               <li>
-                <div className={styles.button_other}>チケットの受け渡し</div>
+                <div className={styles.button_other}><p>チケットの受け渡し</p></div>
                 <p>チケットの受け渡し履歴<br/>
                 ※ 入場後の受け渡し、使用済みチケットの受け渡しはできませんのでご注意ください。</p>
               </li>
@@ -545,7 +544,7 @@ export default function TicketPage() {
                 </div>
                 <div className={styles.action_button}>
                   <div className={styles.action_close} onClick={handleCloseModal}>とじる</div>
-                  <div className={styles.action_print}>印刷する</div>
+                  <div className={styles.action_print}><p>印刷する</p></div>
                 </div>
               </div>
             </div>

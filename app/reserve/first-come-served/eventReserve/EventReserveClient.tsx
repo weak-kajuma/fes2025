@@ -18,8 +18,7 @@ export default function EventReserveClient() {
   const [reservedUserName, setReservedUserName] = useState<string>("");
   const { event, setEvent } = useEventContext();
   const searchParams = useSearchParams();
-  const eventStr = searchParams.get("event");
-  const deserializedEvent = useMemo(() => (eventStr ? deserializeEvent(eventStr) : null), [eventStr]);
+  const eventId = searchParams.get("eventId");
   const [hourFilter, setHourFilter] = useState<HourFilter>("all");
   const [showHourMenu, setShowHourMenu] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string>("");
@@ -46,39 +45,23 @@ export default function EventReserveClient() {
   // 時間帯リスト（11,12,14など）を自動抽出
   const hourList = Array.from(new Set(times.map((t: string | any[]) => t.slice(0,2))));
 
-  const initRef = useRef(false);
-  useEffect(() => {
-    if (initRef.current) return;
-    // URLパラメータ優先でイベント情報を反映
-    if (deserializedEvent) {
-      const nextEvent = deserializedEvent as typeof event;
-      setEvent(nextEvent ?? null);
-      try {
-        window.localStorage.setItem("selectedEvent", JSON.stringify(deserializedEvent));
-      } catch {}
-      initRef.current = true;
-      return;
-    }
-    // フォールバック: localStorage
-    const stored = window.localStorage.getItem("selectedEvent");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setEvent(parsed);
-      } catch {}
-    }
-    // 7days抽選申込で登録した名前があれば初期値に
-    const reservedName = window.localStorage.getItem("reserved_user_name");
-    if (reservedName) {
-      setUserName(reservedName);
-      setReservedUserName(reservedName);
-    } else {
-      // Googleアカウント名があれば初期値に
-      const googleName = window.localStorage.getItem("google_user_name");
-      if (googleName) setUserName(googleName);
-    }
-    initRef.current = true;
-  }, [deserializedEvent, setEvent]);
+    useEffect(() => {
+      if (!eventId) return;
+      (async () => {
+        try {
+          const events = await import("@/public/data/events_7days.json");
+          const found = events.default?.find((ev: any) => String(ev.id) === String(eventId));
+          if (found) setEvent(found);
+        } catch (e) {
+          // fallback: fetchLocalJson
+          try {
+            const events = await (await fetch("/data/events_7days.json")).json();
+            const found = events.find((ev: any) => String(ev.id) === String(eventId));
+            if (found) setEvent(found);
+          } catch {}
+        }
+      })();
+    }, [eventId, setEvent]);
 
   // localStorageのgoogle_user_nameが変化した場合にもuserNameを反映
   useEffect(() => {
@@ -228,7 +211,7 @@ export default function EventReserveClient() {
             <dt>1</dt>
             <dd>
               <span>
-                パビリオン/イベント<br />を選択
+                イベント<br />を選択
               </span>
             </dd>
           </dl>
@@ -274,12 +257,11 @@ export default function EventReserveClient() {
             <h1 className={styles.top_title}><span>＜空き枠先着＞</span><br/>
             時間帯を選択する</h1>
 
-            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)<br/>
-            <span>追加で申込可能な時間帯</span></div>
+            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)</div>
 
             <h1 className={styles.top_title}>{event ? event.name : ""}</h1>
 
-            <h2 className={styles.top_sub_title}>パビリオン･イベントからのお知らせ</h2>
+            <h2 className={styles.top_sub_title}>イベントからのお知らせ</h2>
             <div className={styles.top_sub_text}>
               <p>{event ? event.description : ""}</p>
             </div>
@@ -288,8 +270,8 @@ export default function EventReserveClient() {
             <div className={styles.top_sub_text}>
               <p>観覧の所要時間は別に必要なのでご注意ください。<br/>
                 所要時間は上記お知らせや<br/>
-                前画面「パビリオン･イベント選択」の案内<br/>
-                またはVisitorsの各パビリオン情報の「詳細情報を確認する」からご確認ください。<br/>
+                前画面「イベント選択」の案内<br/>
+                またはVisitorsの各イベント情報の「詳細情報を確認する」からご確認ください。<br/>
                 イベントは 開演-終演時間(開場時間) を表示、<br/>
                 または 開演-終演時間 を表示しています。<br/>
                 詳細はVisitorsの各イベント情報をご確認ください。</p>
@@ -417,8 +399,8 @@ export default function EventReserveClient() {
                       />
                     </div>
                     <div className={styles.modal_content}>
-                      <p className={styles.title}>＜７日前抽選申込＞<br/>
-                        希望のパビリオン･イベントが登録されました</p>
+                      <p className={styles.title}>＜空き枠先着＞<br/>
+                        希望のイベントを予約できました</p>
                       <div className={styles.calendar_icon}>
                         <Image
                           src="/images/calendar.png"
@@ -431,26 +413,26 @@ export default function EventReserveClient() {
                         <p>{event ? event.name : ""} {selectedTime}</p>
                         <div>
                           <p className={styles.annotation}>
-                            <Image
+                            {/* <Image
                               src="/images/annotation.png"
                               alt="annotation"
                               width={20}
                               height={20}
-                            />
-                            <span>まだ抽選申込は完了していません。抽選リストの画面へ戻り内容をご確認のうえ、「この内容で抽選を申し込む」ボタンを押してください。</span>
+                            /> */}
+                            <span>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</span>
                           </p>
                         </div>
                       </div>
                       <ul className={styles.buttons}>
                         <li>
-                          <button className={styles.button} onClick={() => { window.location.reload(); }}>
-                            <span className={styles.button_text}>同じパビリオン・イベントで別の日時を選ぶ</span>
+                          <button className={styles.button} onClick={() => { setShowModal(false); }}>
+                            <span className={styles.button_text}>同じイベントで別の時間帯を選ぶ</span>
                           </button>
                         </li>
                         <li>
-                          <button className={styles.button} onClick={() => { router.push("/reserve/7days-before-reservation/withlist"); }}>
-                            <span className={styles.button_text}>7日前抽選リストへと戻る<br/>
-                            他の希望を追加する</span>
+                          <button className={styles.button} onClick={() => { router.push("/reserve/first-come-served/eventSelect"); }}>
+                            <span className={styles.button_text}>イベントリストへ戻る<br/>
+                            他の予約をする</span>
                           </button>
                         </li>
                       </ul>
@@ -469,7 +451,7 @@ export default function EventReserveClient() {
             <ul className={styles.button_bottom}>
               <li>
                 <Link href={`/reserve/first-come-served/eventSelect`}>
-                  <div className={styles.button_other}>パビリオン･イベントの選択にもどる</div>
+                  <div className={styles.button_other}>イベントの選択にもどる</div>
                 </Link>
               </li>
             </ul>

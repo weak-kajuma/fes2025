@@ -832,3 +832,32 @@
     height: 50dvh;
   }
 }
+
+
+
+.button_other > p {
+  position: absolute;
+  top: 10%;
+  left: 0;
+}
+
+.selector,
+.cart,
+.menu > li,
+.top_summaryButton,
+.button_other > *,
+.action_print > p,
+.top_summaryButton1 > p,
+.bottom_summaryButton1 > p {
+  /* position: relative; */
+  text-decoration: line-through;
+
+  /* &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    z-index: 10;
+    pointer-events: none;
+  } */
+}

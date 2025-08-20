@@ -113,10 +113,10 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
               予約･抽選の確認や変更･取消は<br/>
               <span>マイチケット</span>から行えます 。</div>
             <div className={styles.top_summaryButton}>一度に14枚まで申し込めます。</div>
-            <div className={styles.top_summaryButton1}>他の方がお持ちのチケットも<br/>
+            <div className={styles.top_summaryButton1}><p>他の方がお持ちのチケットも<br/>
               まとめて申し込む<br/>
               （チケットIDを入力）
-            </div>
+            </p></div>
             <ul>
               <li>
                 <div className={styles.ticket_selectable}>選択可能なチケット {tickets.length}枚</div>
@@ -213,13 +213,12 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
             <div className={styles.button_message}>
               <h2>表示されないチケットがある場合</h2>
               <p>申込できるチケットを表示しています。<br/>
-                申込済みのチケットは表示されません。<br/>
-                変更取消はマイチケットのチケット詳細から行ってください。</p>
+                申込済みのチケットは表示されません。</p>
             </div>
-            <div className={styles.bottom_summaryButton1}>他の方がお持ちのチケットも<br/>
+            <div className={styles.bottom_summaryButton1}><p>他の方がお持ちのチケットも<br/>
               まとめて申し込む<br/>
               （チケットIDを入力）
-            </div>
+            </p></div>
             <ul className={styles.ticket_selectable}>
               <li>
                 <div className={styles.ticket_selected}>選択したチケット： {selectedTickets.size}枚</div>
@@ -238,7 +237,9 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
                 )}
               </li>
             </ul>
-            <div className={styles.button_back}>マイチケットに戻る</div>
+            <div className={styles.button_back}>
+              <Link href="/reserve/ticket">マイチケットに戻る</Link>
+            </div>
           </div>
         </div>
       </div>

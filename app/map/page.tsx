@@ -7,6 +7,8 @@ import Map from '@/components/Map'
 import { gsap } from 'gsap'
 
 export default function MapPage() {
+  // 初期ローディング制御
+  const [isReady, setIsReady] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<number>(1)
   const [selectedArea, setSelectedArea] = useState<any>(null)
   const [polygonNames, setPolygonNames] = useState<string[]>([])
@@ -61,48 +63,54 @@ export default function MapPage() {
 
   // ディレクトリ内の.geojsonファイルを昇順で取得
   useEffect(() => {
+    // requestIdleCallbackで遅延実行
     const fetchFiles = async () => {
-      // ファイルリストはサーバーAPIや静的リストで取得する必要あり
-      // ここでは仮にファイル名をハードコード（本番はAPIで動的取得推奨）
-      let files: string[] = []
-      if (selectedFloor === 1) {
-        files = [
-          '1_background_1F.geojson',
-          '2_entrance_1F.geojson',
-          '3_rooms_1F.geojson',
-          '4_wc_1F.geojson',
-          '5_room_1F.geojson',
-          '6_stairs_1F.geojson',
-        ]
-      } else if (selectedFloor === 2) {
-        files = [
-          '1_background_2F.geojson',
-          '2_entrance_2F.geojson',
-          '3_rooms_2F.geojson',
-          '4_wc_2F.geojson',
-          '5_room_2F.geojson',
-          '6_stairs_2F.geojson',
-        ]
-      } else if (selectedFloor === 3) {
-        files = [
-          '1_background_3F.geojson',
-          '3_rooms_3F.geojson',
-          '4_wc_3F.geojson',
-          '5_room_3F.geojson',
-          '6_stairs_3F.geojson',
-        ]
-      } else if (selectedFloor === 4) {
-        files = [
-          '1_background_4F.geojson',
-          '3_rooms_4F.geojson',
-          '4_wc_4F.geojson',
-          '5_room_4F.geojson',
-          '6_stairs_4F.geojson',
-        ]
-      }
-      // 先頭数字で昇順ソート
-      files.sort((a, b) => parseInt(a.match(/^\d+/)?.[0] ?? '0', 10) - parseInt(b.match(/^\d+/)?.[0] ?? '0', 10))
-      setGeojsonUrls(files.map(f => dir + f))
+      window.requestIdleCallback(() => {
+        let files: string[] = []
+        if (selectedFloor === 1) {
+          files = [
+            '1_background_1F.geojson',
+            '2_entrance_1F.geojson',
+            '3_rooms_1F.geojson',
+            '4_wc_1F.geojson',
+            '5_room_1F.geojson',
+            '6_stairs_1F.geojson',
+            '7_points_1F.geojson',
+          ]
+        } else if (selectedFloor === 2) {
+          files = [
+            '1_background_2F.geojson',
+            '2_entrance_2F.geojson',
+            '3_rooms_2F.geojson',
+            '4_wc_2F.geojson',
+            '5_room_2F.geojson',
+            '6_stairs_2F.geojson',
+            '7_points_2F.geojson',
+          ]
+        } else if (selectedFloor === 3) {
+          files = [
+            '1_background_3F.geojson',
+            '3_rooms_3F.geojson',
+            '4_wc_3F.geojson',
+            '5_room_3F.geojson',
+            '6_stairs_3F.geojson',
+            '7_points_3F.geojson',
+          ]
+        } else if (selectedFloor === 4) {
+          files = [
+            '1_background_4F.geojson',
+            '3_rooms_4F.geojson',
+            '4_wc_4F.geojson',
+            '5_room_4F.geojson',
+            '6_stairs_4F.geojson',
+            '7_points_4F.geojson',
+          ]
+        }
+        // 先頭数字で昇順ソート
+        files.sort((a, b) => parseInt(a.match(/^\d+/)?.[0] ?? '0', 10) - parseInt(b.match(/^\d+/)?.[0] ?? '0', 10))
+        setGeojsonUrls(files.map(f => dir + f))
+        setIsReady(true)
+      })
     }
     fetchFiles()
   }, [selectedFloor])
@@ -173,6 +181,8 @@ export default function MapPage() {
 
   return (
     <div className={styles.container}>
+      {/* 初期ローディングを遅延表示 */}
+      {!isReady && <div className={styles.loading}>Loading...</div>}
 
       <div className={styles.floorButtons}>
         <LiquidGlass>
