@@ -596,6 +596,7 @@
 .menu > li{
   /* position: relative; */
   text-decoration: line-through;
+  text-decoration-thickness: 3px;
 
   /* &::before {
     content: "";

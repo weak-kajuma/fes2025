@@ -84,7 +84,7 @@
   .content {
     width: 13rem;
     height: 60px;
-    width: 800px;
+    width: 900px;
     border-radius: calc(60px / 2);
     background-color: #141414;
     display: flex;

@@ -625,7 +625,7 @@ export default function Home() {
 
                 <div className={styles.items}>
 
-                  {[0,1,2,3].map((i) => (
+                  {[0,1,2,3,4].map((i) => (
                     <div
                       className={styles.item}
                       ref={el => { itemRefs.current[i] = el; }}
@@ -644,7 +644,7 @@ export default function Home() {
                         )}
                         <div className={styles.text_wrapper}>
                           <div className={styles.text_inner}>
-                            <AnimatedLink to={i === 0 ? "/timetable" : i === 1 ? "/map" : i === 2 ? "/search" : i === 3 ? "/reserve" : ""}>
+                            <AnimatedLink to={i === 0 ? "/timetable" : i === 1 ? "/map" : i === 2 ? "/search" : i === 3 ? "/reserve" : i === 4 ? "/news" : ""}>
                             <h2
                               className={styles.text}
                               onMouseEnter={() => {
@@ -658,6 +658,7 @@ export default function Home() {
                                 {i === 1 && "MAP"}
                                 {i === 2 && "SEARCH"}
                                 {i === 3 && "RESERVE"}
+                                {i === 4 && "NEWS"}
                             </h2>
                               </AnimatedLink>
                             <div className={styles.info}>
@@ -665,6 +666,7 @@ export default function Home() {
                               {i === 1 && <><div className={styles.tag}>map</div><div className={styles.tag}>bbb</div></>}
                               {i === 2 && <><div className={styles.tag}>search</div><div className={styles.tag}>ccc</div></>}
                               {i === 3 && <><div className={styles.tag}>reserve</div><div className={styles.tag}>ddd</div></>}
+                              {i === 4 && <><div className={styles.tag}>news</div><div className={styles.tag}>eee</div></>}
                             </div>
                           </div>
                         </div>

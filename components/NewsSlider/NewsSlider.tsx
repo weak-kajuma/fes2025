@@ -153,18 +153,19 @@ const NewsSlider = ({ items, isMobile, onItemClick }: NewsSliderProps) => {
                 onClick={e => {
                   if (clickDisabledRef.current) return;
                   if (onItemClick) onItemClick(item);
-                  else router.push(`/news/${item.id}`);
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <div className={styles.image}>
-                  {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                </div>
-                <p className={styles.type_text}>{item.type}</p>
-                <div className={styles.main_text}>
-                  <h4 className={styles.title}>{item.title}</h4>
-                  <div className={styles.button}>詳細</div>
-                </div>
+                <AnimatedLink to={`/news/${item.id}`}>
+                  <div className={styles.image}>
+                    {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                  </div>
+                  <p className={styles.type_text}>{item.type}</p>
+                  <div className={styles.main_text}>
+                    <h4 className={styles.title}>{item.title}</h4>
+                    <div className={styles.button}>詳細</div>
+                  </div>
+                </AnimatedLink>
               </li>
             ))}
           </ul>

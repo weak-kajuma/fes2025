@@ -866,6 +866,7 @@
 .detail_box > p {
   /* position: relative; */
   text-decoration: line-through;
+  text-decoration-thickness: 3px;
 
   /* &::before {
     content: "";

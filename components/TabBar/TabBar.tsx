@@ -65,7 +65,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
       // 開く
       if (isDesktop) {
         gsap.to(contentRef.current, {
-          width: 800,
+          width: 900,
           duration: 0.5,
           ease: "power2.out",
           onComplete: () => {
@@ -92,6 +92,21 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
           if (!isDesktop && menuRef.current) menuRef.current.style.flexDirection = "column";
         }
       });
+      // メニューアイテムを左から順に下からふわっと表示
+      if (menuRef.current) {
+        const items = menuRef.current.querySelectorAll(`.${styles.menu_item}`);
+        gsap.fromTo(
+          items,
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.4,
+            stagger: 0.08,
+            ease: "power2.out"
+          }
+        );
+      }
     } else {
       // 閉じる
       gsap.to(menuRef.current, {
@@ -317,6 +332,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
     { label: "Map", to: "/map" },
     { label: "Search", to: "/search" },
     { label: "Reserve", to: "/reserve" },
+    { label: "News", to: "/news" },
   ];
 
   // ホバーアニメーション
