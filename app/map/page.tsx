@@ -61,12 +61,19 @@ export default function MapPage() {
   // フロアごとのディレクトリ
   const dir = selectedFloor === 1 ? '/data/map/1F/' : selectedFloor === 2 ? '/data/map/2F/' : selectedFloor === 3 ? '/data/map/3F/' : '/data/map/4F/'
 
+  const safeRequestIdleCallback = (cb: () => void) => {
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(cb);
+    } else {
+      setTimeout(cb, 0);
+    }
+  };
+
   // ディレクトリ内の.geojsonファイルを昇順で取得
   useEffect(() => {
-    // requestIdleCallbackで遅延実行
     const fetchFiles = async () => {
-      window.requestIdleCallback(() => {
-        let files: string[] = []
+      safeRequestIdleCallback(() => {
+        let files: string[] = [];
         if (selectedFloor === 1) {
           files = [
             '1_background_1F.geojson',
@@ -76,7 +83,7 @@ export default function MapPage() {
             '5_room_1F.geojson',
             '6_stairs_1F.geojson',
             '7_points_1F.geojson',
-          ]
+          ];
         } else if (selectedFloor === 2) {
           files = [
             '1_background_2F.geojson',
@@ -86,7 +93,7 @@ export default function MapPage() {
             '5_room_2F.geojson',
             '6_stairs_2F.geojson',
             '7_points_2F.geojson',
-          ]
+          ];
         } else if (selectedFloor === 3) {
           files = [
             '1_background_3F.geojson',
@@ -95,7 +102,7 @@ export default function MapPage() {
             '5_room_3F.geojson',
             '6_stairs_3F.geojson',
             '7_points_3F.geojson',
-          ]
+          ];
         } else if (selectedFloor === 4) {
           files = [
             '1_background_4F.geojson',
@@ -104,16 +111,19 @@ export default function MapPage() {
             '5_room_4F.geojson',
             '6_stairs_4F.geojson',
             '7_points_4F.geojson',
-          ]
+          ];
         }
         // 先頭数字で昇順ソート
-        files.sort((a, b) => parseInt(a.match(/^\d+/)?.[0] ?? '0', 10) - parseInt(b.match(/^\d+/)?.[0] ?? '0', 10))
-        setGeojsonUrls(files.map(f => dir + f))
-        setIsReady(true)
-      })
-    }
-    fetchFiles()
-  }, [selectedFloor])
+        files.sort((a, b) =>
+          parseInt(a.match(/^\\d+/)?.[0] ?? '0', 10) -
+          parseInt(b.match(/^\\d+/)?.[0] ?? '0', 10)
+        );
+        setGeojsonUrls(files.map(f => dir + f));
+        setIsReady(true);
+      });
+    };
+    fetchFiles();
+  }, [selectedFloor]);
 
   // ポリゴン名リストをMapから受け取るコールバック
   const handlePolygonsUpdate = useCallback((names: string[]) => {

@@ -13,6 +13,7 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { fetchWithCache } from "@/lib/fetchWithCache";
 
 
 export default function TicketPage() {
@@ -35,21 +36,14 @@ export default function TicketPage() {
         setAppliedEvents([]);
         return;
       }
-      try {
-        const res = await fetch(`/api/lottely-applications?user_id=${userId}`);
-        if (!res.ok) {
-          setAlreadyApplied(false);
-          setAppliedEvents([]);
-          return;
-        }
-        const data = await res.json();
-        const results = Array.isArray(data?.results) ? data.results as { event_id: number; event_time: string; user_name?: string }[] : [];
-        setAlreadyApplied(results.length > 0);
-        setAppliedEvents(results);
-      } catch {
-        setAlreadyApplied(false);
-        setAppliedEvents([]);
-      }
+      // キャッシュ付き取得
+      const data = await fetchWithCache(
+        'applied_events',
+        `/api/lottely-applications?user_id=${userId}`
+      );
+      const results = Array.isArray(data?.results) ? data.results as { event_id: number; event_time: string; user_name?: string }[] : [];
+      setAlreadyApplied(results.length > 0);
+      setAppliedEvents(results);
     };
     if (status === 'authenticated') {
       // user_uuidsテーブルに登録されたuuidのみをlocalStorageに保存
