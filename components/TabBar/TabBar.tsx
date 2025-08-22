@@ -37,10 +37,10 @@ function useDeviceDetection() {
   useEffect(() => {
     const checkDevice = () => {
       const width = window.innerWidth;
-      setIsDesktop(width >= 768); // 768px以上をPCとする
+      setIsDesktop(width >= 900); // 900px以上をPCとする
     };
 
-    checkDevice();
+    checkDevice();　
     window.addEventListener('resize', checkDevice);
 
     return () => window.removeEventListener('resize', checkDevice);

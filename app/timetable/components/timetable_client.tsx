@@ -55,7 +55,7 @@ export default function Timetable_Client() {
       const width = window.innerWidth;
       let newMax = 3;
       if (width > 1200 - 1) newMax = 3;
-      else if (width > 768 - 1) newMax = 2;
+      else if (width > 768 + 1) newMax = 2;
       else newMax = 1;
       setMaxSelectableAreas(prev => prev !== newMax ? newMax : prev);
     };

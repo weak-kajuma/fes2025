@@ -12,6 +12,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media screen and (min-width: 760px) and (max-width: 1200px) {
+    width: 40vw;
+    height: 40dvh;
+  }
 }
 
 .ellipse svg {

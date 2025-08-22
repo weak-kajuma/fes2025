@@ -190,6 +190,11 @@
       --e : cubic-bezier(.16,1,.3,1) .8s;
       margin: 0 10vw;
 
+      @media screen and (max-width: 600px) {
+        grid-template-columns: 1fr;
+        margin: 0 2vw;
+      }
+
       .list_item {
         position: relative;
         height: auto;
@@ -219,7 +224,7 @@
 
             &:hover {
               clip-path: inset(0 round 1vw);
-              background-color: var(--text);
+              /* background-color: var(--text); */
 
               & .img {
                 scale: .75;
@@ -278,6 +283,10 @@
             letter-spacing: -.015em;
             --fs-center: 16;
 
+            @media screen and (max-width: 768px) {
+              margin-top: 10vw;
+            }
+
             &::before {
               content: "( ";
             }
@@ -313,6 +322,16 @@
             letter-spacing: .03em;
             --fs-center: 25;
             font-size: 2rem;
+            break-word: break-word;
+            white-space: nowrap;
+
+            @media screen and (max-width: 1200px) {
+              font-size: 1.3rem;
+            }
+
+            @media screen and (max-width: 768px) {
+              font-size: 1.5rem;
+            }
           }
 
           .render_img:hover ~ .list_title {

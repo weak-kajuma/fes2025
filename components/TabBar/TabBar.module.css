@@ -5,7 +5,7 @@
   position: relative;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 900px) {
   .logo_wrapper {
     position: absolute;
     left: 2.5rem;
@@ -134,7 +134,7 @@
       unicode-bidi: isolate;
       box-sizing: content-box;
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 900px) {
         border-bottom: 0px solid rgba(255, 255, 255, 0.1);
         padding-bottom: 0px;
         bottom: 3.7rem;

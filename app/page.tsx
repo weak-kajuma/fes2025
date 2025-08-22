@@ -51,7 +51,7 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsMobile(window.matchMedia('(max-width: 768px)').matches);
+      setIsMobile(window.matchMedia('(max-width: 900px)').matches);
     }
   }, []);
 
@@ -576,10 +576,7 @@ export default function Home() {
                     <div className={styles.animatedCircle} key={`ellipse-${ellipseKey}`}>
                       <AnimatedEllipse
                         ref={ellipseRef}
-                        text={isMobile
-                          ? "Seikasai 2025 Seikasai 2025 Seikasai 2025 "
-                          : "Seikasai 2025 Seikasai 2025 Seikasai 2025 Seikasai 2025 "
-                        }
+                        text={"Seikasai 2025"}
                       />
                     </div>
                   </div>
