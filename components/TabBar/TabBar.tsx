@@ -372,9 +372,15 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
 
   // ページ遷移時にホバー解除
   useEffect(() => {
+    // ホバー解除
     const hoverEls = document.querySelectorAll(`.${styles.link_hover}`);
     hoverEls.forEach(el => {
       gsap.set(el, { transform: "scale3d(0,0,1)" });
+    });
+    // 文字色リセット
+    const linkEls = document.querySelectorAll(`.${styles.menu_link}`);
+    linkEls.forEach(el => {
+      gsap.set(el, { color: "white" });
     });
   }, [pathname]);
 
