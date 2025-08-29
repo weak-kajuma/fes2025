@@ -8,7 +8,8 @@ import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import DetailOverlay from "../../app/search/components/DetailOverlay";
 import Image from "next/image";
 
-import { useTransitionRouter } from "next-view-transitions";
+import { useRouter } from "next/navigation";
+// ...existing code...
 import { usePathname } from "next/navigation"
 
 import AnimatedLink from '../AnimatedLink';
@@ -174,7 +175,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
   const [selectedEvent, setSelectedEvent] = useState<EventDataForClient | null>(null);
   const { isDesktop } = useDeviceDetection();
 
-  const router = useTransitionRouter();
+  const router = useRouter();
   const pathname = usePathname();
 
   function triggerPageTransition() {
@@ -199,7 +200,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
     }
 
     router.push(path, {
-      onTransitionReady: triggerPageTransition
+  // ...existing code...
     })
   }
 
@@ -369,16 +370,24 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
     }
   };
 
+  // ページ遷移時にホバー解除
+  useEffect(() => {
+    const hoverEls = document.querySelectorAll(`.${styles.link_hover}`);
+    hoverEls.forEach(el => {
+      gsap.set(el, { transform: "scale3d(0,0,1)" });
+    });
+  }, [pathname]);
+
   return (
     <div className={styles.wrapper} ref={combinedRef} data-tabbar-wrapper>
       {!isExpanded ? (
         <div className={styles.content} ref={contentRef}>
           <div className={styles.logo_wrapper}>
-            <AnimatedLink to="/" className={styles.logo_link}>
+            <Link href="/" className={styles.logo_link}>
               <div className={styles.logo_inner}>
                 Sparkle
               </div>
-            </AnimatedLink>
+            </Link>
           </div>
           <nav className={styles.menu} ref={menuRef}>
             {menuItems.map((item, idx) => (
@@ -388,9 +397,9 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
                 onMouseEnter={handleMenuItemHover}
                 onMouseLeave={handleMenuItemLeave}
               >
-                <AnimatedLink to={item.to} className={styles.menu_link}>
+                <Link href={item.to} className={styles.menu_link}>
                   <span>{item.label}</span>
-                </AnimatedLink>
+                </Link>
                 <div className={styles.link_hover}></div>
               </div>
             ))}

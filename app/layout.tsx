@@ -8,7 +8,8 @@ import TabBar from "../components/TabBar/TabBar"
 import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
-import { ViewTransitions } from "next-view-transitions"
+import { unstable_ViewTransition as ViewTransition } from "react";
+// ...existing code...
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,7 +55,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ViewTransitions>
     <html lang="ja">
       <head>
         <meta charSet="utf-8" />
@@ -64,13 +64,14 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable} `}>
         <SessionProvider>
           <TabBarProvider>
-            <ScrollManager />
-            {/* <MenuIcon /> */}
+            <ViewTransition>
+              <ScrollManager />
               {children}
+            </ViewTransition>
           </TabBarProvider>
         </SessionProvider>
       </body>
     </html>
-    </ViewTransitions>
+      // ...existing code...
   );
 }

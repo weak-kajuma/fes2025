@@ -25,9 +25,6 @@
   to { --border-angle-3: 540deg; }
 }
 
-body {
-  background-color: #141414;
-}
 
 .wrapper {
   overflow: auto;

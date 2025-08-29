@@ -1,6 +1,7 @@
 "use client";
 import { ReactNode } from "react";
-import { useTransitionRouter } from "next-view-transitions";
+import { useRouter } from "next/navigation";
+// ...existing code...
 import { usePathname } from "next/navigation";
 
 interface AnimatedLinkProps {
@@ -12,7 +13,7 @@ interface AnimatedLinkProps {
 };
 
 export default function AnimatedLink({ to, children, className, style, as = "a" }: AnimatedLinkProps) {
-  const router = useTransitionRouter();
+  const router = useRouter();
   const pathname = usePathname();
 
   function triggerPageTransition() {
@@ -42,7 +43,7 @@ export default function AnimatedLink({ to, children, className, style, as = "a" 
       return;
     }
     e.preventDefault();
-    router.push(to, { onTransitionReady: triggerPageTransition });
+  router.push(to);
   };
 
   // デザイン崩れ防止: as="a"ならhref属性を付与、buttonならtype="button"を付与
