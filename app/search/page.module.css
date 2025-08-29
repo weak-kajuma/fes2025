@@ -28,6 +28,7 @@
 
 .wrapper {
   overflow: auto;
+  background: #141414;
 }
 
 /* 横スクロールテキスト用 */

@@ -10,6 +10,7 @@ export default function MapPage() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const [zoom, setZoom] = useState(17);
   const [center, setCenter] = useState<[number, number]>([135.6280, 34.8480]);
+  const [floor, setFloor] = useState<'1F' | '2F' | '3F' | '4F'>('1F');
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -19,12 +20,22 @@ export default function MapPage() {
       style: {
         version: 8,
         sources: {},
-        layers: [] // 地図背景なし
+        layers: [
+          {
+            id: 'background',
+            type: 'background',
+            paint: { 'background-color': '#fff' }
+          }
+        ] // 背景を白に設定
       },
       center: center,
       zoom: zoom,
-      minZoom: 0.1,
+      minZoom: 14, // さらに縮小可能に
       maxZoom: 20,
+      maxBounds: [
+        [135.6230, 34.8440], // 南西（左下）
+        [135.6330, 34.8520]  // 北東（右上）
+      ], // 画面内に一部でもあればOKな広めの移動制限
       interactive: true,
       attributionControl: false,
       logoPosition: 'bottom-right',
@@ -104,12 +115,33 @@ export default function MapPage() {
   const offsetY = (center[1] - svgCenter[1]) / latPerPx;
   return (
     <div className={styles.mapContainer}>
-      <div ref={mapContainerRef} style={{ width: '100vw', height: '100vh', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
+      {/* フロア選択ボタン 左上配置 */}
+      <div style={{ position: 'fixed', top: 16, left: 16, zIndex: 10, display: 'flex', gap: '0.5rem' }}>
+        {['1F', '2F', '3F', '4F'].map(f => (
+          <button
+            key={f}
+            style={{
+              padding: '0.5rem 1rem',
+              borderRadius: '1rem',
+              border: floor === f ? '2px solid #007aff' : '1px solid #ccc',
+              background: floor === f ? '#e6f0ff' : '#fff',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              color: 'black'
+            }}
+            onClick={() => setFloor(f as '1F' | '2F' | '3F' | '4F')}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+      <div ref={mapContainerRef} style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 1 }} />
       <svg
         width={svgBounds.width}
         height={svgBounds.height}
         style={{
-          position: 'absolute',
+          position: 'fixed',
           top: '50%',
           left: '50%',
           transform: `translate(-50%, -50%) scale(${Math.pow(2, zoom - 17)}) translate(${-offsetX}px, ${offsetY}px)`,
@@ -117,7 +149,7 @@ export default function MapPage() {
           zIndex: 2,
         }}
       >
-        <image href="/data/map/1F.svg" x="0" y="0" width={svgBounds.width} height={svgBounds.height} />
+        <image href={`/data/map/${floor}.svg`} x="0" y="0" width={svgBounds.width} height={svgBounds.height} />
       </svg>
     </div>
   );

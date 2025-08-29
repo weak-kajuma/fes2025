@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import styles from "./NewsSlider.module.css";
 import { useRouter } from "next/navigation";
-import AnimatedLink from "../AnimatedLink";
+import Link from "next/link"
 
 type NewsItem = { id: string | number; title: string; imgUrl?: string; type?: string };
 
@@ -156,7 +156,16 @@ const NewsSlider = ({ items, isMobile, onItemClick }: NewsSliderProps) => {
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <AnimatedLink to={`/news/${item.id}`}>
+                <Link
+                  href={`/news/${item.id}`}
+                  draggable={false}
+                  onClick={e => {
+                    if (clickDisabledRef.current) {
+                      e.preventDefault();
+                      return;
+                    }
+                  }}
+                >
                   <div className={styles.image}>
                     {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                   </div>
@@ -165,7 +174,7 @@ const NewsSlider = ({ items, isMobile, onItemClick }: NewsSliderProps) => {
                     <h4 className={styles.title}>{item.title}</h4>
                     <div className={styles.button}>詳細</div>
                   </div>
-                </AnimatedLink>
+                </Link>
               </li>
             ))}
           </ul>

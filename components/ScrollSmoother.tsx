@@ -63,6 +63,8 @@ export const useScrollSmoother = () => {
 			});
 
 			window.scrollSmoother = smoother;
+			// 初期化直後に必ずトップへスクロール
+			smoother.scrollTo(0, false);
 
 			setTimeout(() => {
 				ScrollTrigger.refresh();

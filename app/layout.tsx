@@ -65,7 +65,7 @@ export default function RootLayout({
         <SessionProvider>
           <TabBarProvider>
             <ViewTransition>
-              <ScrollManager />
+              {/* <ScrollManager /> */}
               {children}
             </ViewTransition>
           </TabBarProvider>
