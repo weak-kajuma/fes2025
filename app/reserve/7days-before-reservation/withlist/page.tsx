@@ -23,6 +23,7 @@ interface AppliedEvent {
 
 export default function Reserve7DaysBeforeWithlistPage() {
   const [appliedList, setAppliedList] = useState<(AppliedEvent | null)[]>([]);
+  const [appliedEvents, setAppliedEvents] = useState<{ event_id: number; event_time: string; user_name?: string }[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -38,67 +39,67 @@ export default function Reserve7DaysBeforeWithlistPage() {
     setMessage(null);
     try {
       // 全イベント情報と、申込済みの情報を並行して取得
+      const userId = window.localStorage.getItem('user_id');
       const [eventsRes, appliedRes] = await Promise.all([
-        fetch('/data/events.json'),
-        fetch('/api/lottely-applications')
+        fetch('/data/events_7days.json'),
+        userId ? fetch(`/api/lottely-applications?user_id=${userId}`) : Promise.resolve({ ok: false, status: 400, json: async () => ({}) })
       ]);
 
       if (!eventsRes.ok) throw new Error('イベント情報の取得に失敗しました。');
       const allEvents: EventInfo[] = await eventsRes.json();
 
-      let appliedResult: { event_data?: { id: number; time?: string }[] | number[]; user_name?: string } | null = null;
+      let appliedEventsFromApi: { event_id: number; event_time: string; user_name?: string }[] = [];
       if (appliedRes.status === 401) {
-        // 未ログイン時はDBの申込情報なしとして扱う
-        appliedResult = null;
+        appliedEventsFromApi = [];
       } else if (!appliedRes.ok) {
         throw new Error('申込情報の取得に失敗しました。');
       } else {
-        appliedResult = await appliedRes.json();
+        const appliedResult = await appliedRes.json();
+        appliedEventsFromApi = Array.isArray(appliedResult?.results) ? appliedResult.results : [];
+        // 既存の登録名があれば初期値として反映
+        if (appliedEventsFromApi.length > 0 && appliedEventsFromApi[0].user_name) {
+          setUserName(appliedEventsFromApi[0].user_name);
+          window.localStorage.setItem("google_user_name", appliedEventsFromApi[0].user_name);
+        }
       }
-
-      // DBの形式に合わせて配列を正規化（[{id,time}] or [id]）
-      const normalizedFromDb: { id: number; time?: string }[] = Array.isArray(appliedResult?.event_data)
-        ? (appliedResult!.event_data as any[]).map((item: any) => {
-            return typeof item === 'number' ? { id: item } : { id: item.id, time: item.time };
-          })
-        : [];
+      setAppliedEvents(appliedEventsFromApi);
 
       // セッションの編集中リストを反映
       const sessionListRaw = window.sessionStorage.getItem('appliedEventList');
       const sessionList: ({ id: number; name?: string; time?: string } | null)[] = sessionListRaw ? JSON.parse(sessionListRaw) : [];
 
+      // 申込済みイベントIDリスト
+      const appliedEventIds = appliedEventsFromApi.map(ev => ev.event_id);
+
+      // 申込済みイベントは選択不可・表示のみ
       const newAppliedList: (AppliedEvent | null)[] = Array(maxWishes).fill(null);
       for (let i = 0; i < maxWishes; i++) {
         const fromSession = sessionList[i];
-        if (fromSession && fromSession.id) {
+        if (fromSession && fromSession.id && !appliedEventIds.includes(fromSession.id)) {
           const eventDetail = allEvents.find(e => e.id === fromSession.id);
           if (eventDetail) {
             newAppliedList[i] = {
               id: eventDetail.id,
               name: eventDetail.name,
-              time: fromSession.time ?? (eventDetail as any).ImplementationTime?.split(',')[0] ?? ''
+              time: fromSession.time ?? eventDetail.time ?? ''
             };
             continue;
           }
         }
-        const fromDb = normalizedFromDb[i];
-        if (fromDb && fromDb.id) {
-          const eventDetail = allEvents.find(e => e.id === fromDb.id);
+        // 申込済みイベントは表示のみ
+        const fromApi = appliedEventsFromApi[i];
+        if (fromApi && fromApi.event_id) {
+          const eventDetail = allEvents.find(e => e.id === fromApi.event_id);
           if (eventDetail) {
             newAppliedList[i] = {
               id: eventDetail.id,
               name: eventDetail.name,
-              time: fromDb.time ?? (eventDetail as any).ImplementationTime?.split(',')[0] ?? ''
+              time: fromApi.event_time ?? eventDetail.time ?? ''
             };
           }
         }
       }
-
       setAppliedList(newAppliedList);
-      // 既存の登録名があれば初期値として反映
-      if (appliedResult?.user_name && typeof appliedResult.user_name === 'string') {
-        setUserName(appliedResult.user_name);
-      }
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'データの読み込み中に予期せぬエラーが発生しました';
@@ -118,23 +119,42 @@ export default function Reserve7DaysBeforeWithlistPage() {
     setIsLoading(true);
     setMessage(null);
 
-    // APIに送る形式: [{id, time}]（timeは任意）
-    const eventData = appliedList
-      .filter((item): item is AppliedEvent => item !== null)
-      .map(item => ({ id: item.id, time: item.time }));
+    // APIに送る形式: event_id[], event_time[]
+    const filteredList = appliedList.filter((item): item is AppliedEvent => item !== null);
+    const eventIds = filteredList.map(item => item.id);
+    const eventTimes = filteredList.map(item => item.time ?? null);
+    const user_id = window.localStorage.getItem('user_id');
 
-    if (eventData.length === 0) {
+    if (eventIds.length === 0) {
       setMessage("申し込むイベントがありません。");
       setIsLoading(false);
       return;
     }
 
     try {
+      // 既存申込内容と新申込内容を比較し、重複するものはDELETE
+      for (const ev of appliedEvents) {
+        const idx = eventIds.findIndex((id, i) => id === ev.event_id && eventTimes[i] === ev.event_time);
+        if (idx !== -1) {
+          // 重複する申込内容は一度削除
+          await fetch('/api/lottely-applications', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event_id: ev.event_id, event_time: ev.event_time, user_id }),
+          });
+        }
+      }
+
+      // 新しい申込内容をPOST
       const response = await fetch('/api/lottely-applications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ event_data: eventData, user_name: userName }),
+        body: JSON.stringify({ event_id: eventIds, event_time: eventTimes, user_name: userName, user_id }),
       });
+      // 名前をlocalStorageに保存
+      if (userName) {
+        window.localStorage.setItem('reserved_user_name', userName);
+      }
       if (response.status === 401) {
         setMessage('申し込みにはログインが必要です。ログイン後に再度お試しください。');
         setIsLoading(false);
@@ -167,8 +187,21 @@ export default function Reserve7DaysBeforeWithlistPage() {
     }
   };
 
-  // 削除ボタンの処理 (API連携は未実装)
-  const handleDelete = (index: number) => {
+  // 削除ボタンの処理 (API連携)
+  const handleDelete = async (index: number) => {
+    const item = appliedList[index];
+    if (item) {
+      // DBからも削除
+      try {
+        await fetch('/api/lottely-applications', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event_id: item.id, event_time: item.time }),
+        });
+      } catch (e) {
+        setMessage('削除処理でエラーが発生しました');
+      }
+    }
     const newList = [...appliedList];
     newList[index] = null;
     setAppliedList(newList);
@@ -178,6 +211,8 @@ export default function Reserve7DaysBeforeWithlistPage() {
     while (sessionList.length < maxWishes) sessionList.push(null);
     sessionList[index] = null;
     window.sessionStorage.setItem('appliedEventList', JSON.stringify(sessionList));
+    // 再取得
+    await loadAppliedData();
   };
 
   if (isPageLoading) {
@@ -246,10 +281,10 @@ export default function Reserve7DaysBeforeWithlistPage() {
           {/* ... top and middle sections ... */}
           <div className={styles.top}>
             <h1 className={styles.top_title}>7日前<br/>抽選申込</h1>
-            <div className={styles.top_info}>来場予定日のパビリオン･イベントの抽選に、第5希望までお申し込みできます。</div>
+            <div className={styles.top_info}>来場予定日のイベントの抽選に、第5希望までお申し込みできます。</div>
             <div className={styles.top_info}>当選は1回の抽選で1つです。<br/>
             第1希望が落選の場合に第2希望、第2希望が落選の場合に第3希望と順番に抽選を行います。</div>
-            <div className={styles.top_info}>対象のパビリオン･イベントは、以下の登録操作の中で検索して調べることができます。</div>
+            <div className={styles.top_info}>対象のイベントは、以下の登録操作の中で検索して調べることができます。</div>
             <div className={styles.term}>
               <div className={styles.title}>申込期間：</div>
               <div className={styles.values}><span>　2025年7月10日(木) 0:00</span><span>　-　</span><span>2025年8月2日(土) 23:59</span></div>
@@ -269,58 +304,58 @@ export default function Reserve7DaysBeforeWithlistPage() {
             追加で申込可能な時間帯</div>
           </div>
 
-          <div className={styles.reserve_selector}>
-            {[...Array(maxWishes)].map((_, idx) => (
-              <div className={styles.selector} key={idx}>
-                <div className={`${styles.circle} ${appliedList[idx] ? styles.circle_registered : ""}`}>
-                  <span className={styles.circle_text}>第{idx + 1}希望</span>
-                </div>
-                <div className={`${styles.note} ${appliedList[idx] ? styles.note_registered : ""}`}>
-                  <div className={styles.note_inner_sp}>
-                    <div className={styles.infoArea}>
-                      {appliedList[idx] ? (
-                        <p className={styles.noteText_registered}>
-                          {appliedList[idx]!.name}<br />
-                          {appliedList[idx]!.time}
-                        </p>
-                      ) : (
-                        <p className={styles.noteText}>
-                          未登録： 2025年8月2日(土) 23:59までに<br />
-                          登録してください。
-                        </p>
-                      )}
-                    </div>
-                    <div className={styles.noteContent}>
-                      {appliedList[idx] ? (
-                        <div className={styles.actionButtonsArea}>
-                          <div className={styles.action_button}
-                            onClick={() => {
-                              // 変更ページへ遷移。wishIndexを渡して、どの枠の変更か知らせる
-                              router.push(`/reserve/7days-before-reservation/eventSelect?wishIndex=${idx}`);
-                            }}
-                          >
-                            変更
-                          </div>
-                          <div className={styles.action_button}
-                            onClick={() => handleDelete(idx)}
-                          >
-                            削除
-                          </div>
-                        </div>
-                      ) : (
-                        <Link
-                          href={`/reserve/7days-before-reservation/eventSelect?wishIndex=${idx}`}
-                        >
-                          <div className={styles.register_button}>登録する</div>
-                        </Link>
-                      )}
-                    </div>
+            <div className={styles.reserve_selector}>
+              {[...Array(maxWishes)].map((_, idx) => (
+                <div className={styles.selector} key={idx}>
+                  <div className={`${styles.circle} ${appliedList[idx] ? styles.circle_registered : ""}`}>
+                    <span className={styles.circle_text}>第{idx + 1}希望</span>
                   </div>
-                  <div className={`${styles.knob} ${appliedList[idx] ? styles.knob_registered : ""}`}></div>
+                  <div className={`${styles.note} ${appliedList[idx] ? styles.note_registered : ""}`}>
+                    <div className={styles.note_inner_sp}>
+                      <div className={styles.infoArea}>
+                        {appliedList[idx] ? (
+                          <p className={styles.noteText_registered}>
+                            {appliedList[idx]!.name}<br />
+                            {appliedList[idx]!.time}
+                          </p>
+                        ) : (
+                          <p className={styles.noteText}>
+                            未登録： 2025年8月2日(土) 23:59までに<br />
+                            登録してください。
+                          </p>
+                        )}
+                      </div>
+                      <div className={styles.noteContent}>
+                        {appliedList[idx] ? (
+                          <div className={styles.actionButtonsArea}>
+                            <div className={styles.action_button}
+                              onClick={() => {
+                                router.push(`/reserve/7days-before-reservation/eventSelect?wishIndex=${idx}`);
+                              }}
+                            >
+                              変更
+                            </div>
+                            <div className={styles.action_button}
+                              onClick={() => handleDelete(idx)}
+                            >
+                              削除
+                            </div>
+                          </div>
+                        ) : (
+                          <Link
+                            href={`/reserve/7days-before-reservation/eventSelect?wishIndex=${idx}`}
+                          >
+                            <div className={styles.register_button}>登録する</div>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`${styles.knob} ${appliedList[idx] ? styles.knob_registered : ""}`}></div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+
 
           <div className={styles.buttons}>
             {/* 予約者名の入力欄 */}
@@ -331,7 +366,7 @@ export default function Reserve7DaysBeforeWithlistPage() {
               <input
                 type="text"
                 value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                onChange={e => setUserName(e.target.value)}
                 placeholder="例）山田 太郎"
                 style={{
                   width: '100%',

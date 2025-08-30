@@ -3,9 +3,11 @@
   aspect-ratio: 4 / 5;
   margin: 1rem auto;
   padding: 1.1rem;
-  border: solid 1px #48B9FF;
+  border: solid 1px var(--text);
   border-radius: 2rem;
   position: relative;
+  color: white;
+  font-family: var(--mincho);
 
   @media screen and (max-width: 1200px) and (min-width: 601px) {
     width: 90%;
@@ -18,7 +20,8 @@
   .img {
     width: 100%;
     height: 40%;
-    background-color: #D9D9D9;
+    background-color: rgba(203, 163, 115, .2);
+    border: solid 1px var(--text);
     border-radius: 1.5rem;
   }
 
@@ -60,7 +63,7 @@
 
     .tag {
       font-size: 0.8rem;
-      background-color: #D9D9D9;
+      background-color: var(--text);
       padding: .4rem .8rem;
       border-radius: 1rem;
     }
@@ -72,7 +75,7 @@
     left: 0;
     width: 100%;
     height: 7%;
-    background-color: #48B9FF;
+    background-color: var(--text);
     border-radius: 0 0 2rem 2rem;
 
     .bottom_inner {

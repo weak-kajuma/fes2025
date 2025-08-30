@@ -1,3 +1,159 @@
+/* モーダルオーバーレイ */
+.modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .modal_wrapper {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    border: 2px solid rgb(0, 0, 0);
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    padding: 0px;
+    margin-right: -50%;
+    width: max-content;
+    height: auto;
+    max-width: calc(-60px + 100vw);
+    max-height: calc(-60px + 100dvh);
+    transform: translate(-50%, -50%);
+
+    .modal_inner {
+      width: 100%;
+      height: 100%;
+      padding: 40px 48px 48px;
+      text-align: center;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+
+      .modal_close {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: none;
+        background: none;
+        padding: 0;
+      }
+
+      .modal_content {
+        /* min-width: 400px; */
+
+        p {
+          font-size: 20px;
+          font-weight: 700;
+          line-height: 1.45;
+          letter-spacing: .1em;
+        }
+
+        .calendar_icon {
+          margin: 10px 0;
+        }
+
+        .sum {
+          padding-top: 40px;
+
+          p {
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.6;
+          }
+
+          & > div {
+
+            p {
+              font-size: 15px;
+              font-weight: 700;
+              line-height: 1.6;
+              margin: 20px 0 0;
+              white-space: pre-wrap;
+              text-align: left;
+              display: flex;
+              align-items: flex-start;
+
+              span {
+                font-size: 15px;
+                font-weight: 700;
+                line-height: 1.6;
+                white-space: pre-wrap;
+                text-align: left;
+              }
+            }
+          }
+        }
+
+        .buttons {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 40px;
+          list-style: none;
+
+          @media screen and (max-width: 768px) {
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+          }
+
+          li {
+            margin: auto;
+
+            .button {
+              @apply button-base;
+              padding-right: 44px;
+              padding-left: 44px;
+              color: #fff;
+              background: #e60012;
+              border: none;
+              width: 295px;
+              min-height: 80px;
+              position: relative;
+
+              @media screen and (max-width: 768px) {
+                width: 100%;
+              }
+
+              span {
+                display: inline-block;
+                font-size: 15px;
+                text-align: center;
+
+                &::after {
+                  background: url(/images/ticket_back_red.png) no-repeat 0 0 / 100% auto;
+                  position: absolute;
+                  top: 50%;
+                  right: 8px;
+                  display: block;
+                  width: 22px;
+                  height: 22px;
+                  content: "";
+                  transform: translateY(-50%);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+}
+
+
+
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -250,21 +406,6 @@
       background-color: #0068b7;
     }
 
-    svg {
-      position: absolute;
-      width: auto;
-      height: 100%;
-      top: 0;
-      left: calc(100% - 9px);
-      z-index: 10;
-      background-color: transparent;
-      fill: #0068b7;
-    }
-
-    dl {
-      transform: translateX(-10px);
-    }
-
     dt {
       color: #0068b7;
       background-color: #ffffff;
@@ -282,17 +423,49 @@
     align-items: flex-start;
     position: relative;
     z-index: 9;
+    transform: translateX(-10px);
+
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: calc(100% - 6px);
+      height: 100%;
+      background-color: #0068b7;
+    }
+
+    svg {
+      position: absolute;
+      width: auto;
+      height: 100%;
+      top: 0;
+      left: calc(100% - 9px);
+      z-index: 10;
+      background-color: transparent;
+      fill: #0068b7;
+    }
 
     &::after {
       content: "";
       width: 15px;
+    }
+
+    dt {
+      color: #0068b7;
+      background-color: #ffffff;
+    }
+
+    dd {
+      color: #fff
     }
   }
 }
 
 .main {
   margin-top: 0;
-  /* margin-bottom: 30vh; */
+  /* margin-bottom: 30dvh; */
 
   .main_inner {
     max-width: 1200px;
@@ -336,6 +509,19 @@
         span {
           text-decoration: underline;
         }
+      }
+
+      .top_sub_title {
+        text-align: center;
+        margin: 20px 0;
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-top: 3rem;
+      }
+
+      .top_sub_text {
+        text-align: center;
+        line-height: 1.6;
       }
 
       .search {
@@ -392,7 +578,7 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: flex-end;
+      /* justify-content: flex-end; */
       padding-bottom: 24px;
       border-bottom: 2px solid #222426;
       margin: 0 auto;
@@ -403,6 +589,7 @@
         justify-content: flex-end;
         align-items: center;
         margin-top: 25px;
+        width: 100%;
 
         p {
           height: 50px;
@@ -412,10 +599,11 @@
           align-items: center;
           font-size: 1rem;
           font-weight: 700;
+          white-space: nowrap;
         }
 
         .controller_text {
-          width: 114px;
+          width: 100%;
           padding: 10px 15px;
           text-align: center;
           border: 2px solid #222426;
@@ -433,72 +621,95 @@
       }
     }
 
-    .event_list {
-      margin-top: 30px;
+    .time_picker {
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
 
-      .event_item {
+      .time_picker_content_wrapper {
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
         width: 100%;
 
-        .event_button {
+        .time_picker_content {
+          border-radius: 10px;
           width: 100%;
-          /* min-height: 60px; */
-          padding: 10px 30px;
-          border: 2px solid #222426;
-          background-color: #fff;
-          color: #000;
-          font-size: 1rem;
-          font-weight: 700;
-          text-align: left;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
 
-          &:hover {
-            background-color: #f5f5f5;
-          }
+          .time_picker_content_inner {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            padding: 12px;
 
-          &::after {
-            background: url(/images/button_back_red.png) no-repeat 0 0 / 100% auto;
-            position: absolute;
-            top: 50%;
-            right: 16px;
-            display: block;
-            width: 22px;
-            height: 22px;
-            content: "";
-            transform: translateY(-50%);
+            .time_picker_radio {
+              width: 20px;
+              height: 20px;
+              margin: 0 20px;
+            }
           }
         }
+      }
 
-        .detail_link {
-          max-width: 100%;
-          line-height: 1.6;
-          color: #000;
-          font-size: 16px;
-          text-decoration: underline;
-          width: max-content;
+      .time_register{
+        list-style: none;
+        width: 100%;
+        margin-top: 40px;
+      }
+
+      .time_register_info {
+        background-color: #fde6e6;
+        font-size: 14px;
+        padding: 20px;
+        text-align: center;
+
+        & > p {
+          font-weight: 700;
+          margin: 0 0 10px;
+        }
+      }
+
+      .time_register_link {
+        text-decoration: none;
+        background: #e60012 !important;
+        min-height: 54px;
+        color: #fff;
+        border: none;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 315px;
+        padding: .7em 44px;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.5;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background .2s ease-out;
+        background-color: initial;
+        width: 100%;
+
+        &::after {
+          background: url(/images/ticket_back_red.png) no-repeat 0 0 / 100% auto;
+          position: absolute;
+          top: 50%;
+          right: 8px;
           display: block;
+          width: 22px;
+          height: 22px;
+          content: "";
+          transform: translateY(-50%);
+        }
 
-          .detail_box {
-            background: #eee;
-            width: fit-content;
-            padding: 4px 16px;
-            border-radius: 20px;
-            overflow-wrap: anywhere;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
+        &.time_register_link_disabled {
+          background: #6a7981 !important;
+          color: #fff;
+          cursor: not-allowed;
 
-            img {
-              filter: brightness(0);
-            }
+          &::after {
+            background: url(/images/arrow_back_gray.png) no-repeat 0 0 / 100% auto;
           }
         }
       }
@@ -588,7 +799,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 315px;
             padding: .7em 44px;
             font-size: 1rem;
             font-weight: 700;
@@ -640,6 +850,30 @@
     max-width: 880px;
     margin: 0 auto;
     position: relative;
-    height: 50vh;
+    height: 50dvh;
   }
+}
+
+
+
+
+
+.selector_current,
+.selector_list,
+.cart,
+.menu > li,
+.search_inner > button > span,
+.detail_box > p {
+  /* position: relative; */
+  text-decoration: line-through;
+  text-decoration-thickness: 3px;
+
+  /* &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.2);
+    z-index: 10;
+    pointer-events: none;
+  } */
 }

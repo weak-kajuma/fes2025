@@ -43,7 +43,7 @@ export default function ReservationForm({ params }: { params: Promise<{ slotId: 
       width: '100%',
       maxWidth: '100vw',
       overflowX: 'hidden',
-      minHeight: '100vh',
+      minHeight: '100dvh',
       padding: '20px',
       boxSizing: 'border-box'
     }}>

@@ -1,9 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap');
+
+
+@font-face {
+  font-family: 'Freestyle Script';
+  src: url('/fonts/FREESCPT.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
-  --background: #ffffff;
+  --background: #ddd9d5;
   --foreground: #171717;
   --deepblue: #272A56;
+  --bg: #141414;
+  --text: #cba373;
   --mincho: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "HGS明朝E", "MS P明朝", "MS Mincho", serif;
+  --workSans: 'Work Sans', 'Arial', 'Helvetica', sans-serif;
 
+
+  /* --location-primary-color-stage: #FFA09D;
+  --location-secondary-color-stage: #FFE2E2;
+  --location-primary-color-yard: #91C4FF;
+  --location-secondary-color-yard: #E2F1FF;
+  --location-primary-color-gym: #D9AEFF;
+  --location-secondary-color-gym: #E6E6FA;
+  --location-primary-color-hole: #89FF8D;
+  --location-secondary-color-hole: #E2FFEE; */
 
   --location-primary-color-stage: #FFA09D;
   --location-secondary-color-stage: #FFE2E2;
@@ -70,13 +92,14 @@ html {
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: #141414;
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: -webkit-fill-available;
 }
 
 /* Ensure ScrollSmoother content never shows a scrollbar */
@@ -145,21 +168,24 @@ a {
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 }
-
+/*
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.8s;
-  animation-timing-function: ease;
+  animation: none !important;
+}
+
+::view-transition-group(root) {
+  z-index: auto !important;
 }
 
 ::view-transition-old(root) {
-  animation-name: fade-out;
   z-index: 1;
+  animation: none !important;
 }
 
 ::view-transition-new(root) {
-  animation-name: fade-in;
-  z-index: 2;
+  z-index: 10000;
+  animation: none !important;
 }
 
 @keyframes fade-in {
@@ -170,7 +196,7 @@ a {
 @keyframes fade-out {
   from { opacity: 1; }
   to   { opacity: 0; }
-}
+} */
 
 [data-smooth-wrapper], [data-scroll-container], body {
   pointer-events: auto !important;
@@ -183,4 +209,44 @@ svg {
   -moz-user-select: none !important;
   -ms-user-select: none !important;
   pointer-events: none !important;
+}
+
+.revealer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  transform-origin: center top;
+  background-color: var(--bg);
+  pointer-events: none;
+  z-index: 100000000;
+}
+
+
+
+@keyframes fadeOut {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+::view-transition-old(cross-fade) {
+  animation: fadeOut 0.4s var(--easing-ease-in-out-circ) forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+::view-transition-new(cross-fade) {
+  animation: fadeIn 0.6s var(--easing-ease-out) 0.2s forwards;
 }

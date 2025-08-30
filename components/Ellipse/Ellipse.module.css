@@ -8,10 +8,15 @@
 } */
 
 .ellipse {
-  width: min(63vw, 63vh);
+  width: min(63vw, 63dvh);
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media screen and (min-width: 760px) and (max-width: 1200px) {
+    width: 40vw;
+    height: 40dvh;
+  }
 }
 
 .ellipse svg {
@@ -21,5 +26,5 @@
 }
 
 .ellipse svg text {
-  letter-spacing: 0.07em; /* ここを増減して文字間隔を調整 */
+  letter-spacing: 0.07em;
 }

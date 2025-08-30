@@ -1,29 +1,19 @@
 'use client';
 
+// Extend the Window interface to include supabase
+declare global {
+  interface Window {
+    supabase?: typeof supabase;
+  }
+}
+
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-
-// export default async function RservePage() {
-//   const { data: events, error } = await supabase
-//     .from("reserveEvents")
-//     .select("*")
-//     // .gte("reserved_count", 0);
-
-//   if (error || !events) {
-//     return <div>イベントの取得に失敗しました。</div>;
-//   }
-
-//   return (
-//     <main className="p-4">
-//       <h1 className="text-2xl font-bold mb-4">予約可能なイベント</h1>
-//       <ReserveForm events={events} />
-//     </main>
-//   );
-// }
+import { fetchWithCache } from "@/lib/fetchWithCache";
 
 
 export default function TicketPage() {
@@ -32,53 +22,66 @@ export default function TicketPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { data: session, status } = useSession();
-  const [alreadyApplied, setAlreadyApplied] = useState<boolean>(false);
+  const [alreadyApplied, setAlreadyApplied] = useState(false);
+  const [appliedEvents, setAppliedEvents] = useState<{ event_id: number; event_time: string; user_name?: string }[]>([]);
 
-  // データ取得をuseEffectで行う
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("reserveEvents")
-          .select("*");
 
-        if (error) {
-          setError("イベントの取得に失敗しました。");
-        } else {
-          setEvents(data || []);
-        }
-      } catch (err) {
-        setError("イベントの取得に失敗しました。");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
 
   // 7日前抽選 申込済みかをチェック
   useEffect(() => {
-    const checkApplied = async () => {
-      try {
-        const res = await fetch('/api/lottely-applications');
-        if (!res.ok) {
-          setAlreadyApplied(false);
-          return;
-        }
-        const data = await res.json();
-        const eventData = (data?.event_data ?? []) as unknown[];
-        setAlreadyApplied(Array.isArray(eventData) && eventData.length > 0);
-      } catch {
+    const fetchAppliedEvents = async () => {
+      const userId = window.localStorage.getItem('user_id');
+      if (!userId) {
         setAlreadyApplied(false);
+        setAppliedEvents([]);
+        return;
       }
+      // キャッシュ付き取得
+      const data = await fetchWithCache(
+        'applied_events',
+        `/api/lottely-applications?user_id=${userId}`
+      );
+      const results = Array.isArray(data?.results) ? data.results as { event_id: number; event_time: string; user_name?: string }[] : [];
+      setAlreadyApplied(results.length > 0);
+      setAppliedEvents(results);
     };
     if (status === 'authenticated') {
-      void checkApplied();
+      // user_uuidsテーブルに登録されたuuidのみをlocalStorageに保存
+      const saveUserId = async () => {
+        const email = session?.user?.email;
+        if (!email) return;
+        const { data, error } = await supabase
+          .from('user_uuids')
+          .select('uuid')
+          .eq('email', email)
+          .single();
+        if (data?.uuid) {
+          window.localStorage.setItem('user_id', data.uuid);
+        } else {
+          // 未登録なら新規登録
+          const newUuid = crypto.randomUUID();
+          const { data: insertData, error: insertError } = await supabase
+            .from('user_uuids')
+            .insert({ email, uuid: newUuid })
+            .select('uuid')
+            .single();
+          if (insertData?.uuid) {
+            window.localStorage.setItem('user_id', insertData.uuid);
+          } else {
+            window.localStorage.removeItem('user_id');
+          }
+        }
+        if (session?.user?.name) {
+          window.localStorage.setItem('google_user_name', session.user.name);
+        }
+      };
+      saveUserId();
+      void fetchAppliedEvents();
     } else {
       setAlreadyApplied(false);
+      setAppliedEvents([]);
     }
-  }, [status]);
+  }, [status, session]);
 
   const handleQRClick = () => {
     setIsModalOpen(true);
@@ -88,9 +91,6 @@ export default function TicketPage() {
     setIsModalOpen(false);
   };
 
-  if (loading || status === "loading") {
-    return <div>読み込み中...</div>;
-  }
 
   if (error || !events) {
     return <div>{error || "イベントの取得に失敗しました。"}</div>;
@@ -159,7 +159,7 @@ export default function TicketPage() {
             <div className={styles.top_info}>お持ちのチケットを確認できます。<br />
               複数のチケットにまとめて予約･抽選を<br />
               申し込むことができます。<br />
-              入場および予約したパビリオン･イベントに入館する際には、QRコード表示ボタンを押してQRコードを提示してください。<br />
+              入場および予約したイベントに入館する際には、QRコード表示ボタンを押してQRコードを提示してください。<br />
               予約･抽選の確認や変更･取消は、チケットを選択して1枚ずつ行ってください。<br />
               まとめて申し込んだ内容を変更する場合は<br />
               チケット毎に取り消し、再度まとめてお申し込みください。</div>
@@ -262,6 +262,7 @@ export default function TicketPage() {
                         />
                       </div>
                     </div>
+
                     <div className={styles.arrows_event}>
                       <div className={styles.arrows_title}>
                         <span>■</span>
@@ -349,6 +350,74 @@ export default function TicketPage() {
                         />
                       </div>
                     </div>
+
+                    <div className={styles.arrows_event}>
+                      <div className={styles.arrows_title}>
+                        <span>■</span>
+                        イベントの予約
+                      </div>
+                      <div className={styles.arrow}>
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                          <>
+                            <Image
+                              src="/images/arrow_red_left.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                            <Link className={styles.arrow_middle} href="/reserve/first-come-served/ticketselect">
+                              <div>空き枠先着申込<br/>(受付中)</div>
+                            </Link>
+                            <Image
+                              src="/images/arrow_red_right.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                          </>
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className={styles.ticket_bottom_text}>
                     <div className={styles.ticket_bottom_text_icon}>
@@ -376,16 +445,15 @@ export default function TicketPage() {
           </div>
           <div className={styles.buttons}>
             <div className={styles.button_top}>
-              <div className={styles.button_more}>もっと見る　</div>
-              <p>チケットの購入履歴はこちら</p>
+              <div className={styles.button_more}>　　　　　　　</div>
             </div>
             <ul className={styles.button_bottom}>
               <li>
-                <div className={styles.button_other}>チケットの追加購入</div>
+                <div className={styles.button_other}><p>チケットの追加購入</p></div>
                 <p>※ 入場後の登録、使用済みチケットの登録はできませんのでご注意ください。</p>
               </li>
               <li>
-                <div className={styles.button_other}>チケットの受け渡し</div>
+                <div className={styles.button_other}><p>チケットの受け渡し</p></div>
                 <p>チケットの受け渡し履歴<br/>
                 ※ 入場後の受け渡し、使用済みチケットの受け渡しはできませんのでご注意ください。</p>
               </li>
@@ -422,7 +490,7 @@ export default function TicketPage() {
                     <div className={styles.age}>来場者</div>
                     <div className={styles.qrcode}>
                       <Image
-                        src="/images/qr-ex.png"
+                        src="/images/qrcode.png"
                         width={200}
                         height={200}
                         alt="QRコード"
@@ -470,7 +538,7 @@ export default function TicketPage() {
                 </div>
                 <div className={styles.action_button}>
                   <div className={styles.action_close} onClick={handleCloseModal}>とじる</div>
-                  <div className={styles.action_print}>印刷する</div>
+                  <div className={styles.action_print}><p>印刷する</p></div>
                 </div>
               </div>
             </div>

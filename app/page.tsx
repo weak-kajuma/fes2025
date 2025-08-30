@@ -11,7 +11,9 @@ import styles from "./page.module.css";
 import { useScrollSmoother } from "@/components/ScrollSmoother";
 import AnimatedEllipse from "@/components/Ellipse/Ellipse";
 import { fetchLocalJson } from "@/lib/fetchLocalJson";
-import NewsSlider from "@/components/NewsCarousel";
+import NewsSlider from "@/components/NewsSlider/NewsSlider";
+
+import AnimatedLink from "@/components/AnimatedLink";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -27,6 +29,7 @@ export default function Home() {
   const [opening, setOpening] = useState(false);
   const [showSVG, setShowSVG] = useState(false);
   const [isFirstSession, setIsFirstSession] = useState(false);
+  const backRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const openingMaskRef = useRef<HTMLDivElement>(null);
   const maskPathRef = useRef<SVGPathElement>(null);
@@ -34,15 +37,24 @@ export default function Home() {
   const mapPathRef = useRef<SVGPathElement>(null);
   const searchPathRef = useRef<SVGPathElement>(null);
   const reservePathRef = useRef<SVGPathElement>(null);
-  const ellipseRef = useRef<SVGSVGElement>(null);
-  const pathname = usePathname();
-  const router = useRouter();
+  const ellipseRef = useRef<SVGSVGElement>(null);;
   const [ellipseKey, setEllipseKey] = useState(0);
   const [timetableStart, setTimetableStart] = useState(false);
+  const pathname = usePathname();
+
 
   const toolsRootRef = useRef<HTMLDivElement>(null);
   const itemBorderRefs = useRef<(SVGRectElement | null)[]>([]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // SSR対応: isMobile判定はuseEffectで
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.matchMedia('(max-width: 900px)').matches);
+    }
+  }, []);
+
   const fetchNews = useCallback(async () => {
     try {
       const data = await fetchLocalJson<Array<{ id: number; title: string; type: string; main: string; imgUrl: string }>>("/data/news.json");
@@ -91,10 +103,12 @@ export default function Home() {
           const menu = document.querySelector('[data-menu-icon-wrapper]') as HTMLElement | null;
           const tabbar = document.querySelector('[data-tabbar-wrapper]') as HTMLElement | null;
           if (menu) {
-            gsap.fromTo(menu, { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' });
+            menu.style.transform = 'none'; // 初期位置リセット
+            gsap.fromTo(menu, { x: '80px', opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' });
           }
           if (tabbar) {
-            gsap.fromTo(tabbar, { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.1 });
+            tabbar.style.transform = ''; // 初期位置リセット
+            gsap.fromTo(tabbar, { y: '80px', opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out', delay: 0.1 });
           }
         }, 100);
       }
@@ -102,7 +116,7 @@ export default function Home() {
 
     tl
       .fromTo(maskEl,
-        { y: '100vh', clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)' },
+        { y: '100dvh', clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)' },
         { y: '0', zIndex: 10, clipPath: 'inset(45% 45% 45% 45% round 24px)', webkitClipPath: 'inset(45% 45% 45% 45% round 24px)', duration: 1.5, ease: 'power2.out' }
       )
       .fromTo(maskEl,
@@ -115,12 +129,22 @@ export default function Home() {
           maskEl.style.transform = 'none';
           maskEl.style.pointerEvents = 'none';
         }
+        // clippathアニメーション完了後にTabBar表示復帰
+        const tabbar = document.querySelector('[data-tabbar-wrapper]') as HTMLElement | null;
+        if (tabbar) {
+          tabbar.style.opacity = '1';
+          tabbar.style.pointerEvents = '';
+          tabbar.style.transform = 'translateX(-50%) translateY(100px)';
+        }
       }, '+=0.1');
   };
 
   // トップのスクロールアニメーション（context化）
   const topCtx = useRef<gsap.Context | null>(null);
   const initTopScrollAnimations = () => {
+
+  // isMobileはuseStateで管理
+
     ScrollTrigger.refresh();
 
     ScrollTrigger.create({
@@ -129,10 +153,11 @@ export default function Home() {
       end: "bottom bottom",
       pin: `.${styles.top_inner}`,
       onLeave: () => gsap.set(`.${styles.bg}`, { marginTop: -1 }),
-      onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: 0 })
+      onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: isMobile ? '-.7px' : 0 })
     });
 
     const ellipseTextPaths = ellipseRef.current?.querySelectorAll('textPath');
+
 
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
@@ -150,6 +175,7 @@ export default function Home() {
     const textEls = mainRef.current?.querySelectorAll(`.${styles.line} p`) ?? [];
     const bgEls = mainRef.current?.querySelectorAll(`.${styles.background} .${styles.bg}`) ?? [];
     const titleEl = mainRef.current?.querySelector(`.${styles.title}`) as HTMLElement;
+    const backEl = backRef.current;
 
     if (logoEl && targetEl) {
       const logoRect = logoEl.getBoundingClientRect();
@@ -166,6 +192,7 @@ export default function Home() {
       const x = targetCenterX - logoCenterX;
       const y = targetCenterY - logoCenterY;
 
+      const logoScale = isMobile ? 2.3 : 1; // スマホ時は縮小倍率を小さく（大きく表示）
       tl
         .to(logoEl, { x, y, scaleX: scaleX * 1.5, scaleY: scaleY * 1.5, ease: 'none' })
         .fromTo(textEls, {
@@ -180,11 +207,12 @@ export default function Home() {
           ease: 'power1.out',
           stagger: 0.2,
         })
-        .to(logoEl, { x, y, scaleX, scaleY, ease: 'none' }, "<")
+        .to(logoEl, { x, y, scaleX: scaleX * logoScale, scaleY: scaleY * logoScale, ease: 'none' }, "<")
         .to(bgEls, { opacity: 1, stagger: { amount: 0.2, from: "end" }, ease: "none" }, "+=0.5")
         .to(textEls, { color: "rgb(203, 163, 115)" }, "<")
         .to(titleEl, { color: "rgb(203, 163, 115)" }, "<")
-        .to(ellipseTextPaths ? ellipseTextPaths : [], { fill: "rgb(203, 163, 115)" }, "<");
+        .to(ellipseTextPaths ? ellipseTextPaths : [], { fill: "rgb(203, 163, 115)" }, "<")
+        .to(backEl, { background: "rgb(53, 53, 53)" }, "<");
     }
   };
 
@@ -217,7 +245,7 @@ export default function Home() {
 
     const cleanup = ensureSmoother();
     return typeof cleanup === 'function' ? cleanup : undefined;
-  }, [opening, pathname]);
+  }, [opening, pathname, isMobile]);
 
   // ellipseのなんか
   useEffect(() => {
@@ -235,7 +263,18 @@ export default function Home() {
 
   // オープニングアニメーション
   useEffect(() => {
-    if (!showSVG) {
+    const tabbar = document.querySelector('[data-tabbar-wrapper]') as HTMLElement | null;
+    if (showSVG) {
+      window.showSVG = true;
+      window.dispatchEvent(new Event("showSVGChange"));
+      if (tabbar) {
+        tabbar.style.opacity = '0';
+        tabbar.style.pointerEvents = 'none';
+        tabbar.style.transform = 'translateX(-50%)';
+      }
+    } else {
+      window.showSVG = false;
+      window.dispatchEvent(new Event("showSVGChange"));
       // 2回目以降のみ即座に展開済み状態
       if (!isFirstSession && openingMaskRef.current) {
         openingMaskRef.current.style.transform = 'none';
@@ -244,6 +283,12 @@ export default function Home() {
         openingMaskRef.current.style.pointerEvents = 'none';
         if (mainRef.current) mainRef.current.style.overflow = 'auto';
         setOpening(false);
+        // menuiconも通常位置・opacityに
+        const menu = document.querySelector('[data-menu-icon-wrapper]') as HTMLElement | null;
+        if (menu) {
+          menu.style.transform = 'none';
+          menu.style.opacity = '1';
+        }
       }
       return;
     }
@@ -353,6 +398,25 @@ export default function Home() {
         const items = root.querySelectorAll(`.${styles.item}`);
         if (!title || !subtitle || !items.length) return;
 
+
+        const allItems = Array.from(itemRefs.current).filter(Boolean);
+
+        // すべてのitemのtext, tags, imgsを取得
+        const allTexts = Array.from(itemRefs.current)
+          .map(item => item?.querySelector(`.${styles.text}`))
+          .filter(Boolean);
+
+        const allTags = Array.from(itemRefs.current)
+          .flatMap(item => Array.from(item?.querySelectorAll(`.${styles.tag}`) ?? []))
+          .filter(Boolean);
+
+        const allImgs = Array.from(itemRefs.current)
+          .flatMap(item => Array.from(item?.querySelectorAll(`.${styles.img}`) ?? []))
+          .filter(Boolean);
+
+        // 必要ならconsole.logで確認
+        // console.log(allTexts, allTags, allImgs);
+
         gsap.set([title, subtitle], { y: '100%', opacity: 0 });
         gsap.set(items, { y: '100%', opacity: 0 });
 
@@ -364,9 +428,20 @@ export default function Home() {
             toggleActions: 'play none none none',
           },
         });
-        tl.to(title,   { y: 0, opacity: 1 })
-          .to(subtitle,{ y: 0, opacity: 1 }, '-=0.2')
-          .to(items,   { y: 0, opacity: 1, stagger: 0.18 }, '-=0.1');
+          tl.to(title,   { y: 0, opacity: 1 })
+            .to(subtitle,{ y: 0, opacity: 1 }, '-=0.2')
+            .to(items,   { y: 0, opacity: 1, stagger: 0.18 }, '-=0.3');
+          if (isMobile) {
+            tl.to(allTexts, { fontSize: '5rem' }, '+=0.1')
+              .to(allItems, { marginBottom: '2rem' }, '<');
+            allTags.forEach(tag => {
+              tl.to(tag, { opacity: 1, ease: 'power2.out' }, '<');
+            });
+            allImgs.forEach(img => {
+              tl.to(img, { opacity: 1, transform: 'scale(1)', ease: 'power2.out' }, '<');
+            });
+          }
+
       }, toolsRootRef);
 
       toolsInited.current = true;
@@ -375,7 +450,7 @@ export default function Home() {
 
     const cleanup = ensureSmoother();
     return typeof cleanup === 'function' ? cleanup : undefined;
-  }, [opening]);
+  }, [opening, isMobile]);
 
   // functionItemホバーアニメーション（stateは使うが他エフェクトに影響しない）
   const handleTextWrapperHover = (index: number, hover: boolean) => {
@@ -401,13 +476,13 @@ export default function Home() {
     const imgs = itemEl.querySelectorAll(`.${styles.img}`);
 
     gsap.to(text, {
-      fontSize: hover ? '10rem' : '8rem',
+      fontSize: isMobile ? (hover ? '5rem' : '4rem') : (hover ? '10rem' : '8rem'),
       // color: hover ? 'rgb(203, 163, 115)' : '#fff',
       duration: 0.4,
       ease: "power2.out",
     });
     gsap.to(itemEl, {
-      marginBottom: hover ? 0 : '-2.2rem',
+      marginBottom: isMobile ? (hover ? 0 : '-10rem') : (hover ? 0 : '-2.2rem'),
     });
     tags.forEach((tag) => {
       gsap.to(tag, {
@@ -462,10 +537,12 @@ export default function Home() {
 
   return (
     <>
+      <div className={styles.revealer} data-reveal></div>
+
       {/* Opening SVG */}
       {showSVG && (
-        <div style={{ position: 'fixed', zIndex: 2, top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(34,34,34,1)', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}>
-          <svg width={500} height={200} viewBox="0 0 500 200" style={{ display: 'block', maxWidth: '80vw', maxHeight: '40vh', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }} onDragStart={(e) => e.preventDefault()}>
+        <div style={{ position: 'fixed', zIndex: 2, top: 0, left: 0, width: '100vw', height: '100dvh', background: 'rgba(34,34,34,1)', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}>
+          <svg width={500} height={200} viewBox="0 0 500 200" style={{ display: 'block', maxWidth: '80vw', maxHeight: '40dvh', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }} onDragStart={(e) => e.preventDefault()}>
             <defs>
               <mask id="handwrite-mask"> <rect x="0" y="0" width="500" height="200" fill="#000" />
                 <path ref={maskPathRef} d="M 85.158784,63.945946 C 154.63851,32.89527 131.27365,-4.3040541 77.472973,33.817568 c 0,0 -36.277027,29.206081 -5.533784,55.952702 0,0 34.432431,33.51014 -13.219594,47.03716 0,0 -22.75,6.14865 -34.739865,-9.83784 0,0 -9.530406,-15.06418 14.756757,-22.13513 L 137.11486,73.783784 c 0,0 -43.347968,59.949326 -64.560806,117.131756 l 40.888516,-81.16216 c 0,0 32.58784,-38.121623 38.42905,-19.368245 0,0 -16.29392,59.027025 -47.95946,37.506755 0,0 182.9223,-195.219593 106.67906,-36.584458 0,0 -2.7669,-27.054054 -33.20271,6.456082 0,0 -30.43581,68.864866 15.37163,20.290536 l 16.90878,-24.287158 c 0,0 -22.44257,50.111488 -4.91892,43.040538 0,0 59.64189,-181.385133 44.88514,-52.263511 0,0 -22.75,19.368241 -30.43582,53.493241 0,0 25.82433,-43.655403 58.41217,-54.722971 0,0 -44.27027,39.351351 10.4527,14.449325 l 25.51689,-8.300676 c 3.07433,-0.922297 62.10135,-35.969595 63.63851,-64.560811 -5.53378,4.611487 -8.6081,-24.59459457 -63.94594,63.638514 l -23.36487,43.962839 c 0,0 30.43581,-44.270272 61.17906,-47.037164 l -26.43919,12.297298 c 2.76689,2.766896 -24.28716,75.320946 37.81419,12.604726 l 22.13513,-12.297294 c 0,0 51.64865,-28.898649 62.40879,-75.628378 0,0 -28.28379,0 -62.10135,73.476351 0,0 -34.73987,74.091221 18.44594,12.912161 l 16.29392,6.76351 c 0,0 39.65878,-11.06756 35.66216,-29.513509 v 0 C 420.875,72.861487 387.6723,179.54054 468.21959,110.67568" stroke="#fff" strokeWidth={16.7} fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -481,7 +558,7 @@ export default function Home() {
       )}
 
       {!showSVG && (
-        <div style={{ position: 'fixed', zIndex: 1, top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(34,34,34,1)', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}></div>
+        <div ref={backRef} style={{ position: 'fixed', zIndex: 1, top: 0, left: 0, width: '100vw', height: '100dvh', background: 'rgba(34,34,34,1)', userSelect: 'none', WebkitUserSelect: 'none', MozUserSelect: 'none', msUserSelect: 'none', WebkitTouchCallout: 'none', pointerEvents: 'none' }}></div>
       )}
 
 
@@ -497,7 +574,10 @@ export default function Home() {
                   <div className={styles.top_logo}>
                     <h1 className={styles.title}>青霞祭</h1>
                     <div className={styles.animatedCircle} key={`ellipse-${ellipseKey}`}>
-                      <AnimatedEllipse ref={ellipseRef} text="Seikasai 2025 Seikasai 2025 Seikasai 2025 Seikasai 2025 " />
+                      <AnimatedEllipse
+                        ref={ellipseRef}
+                        text={"Seikasai 2025"}
+                      />
                     </div>
                   </div>
 
@@ -542,48 +622,56 @@ export default function Home() {
 
                 <div className={styles.items}>
 
-                  {[0,1,2,3].map((i) => (
+                  {[0,1,2,3,4].map((i) => (
                     <div
                       className={styles.item}
                       ref={el => { itemRefs.current[i] = el; }}
                       key={i}
                     >
-                      <div className={styles.item_grid}>
+                      <div
+                        className={styles.item_grid}
+                      >
                         <div className={styles.img}>
                           <div className={styles.img_inner}></div>
                         </div>
-                        <div className={styles.img}>
-                          <div className={styles.img_inner}></div>
-                        </div>
+                        {!isMobile && (
+                          <div className={styles.img}>
+                            <div className={styles.img_inner}></div>
+                          </div>
+                        )}
                         <div className={styles.text_wrapper}>
                           <div className={styles.text_inner}>
+                            <AnimatedLink to={i === 0 ? "/timetable" : i === 1 ? "/map" : i === 2 ? "/search" : i === 3 ? "/reserve" : i === 4 ? "/news" : ""}>
                             <h2
                               className={styles.text}
-                              onMouseEnter={() => handleTextWrapperHover(i, true)}
-                              onMouseLeave={() => handleTextWrapperHover(i, false)}
-                              onClick={() => {
-                                if (i === 0) router.push("/timetable");
-                                else if (i === 1) router.push("/map");
-                                else if (i === 2) router.push("/search");
-                                else if (i === 3) router.push("/reserve");
+                              onMouseEnter={() => {
+                                if (!isMobile) handleTextWrapperHover(i, true)
+                              }}
+                              onMouseLeave={() => {
+                                if (!isMobile) handleTextWrapperHover(i, false)
                               }}
                             >
-                              {i === 0 && "TIME TABLE"}
-                              {i === 1 && "MAP"}
-                              {i === 2 && "SEARCH"}
-                              {i === 3 && "RESERVE"}
+                                {i === 0 && "TIME TABLE"}
+                                {i === 1 && "MAP"}
+                                {i === 2 && "SEARCH"}
+                                {i === 3 && "RESERVE"}
+                                {i === 4 && "NEWS"}
                             </h2>
+                              </AnimatedLink>
                             <div className={styles.info}>
                               {i === 0 && <><div className={styles.tag}>timetable</div><div className={styles.tag}>aaa</div></>}
                               {i === 1 && <><div className={styles.tag}>map</div><div className={styles.tag}>bbb</div></>}
                               {i === 2 && <><div className={styles.tag}>search</div><div className={styles.tag}>ccc</div></>}
                               {i === 3 && <><div className={styles.tag}>reserve</div><div className={styles.tag}>ddd</div></>}
+                              {i === 4 && <><div className={styles.tag}>news</div><div className={styles.tag}>eee</div></>}
                             </div>
                           </div>
                         </div>
-                        <div className={styles.img}>
-                          <div className={styles.img_inner}></div>
-                        </div>
+                        {!isMobile && (
+                          <div className={styles.img}>
+                            <div className={styles.img_inner}></div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -601,35 +689,37 @@ export default function Home() {
 
                 <div className={styles.news_list_wrapper}>
 
-                  <NewsSlider items={newsItems} />
+                  <NewsSlider items={newsItems} isMobile={isMobile} />
 
-                  <div className={styles.controller}>
+                  {!isMobile && (
+                    <div className={styles.controller}>
 
-                    <nav className={styles.nav}>
+                      <nav className={styles.nav}>
 
-                      <div className={styles.prev}>
-                        <span className={styles.button_inner}>
-                          <svg className={styles.icon}>
-                            <use xlinkHref="/sprite.svg#icon-arrow-left"></use>
-                          </svg>
-                        </span>
-                      </div>
+                        <div className={styles.prev}>
+                          <span className={styles.button_inner}>
+                            <svg className={styles.icon}>
+                              {/* <use xlinkHref="/sprite.svg#icon-arrow-left"></use> */}
+                            </svg>
+                          </span>
+                        </div>
 
-                      <div className={styles.next}>
-                        <span className={styles.button_inner}>
-                          <svg className={styles.icon}>
-                            <use xlinkHref="/sprite.svg#icon-arrow-right"></use>
-                          </svg>
-                        </span>
-                      </div>
+                        <div className={styles.next}>
+                          <span className={styles.button_inner}>
+                            <svg className={styles.icon}>
+                              {/* <use xlinkHref="/sprite.svg#icon-arrow-right"></use> */}
+                            </svg>
+                          </span>
+                        </div>
 
-                      <div className={styles.pagination}></div>
+                        <div className={styles.pagination}></div>
 
-                    </nav>
+                      </nav>
 
-                    <div className={styles.toNews_button}></div>
+                      <div className={styles.toNews_button}></div>
 
-                  </div>
+                    </div>
+                  )}
                 </div>
 
               </div>

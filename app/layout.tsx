@@ -5,11 +5,11 @@ import { BIZ_UDMincho } from 'next/font/google'
 import "./globals.css"
 import MenuIcon from "../components/MenuIcon/MenuIcon"
 import TabBar from "../components/TabBar/TabBar"
-import ViewTransitionWrapper from "../components/ViewTransitionWrapper"
 import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
-import { Bebas_Neue } from 'next/font/google';
+import { unstable_ViewTransition as ViewTransition } from "react";
+// ...existing code...
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,14 +64,14 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable} `}>
         <SessionProvider>
           <TabBarProvider>
-            <ScrollManager />
-            <MenuIcon />
-            <ViewTransitionWrapper>
+            <ViewTransition>
+              {/* <ScrollManager /> */}
               {children}
-            </ViewTransitionWrapper>
+            </ViewTransition>
           </TabBarProvider>
         </SessionProvider>
       </body>
     </html>
+      // ...existing code...
   );
 }

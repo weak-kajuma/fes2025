@@ -1,20 +1,22 @@
-/* locationごとの固有色を定義 */
-.location野外ステージ { /* .tsxのformatLocationToClassNameで生成されるクラス名と一致させる */
+
+
+/* locationごとの固有色（キャメルケースクラス名に統一） */
+.locationStage {
   --location-primary-color: var(--location-primary-color-stage);
   --location-secondary-color: var(--location-secondary-color-stage);
 }
 
-.location中庭 {
+.locationYard {
   --location-primary-color: var(--location-primary-color-yard);
-  --location-secondary-color: var(--location-secondary-color-yard)
+  --location-secondary-color: var(--location-secondary-color-yard);
 }
 
-.locationコナコピアホール {
+.locationHole {
   --location-primary-color: var(--location-primary-color-hole);
   --location-secondary-color: var(--location-secondary-color-hole);
 }
 
-.location体育館 {
+.locationGym {
   --location-primary-color: var(--location-primary-color-gym);
   --location-secondary-color: var(--location-secondary-color-gym);
 }
@@ -29,7 +31,9 @@
 
 
 .wrapper {
-  background-color: var(--location-primary-color);
+  /* background-color: var(--location-primary-color); */
+  /* background-color: rgb(226, 226, 226); */
+  border: 2px solid var(--text);
   border-radius: 10px;
   margin: 2px auto;
   width: 90%;
@@ -43,7 +47,8 @@
   .title {
     position: absolute;
     top: 50%;
-    left: 50%;
-     transform: translate(-50%, -50%);
+    left: 60%;
+    transform: translate(-50%, -50%);
+    text-align: center;
   }
 }

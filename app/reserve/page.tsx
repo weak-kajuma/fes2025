@@ -1,6 +1,7 @@
 import { signIn, auth, signOut } from "@/auth";
 import Image from "next/image";
 import styles from "./ticket/page.module.css";
+import { TicketButton } from "@/components/TicketButton";
 
 export default async function ReserveLoginPage() {
   const session = await auth();
@@ -103,12 +104,7 @@ export default async function ReserveLoginPage() {
                     </button>
                   </form>
 
-                  <a
-                    href="/reserve/ticket"
-                    className={styles.ticket_button}
-                  >
-                    チケット画面へ進む
-                  </a>
+                  <TicketButton className={styles.ticket_button} />
                 </div>
               </div>
             ) : (

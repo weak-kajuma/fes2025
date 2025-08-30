@@ -57,12 +57,14 @@ export const useScrollSmoother = () => {
 				wrapper: wrapperEl!,
 				content: contentEl,
 				smooth: isMobile ? 1 : 2,
-				smoothTouch: 0.1,
+				smoothTouch: isMobile ? 0.01 : 0.1,
 				effects: true,
 				normalizeScroll: true,
 			});
 
 			window.scrollSmoother = smoother;
+			// 初期化直後に必ずトップへスクロール
+			smoother.scrollTo(0, false);
 
 			setTimeout(() => {
 				ScrollTrigger.refresh();

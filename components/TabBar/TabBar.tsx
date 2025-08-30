@@ -4,9 +4,15 @@ import { useEffect, useRef, forwardRef, useCallback, useState } from "react";
 import gsap from "gsap";
 import styles from "./TabBar.module.css";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import DetailOverlay from "../../app/search/components/DetailOverlay";
+import Image from "next/image";
+
+import { useRouter } from "next/navigation";
+// ...existing code...
+import { usePathname } from "next/navigation"
+
+import AnimatedLink from '../AnimatedLink';
 
 type EventDataForClient = {
   id: number;
@@ -18,6 +24,13 @@ type EventDataForClient = {
   tags: string[] | null;
 };
 
+// window.showSVG 型エラー対策
+declare global {
+  interface Window {
+    showSVG?: boolean;
+  }
+}
+
 // デバイス判定フック
 function useDeviceDetection() {
   const [isDesktop, setIsDesktop] = useState(false);
@@ -25,10 +38,10 @@ function useDeviceDetection() {
   useEffect(() => {
     const checkDevice = () => {
       const width = window.innerWidth;
-      setIsDesktop(width >= 768); // 768px以上をPCとする
+      setIsDesktop(width >= 900); // 900px以上をPCとする
     };
 
-    checkDevice();
+    checkDevice();　
     window.addEventListener('resize', checkDevice);
 
     return () => window.removeEventListener('resize', checkDevice);
@@ -38,12 +51,158 @@ function useDeviceDetection() {
 }
 
 export default forwardRef<HTMLDivElement>((props, ref) => {
+  // 開閉状態管理
+  const [isOpen, setIsOpen] = useState(false);
+  // メニューアイコンのアニメーション状態
+  const [isMenuAnimating, setIsMenuAnimating] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // 開閉アニメーション
+  const handleMenuClick = () => {
+    setIsOpen(!isOpen); // SVGアニメーションを即座に発火
+    setIsMenuAnimating(true);
+    if (!isOpen) {
+      // 開く
+      if (isDesktop) {
+        gsap.to(contentRef.current, {
+          width: 900,
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: () => {
+            setIsMenuAnimating(false);
+          }
+        });
+      } else {
+        gsap.to(contentRef.current, {
+          height: 300,
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: () => {
+            setIsMenuAnimating(false);
+          }
+        });
+      }
+      gsap.to(menuRef.current, {
+        display: "flex",
+        opacity: 1,
+        duration: 0.3,
+        delay: 0.2,
+        onStart: () => {
+          if (menuRef.current) menuRef.current.style.display = "flex";
+          if (!isDesktop && menuRef.current) menuRef.current.style.flexDirection = "column";
+        }
+      });
+      // メニューアイテムを左から順に下からふわっと表示
+      if (menuRef.current) {
+        const items = menuRef.current.querySelectorAll(`.${styles.menu_item}`);
+        gsap.fromTo(
+          items,
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.4,
+            stagger: 0.08,
+            ease: "power2.out"
+          }
+        );
+      }
+    } else {
+      // 閉じる
+      gsap.to(menuRef.current, {
+        opacity: 0,
+        duration: 0.2,
+        onComplete: () => {
+          if (menuRef.current) menuRef.current.style.display = "none";
+        }
+      });
+      if (isDesktop) {
+        gsap.to(contentRef.current, {
+          width: "13rem",
+          duration: 0.5,
+          ease: "power2.inOut",
+          onComplete: () => {
+            setIsMenuAnimating(false);
+          }
+        });
+      } else {
+        gsap.to(contentRef.current, {
+          height: 60,
+          duration: 0.5,
+          ease: "power2.inOut",
+          onComplete: () => {
+            setIsMenuAnimating(false);
+          }
+        });
+      }
+    }
+  };
+
+  // 初期状態
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.style.width = "13rem";
+      contentRef.current.style.height = "60px";
+    }
+    if (menuRef.current) menuRef.current.style.display = "none";
+  }, []);
+
+  // TabBarの表示制御はCSSで行う
+  useEffect(() => {
+    const updateTabBarVisibility = () => {
+      const tabbar = tabBar_Ref.current;
+      if (!tabbar) return;
+      if (typeof window !== "undefined" && window.showSVG) {
+        tabbar.style.opacity = "0";
+        tabbar.style.pointerEvents = "none";
+      } else {
+        tabbar.style.opacity = "1";
+        tabbar.style.pointerEvents = "";
+        tabbar.style.transform = "translateX(-50%)";
+      }
+    };
+    updateTabBarVisibility();
+    window.addEventListener("showSVGChange", updateTabBarVisibility);
+    return () => {
+      window.removeEventListener("showSVGChange", updateTabBarVisibility);
+    };
+  }, []);
   const tabBar_Ref = useRef<HTMLDivElement>(null);
   const wrapperInitRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventDataForClient | null>(null);
   const { isDesktop } = useDeviceDetection();
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  function triggerPageTransition() {
+    document.documentElement.animate([
+      {
+        clipPath: 'polygon(25% 75%, 75% 75%, 75% 75%, 25% 75%)',
+      },
+      {
+        clipPath: 'polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)',
+      }
+    ], {
+      duration: 2000,
+      easing: 'cubic-bezier(0.9, 0, 0.1, 1)',
+      pseudoElement: '::view-transition-new(root)'
+    })
+  }
+
+  const handleNavigation = (path: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (path === pathname) {
+      e.preventDefault();
+      return;
+    }
+
+    router.push(path, {
+  // ...existing code...
+    })
+  }
 
   // 外部refと内部refを結合
   const combinedRef = (node: HTMLDivElement) => {
@@ -70,7 +229,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
         left: '50%',
         transform: 'translateX(-50%)',
         width: '90vw',
-        height: '80vh',
+        height: '80dvh',
         bottom: 0,
         top: 'auto',
         borderRadius: '2rem 2rem 0 0',
@@ -167,36 +326,128 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
   // PC版のトップページかどうかを判定
   const isDesktopTopPage = isDesktop && pathname === "/";
 
+  // メニュー項目データ
+  const menuItems = [
+    { label: "Home", to: "/" },
+    { label: "Time table", to: "/timetable" },
+    { label: "Map", to: "/map" },
+    { label: "Search", to: "/search" },
+    { label: "Reserve", to: "/reserve" },
+    { label: "News", to: "/news" },
+  ];
+
+  // ホバーアニメーション
+  // 初期化: .link_hoverを必ず非表示状態に
+  useEffect(() => {
+    const hoverEls = document.querySelectorAll(`.${styles.link_hover}`);
+    hoverEls.forEach(el => {
+      gsap.set(el, { transform: "scale3d(0,0,1)" });
+    });
+  }, [isDesktop]);
+
+  const handleMenuItemHover = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDesktop) return;
+    const hoverEl = e.currentTarget.querySelector(`.${styles.link_hover}`) as HTMLElement;
+    const linkEl = e.currentTarget.querySelector(`.${styles.menu_link}`) as HTMLElement;
+    if (hoverEl) {
+      gsap.killTweensOf(hoverEl);
+      gsap.to(hoverEl, { transform: "scale3d(1,1,1)", duration: 0.35, ease: "power2.out" });
+    }
+    if (linkEl) {
+      gsap.to(linkEl, { color: "#141414", duration: 0.2, ease: "power2.out" });
+    }
+  };
+  const handleMenuItemLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDesktop) return;
+    const hoverEl = e.currentTarget.querySelector(`.${styles.link_hover}`) as HTMLElement;
+    const linkEl = e.currentTarget.querySelector(`.${styles.menu_link}`) as HTMLElement;
+    if (hoverEl) {
+      gsap.killTweensOf(hoverEl);
+      gsap.to(hoverEl, { transform: "scale3d(0,0,1)", duration: 0.25, ease: "power2.in", clearProps: "transform" });
+    }
+    if (linkEl) {
+      gsap.to(linkEl, { color: "white", duration: 0.2, ease: "power2.in" });
+    }
+  };
+
+  // ページ遷移時にホバー解除
+  useEffect(() => {
+    // ホバー解除
+    const hoverEls = document.querySelectorAll(`.${styles.link_hover}`);
+    hoverEls.forEach(el => {
+      gsap.set(el, { transform: "scale3d(0,0,1)" });
+    });
+    // 文字色リセット
+    const linkEls = document.querySelectorAll(`.${styles.menu_link}`);
+    linkEls.forEach(el => {
+      gsap.set(el, { color: "white" });
+    });
+  }, [pathname]);
+
   return (
     <div className={styles.wrapper} ref={combinedRef} data-tabbar-wrapper>
-      <LiquidGlass>
-        {!isExpanded ? (
-          <div className={styles.items}>
-            <Link className={`${styles.item} ${styles.pamphlet}`} href="/pamphlet" scroll={false}>
-              <img src="/icon/pamphlet.svg" alt="pamphlet" className={`${styles.icon_svg}`} />
-            </Link>
-            <Link className={`${styles.item} ${styles.timetable}`} href="/timetable" scroll={false}>
-              <img src="/icon/timetable.svg" alt="timetable" className={`${styles.icon_svg}`} />
-            </Link>
-            <Link className={`${styles.item} ${styles.search}`} href="/search" scroll={false}>
-              <img src="/icon/search.svg" alt="search" className={`${styles.icon_svg}`} />
-            </Link>
-            <Link className={`${styles.item} ${styles.user}`} href="" scroll={false}>
-              <img src="/icon/user.svg" alt="user" className={`${styles.icon_svg}`} />
-            </Link>
-            <Link className={`${styles.item} ${styles.allEvents}`} href="/allEvents" scroll={false}>
-              <img src="/icon/allEvents_tabbar.svg" alt="allEvents" className={`${styles.icon_svg}`} />
+      {!isExpanded ? (
+        <div className={styles.content} ref={contentRef}>
+          <div className={styles.logo_wrapper}>
+            <Link href="/" className={styles.logo_link}>
+              <div className={styles.logo_inner}>
+                Sparkle
+              </div>
             </Link>
           </div>
-        ) : (
-          selectedEvent && (
-            <DetailOverlay
-              event={selectedEvent}
-              onClose={closeExpanded}
-            />
-          )
-        )}
-      </LiquidGlass>
+          <nav className={styles.menu} ref={menuRef}>
+            {menuItems.map((item, idx) => (
+              <div
+                className={styles.menu_item}
+                key={item.to}
+                onMouseEnter={handleMenuItemHover}
+                onMouseLeave={handleMenuItemLeave}
+              >
+                <Link href={item.to} className={styles.menu_link}>
+                  <span>{item.label}</span>
+                </Link>
+                <div className={styles.link_hover}></div>
+              </div>
+            ))}
+          </nav>
+          <div className={styles.button} onClick={handleMenuClick}>
+            <svg
+              className={`${styles.ham} ${styles.hamRotate} ${styles.ham1} ${isOpen ? styles.active : ''} ${styles.ham_black}`}
+              viewBox="0 0 100 100"
+              width="50"
+            >
+              <path
+                className={`${styles.line} ${styles.top}`}
+                d="m 30,33 h 40 c 0,0 9.044436,-0.654587 9.044436,-8.508902 0,-7.854315 -8.024349,-11.958003 -14.89975,-10.85914 -6.875401,1.098863 -13.637059,4.171617 -13.637059,16.368042 v 40"
+                fill="none"
+                stroke="white"
+                strokeWidth="6"
+              />
+              <path
+                className={`${styles.line} ${styles.middle}`}
+                d="m 30,50 h 40"
+                fill="none"
+                stroke="white"
+                strokeWidth="6"
+              />
+              <path
+                className={`${styles.line} ${styles.bottom}`}
+                d="m 30,67 h 40 c 12.796276,0 15.357889,-11.717785 15.357889,-26.851538 0,-15.133752 -4.786586,-27.274118 -16.667516,-27.274118 -11.88093,0 -18.499247,6.994427 -18.435284,17.125656 l 0.252538,40"
+                fill="none"
+                stroke="white"
+                strokeWidth="6"
+              />
+            </svg>
+          </div>
+        </div>
+      ) : (
+        selectedEvent && (
+          <DetailOverlay
+            event={selectedEvent}
+            onClose={closeExpanded}
+          />
+        )
+      )}
     </div>
   );
 });

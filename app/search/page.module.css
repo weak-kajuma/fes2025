@@ -26,18 +26,56 @@
 }
 
 
+.wrapper {
+  overflow: auto;
+  background: #141414;
+}
+
+/* 横スクロールテキスト用 */
+.scrolling_text {
+  margin-top: 10dvh;
+  width: 100%;
+  overflow: hidden;
+  height: 40dvh;
+  display: flex;
+  align-items: center;
+  background: var(--color-just-black);
+
+  @media screen and (max-width: 600px) {
+    height: 20dvh;
+  }
+}
+
+.rail {
+  display: flex;
+}
+
+.rail_text {
+  white-space: nowrap;
+  font-size: 15rem;
+  font-weight: 900;
+  color: var(--text);
+  margin-right: 30px;
+  font-family: var(--mincho);
+
+  @media screen and (max-width: 600px) {
+    font-size: 10rem;
+  }
+}
+
 .main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow-x: hidden;
+  width: 100%;
 }
 
 .title {
   font-size: 5vw;
   color: var(--deepblue);
-  margin-top: 20vh;
+  margin-top: 20dvh;
   user-select: none;
 
   @media screen and (max-width: 1200px) {
@@ -53,7 +91,6 @@
   display: flex;
   flex-direction: row;
   gap: 2vw;
-  height: 60vh;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
@@ -73,10 +110,11 @@
       padding: 1.2vw 1vw;
       border-radius: 10px;
       background-color: inherit;
-      outline: solid 1px #dfdfdf;
+      outline: solid 1px var(--text);
       outline-offset: -1px;
+      color: rgb(223, 223, 223);
 
-      background-color: #fefefe;
+      /* background-color: #fefefe; */
 
       &.selected {
         outline: none;
@@ -159,7 +197,7 @@
     font-size: 3vw;
     border-radius: 20px;
     outline-offset: -2px;
-    background-color: #fefefe;
+    background-color: transparent;
   }
 
   .selector .tab_content .option > p {
@@ -206,7 +244,7 @@
 
 .results {
   width: 80%;
-  height: 300vh;
+  min-height: 50vh;
   margin-top: 5rem;
   padding-bottom: 10rem;
 

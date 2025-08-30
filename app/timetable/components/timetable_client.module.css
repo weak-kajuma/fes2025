@@ -1,3 +1,36 @@
+/* 横スクロールテキスト用 */
+.scrolling_text {
+  margin-top: 10dvh;
+  width: 100%;
+  overflow: hidden;
+  height: 40dvh;
+  display: flex;
+  align-items: center;
+  background: var(--color-just-black);
+
+  @media screen and (max-width: 600px) {
+    height: 20dvh;
+  }
+}
+
+.rail {
+  display: flex;
+}
+
+.rail_text {
+  white-space: nowrap;
+  font-size: 15rem;
+  font-weight: 900;
+  color: #000;
+  margin-right: 30px;
+  font-family: var(--mincho);
+
+  @media screen and (max-width: 600px) {
+    font-size: 10rem;
+  }
+}
+
+/* bgName */
 .location野外ステージ {
   --location-primary-color: var(--location-primary-color-stage);
   --location-secondary-color: var(--location-secondary-color-stage);
@@ -23,22 +56,174 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 100vh;
+  padding-bottom: 100dvh;
+  background-color: #ddd9d5;
 
-  .title {
-    font-size: 5vw;
-    color: var(--deepblue);
-    margin-top: 20vh;
-    user-select: none;
+  .title_wrapper {
+    width: 100%;
+    display: flex;
+  justify-content: flex-start;
+    align-items: center;
 
-    @media screen and (max-width: 1200px) {
-      font-size: 7vw;
-    }
+    .title {
+      font-size: 5vw;
+      color: var(--text);
+      font-family: we;
+      margin-top: 2rem;
+      user-select: none;
 
-    @media screen and (max-width: 768px) {
-      font-size: 10vw;
+      @media screen and (max-width: 1200px) {
+        font-size: 7vw;
+      }
+
+      @media screen and (max-width: 768px) {
+        font-size: 10vw;
+      }
     }
   }
+
+  .nav {
+    margin-top: 3rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #000;
+
+    .nav_content {
+      display: flex;
+      padding: 1.8rem 3rem;
+      gap: 80px;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      font-family: var(--mincho);
+      width: 100%;
+
+      @media screen and (max-width: 768px) {
+        padding: 1.4rem 0;
+        gap: 20px;
+      }
+
+      &:nth-child(2) {
+        border-top: 0px solid #000;
+      }
+
+      .nav_item_back_wrapper {
+        display: flex;
+        gap: 80px;
+
+        @media screen and (max-width: 768px) {
+          transform: translateX(-2rem);
+          gap: 25px;
+        }
+      }
+
+      .nav_item {
+        position: relative;
+        --fs-min: 20;
+        --fs-max: 40;
+        padding: 10px 0;
+        line-height: 1;
+        letter-spacing: 0;
+        transition: opacity .2s linear;
+        --fs-center: 25;
+        word-wrap: break-word;
+        font-size: 1.5rem;
+        user-select: none;
+
+        /* ホバー時の下枠線（未選択のみ） */
+        &:not(.selected):hover::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: #000;
+          transform: scaleX(1);
+          transform-origin: left;
+          transition: transform 0.4s cubic-bezier(.25,1,.5,1);
+          z-index: 1;
+        }
+        &:not(.selected)::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: #000;
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.4s cubic-bezier(.25,1,.5,1);
+          z-index: 1;
+        }
+
+        &.nav_item_back::before {
+          z-index: auto;
+          position: absolute;
+          top: 48%;
+          right: calc(100% + 20px);
+          width: 40px;
+          height: 1px;
+          background: #000;
+          content: "";
+        }
+
+        &.selected::after {
+          z-index: 0;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          transform-origin: left top;
+          /* scale: 0 1; */
+          background: #000;
+          content: "";
+          transition: scale cubic-bezier(.25,1,.5,1) .6s;
+        }
+
+        &.selected {
+          background-color: var(--text);
+        }
+
+        &.pre {
+          width: 7.5rem;
+          font-size: 1.8rem;
+          word-break: keep-all;
+          white-space: nowrap;
+          text-align: center;
+          font-family: var(--workSans);
+        }
+
+        @media screen and (max-width: 768px) {
+          font-size: 1rem;
+          word-break: keep-all;
+          white-space: nowrap;
+
+          &.pre {
+            font-size: 1.2rem;
+            width: 6rem;
+            word-break: none;
+            white-space: normal;
+            transform: rotate(90deg) translateY(60%);
+          }
+
+          &.nav_item_back::before {
+            right: calc(100% + 7px);
+            width: 10px;
+          }
+
+          &:not(.pre) {
+            word-break: none;
+            white-space: normal;
+          }
+        }
+      }
+    }
+  }
+
 
   .selector {
     display: grid;
@@ -115,7 +300,7 @@
 
   .eventContentWrapper {
     margin-top: 100px;
-    margin-bottom: 80vh;
+    margin-bottom: 80dvh;
     width: 95%;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -140,7 +325,7 @@
         grid-column-start: 2;
         grid-column-end: 4; /* 左側のバーは1列目から2列目まで */
         grid-row: var(--current-row); /* JSから渡された行番号を開始位置とし、高さは1行分 */
-        background-color: rgb(107 114 128); /* 半透明の赤色 */
+        background-color: #a3a3a3; /* 半透明の赤色 */
         height: 3px; /* バーの太さ */
         z-index: 5; /* イベントより手前に表示 */
         pointer-events: none; /* クリックイベントを透過させる */
@@ -152,9 +337,9 @@
         grid-row: 1;
         grid-column: 3 / 4;
         z-index: 8;
-        align-self: start;
+  align-self: flex-start;
         height: 60px;
-        background-color: white;
+        background-color: #ddd9d5;
 
         &::before {
           content: "";
@@ -163,7 +348,7 @@
           left: -60px;
           height: 88px;
           width: calc(100% + 60px);
-          background-color: white;
+          background-color: #ddd9d5;
         }
 
         &::after {
@@ -173,11 +358,11 @@
           top: 0px;
           height: 60px;
           width: 60px;
-          background-image: linear-gradient(to bottom, white, transparent);
+          background-image: linear-gradient(to bottom, #ddd9d5, transparent);
         }
 
         a {
-          background-color: var(--location-primary-color);
+          background-color: var(--text);
           padding: .5rem;
           border-top-left-radius: 1rem;
           border-top-right-radius: 1rem;
@@ -189,6 +374,7 @@
 
           .label_inner {
             color: white;
+            font-family: var(--mincho);
           }
         }
       }
@@ -209,7 +395,8 @@
         grid-row-end: 691;
         grid-column-start: 3;
         border-radius: 1rem;
-        background-color: var(--location-secondary-color);
+        /* background-color: var(--location-secondary-color); */
+        border: 1px solid var(--text);
         width: 100%;
       }
 
@@ -279,7 +466,7 @@
         display: flex;
         justify-content: flex-end;
         grid-column-start: 2;
-        background-color: gray;
+        background-color: #a3a3a3;
 
         &:nth-of-type(14) {
           grid-row: 2;

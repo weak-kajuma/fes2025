@@ -4,7 +4,7 @@
   position: relative;
   width: 15vw;
   height: 4vw;
-  border: #c5c5c5 1px solid;
+  border: 1px solid var(--text);
   border-radius: 30px;
   gap: 0.5vw;
 
@@ -36,7 +36,7 @@
     transform: translateY(-50%);
     font-size: 1vw;
     font-weight: 500;
-    color: #171717;
+    color: white;
     user-select: none;
     padding-right: 2em; /* 矢印分の余白 */
     font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", "MS PMincho", serif;

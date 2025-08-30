@@ -82,7 +82,7 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
       const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
       if (liquidGlassWrapper) {
         gsap.to(liquidGlassWrapper, {
-          y: '100vh',
+          y: '100dvh',
           duration: 0.3,
           ease: 'power2.out',
           onComplete: () => {
@@ -140,7 +140,7 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
       const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
       if (liquidGlassWrapper) {
         gsap.to(liquidGlassWrapper, {
-          y: '100vh',
+          y: '100dvh',
           duration: 0.3,
           ease: 'power2.out',
           onComplete: () => {
@@ -251,7 +251,7 @@ export default function DetailOverlay({ event, onClose }: DetailOverlayProps) {
           const liquidGlassWrapper = overlayRef.current?.closest('[class*="liquidGlass_wrapper"]') as HTMLElement;
           if (liquidGlassWrapper) {
             gsap.to(liquidGlassWrapper, {
-              y: '100vh',
+              y: '100dvh',
               duration: .3,
               ease: 'power2.inOut',
               onComplete: () => {
