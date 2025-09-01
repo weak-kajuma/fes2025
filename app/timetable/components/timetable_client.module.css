@@ -62,7 +62,7 @@
   .title_wrapper {
     width: 100%;
     display: flex;
-  justify-content: flex-start;
+    justify-content: flex-start;
     align-items: center;
 
     .title {
@@ -337,7 +337,7 @@
         grid-row: 1;
         grid-column: 3 / 4;
         z-index: 8;
-  align-self: flex-start;
+        align-self: flex-start;
         height: 60px;
         background-color: #ddd9d5;
 
@@ -467,6 +467,7 @@
         justify-content: flex-end;
         grid-column-start: 2;
         background-color: #a3a3a3;
+        height: 2.5px;
 
         &:nth-of-type(14) {
           grid-row: 2;
@@ -478,6 +479,7 @@
         }
         &:nth-of-type(16) {
           grid-row: 62;
+          height: 2.5px;
         }
         &:nth-of-type(17) {
           grid-row: 32;
@@ -485,6 +487,7 @@
         }
         &:nth-of-type(18) {
           grid-row: 62;
+          height: 2.5px;
         }
         &:nth-of-type(19) {
           grid-row: 92;
@@ -492,6 +495,7 @@
         }
         &:nth-of-type(20) {
           grid-row: 122;
+          height: 2.5px;
         }
         &:nth-of-type(21) {
           grid-row: 152;
@@ -499,6 +503,7 @@
         }
         &:nth-of-type(22) {
           grid-row: 182;
+          height: 2.5px;
         }
         &:nth-of-type(23) {
           grid-row: 212;
@@ -506,6 +511,7 @@
         }
         &:nth-of-type(24) {
           grid-row: 242;
+          height: 2.5px;
         }
         &:nth-of-type(25) {
           grid-row: 272;
@@ -513,6 +519,7 @@
         }
         &:nth-of-type(26) {
           grid-row: 302;
+          height: 2.5px;
         }
         &:nth-of-type(27) {
           grid-row: 332;
@@ -520,6 +527,7 @@
         }
         &:nth-of-type(28) {
           grid-row: 362;
+          height: 2.5px;
         }
         &:nth-of-type(29) {
           grid-row: 392;
@@ -527,6 +535,7 @@
         }
         &:nth-of-type(30) {
           grid-row: 422;
+          height: 2.5px;
         }
       }
 
@@ -544,6 +553,275 @@
       @media screen and (max-width: 768px) {
         .eventContentWrapper {
           grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+      }
+    }
+  }
+
+  .eventContentWrapper {
+    margin-top: 100px;
+    margin-bottom: 80dvh;
+    width: 95%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+
+    @media screen and (max-width: 1200px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .detail_wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .nowEvent {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid var(--text);
+        padding: 1rem 0;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .eventLocationContainer_detail {
+        display: grid;
+        grid-template-columns: 35px 25px 1fr;
+        grid-template-rows: 60px repeat(422, 8px);
+        position: relative;
+        width: 100%;
+
+        .bar {
+          grid-column-start: 2;
+          grid-column-end: 4; /* 左側のバーは1列目から2列目まで */
+          grid-row: var(--current-row); /* JSから渡された行番号を開始位置とし、高さは1行分 */
+          background-color: #a3a3a3; /* 半透明の赤色 */
+          height: 3px; /* バーの太さ */
+          z-index: 5; /* イベントより手前に表示 */
+          pointer-events: none; /* クリックイベントを透過させる */
+        }
+
+        .label {
+          position: sticky;
+          top: 88px;
+          grid-row: 1;
+          grid-column: 3 / 4;
+          z-index: 8;
+          align-self: flex-start;
+          height: 60px;
+          background-color: #ddd9d5;
+
+          /* &::before {
+            content: "";
+            position: absolute;
+            top: -88px;
+            left: -60px;
+            height: 88px;
+            width: calc(100% + 60px);
+            background-color: #ddd9d5;
+          } */
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: -60px;
+            top: 0px;
+            height: 60px;
+            width: 60px;
+            background-image: linear-gradient(to bottom, #ddd9d5, transparent);
+          }
+
+          a {
+            background-color: var(--text);
+            padding: .5rem;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            inset: 0;
+            position: absolute;
+
+            .label_inner {
+              color: white;
+              font-family: var(--mincho);
+            }
+          }
+        }
+
+        .box {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          grid-row: 1 / 2;
+          grid-column-start: 2 / 3;
+          left: 0;
+          position: sticky;
+          width: 100%;
+        }
+
+        .background {
+          grid-row-start: 1;
+          grid-row-end: 691;
+          grid-column-start: 3;
+          border-radius: 1rem;
+          /* background-color: var(--location-secondary-color); */
+          border: 1px solid var(--text);
+          width: 100%;
+        }
+
+        .timeText {
+          color: gray;
+          font-size: .75rem;
+          line-height: 1rem;
+          transform: translateY(-6.75px);
+          grid-column-start: 1;
+
+          &:nth-child(5) {
+            grid-row: 2;
+          }
+
+          &:nth-child(6) {
+            grid-row: 32;
+          }
+          &:nth-child(7) {
+            grid-row: 92;
+          }
+          &:nth-child(8) {
+            grid-row: 152;
+          }
+          &:nth-child(9) {
+            grid-row: 212;
+          }
+          &:nth-child(10) {
+            grid-row: 272;
+          }
+          &:nth-child(11) {
+            grid-row: 332;
+          }
+          &:nth-child(12) {
+            grid-row: 392;
+          }
+          &:nth-child(13) {
+            grid-row: 422;
+          }
+          /* &:nth-child(13) {
+            grid-row: 452;
+          } */
+          /* &:nth-child(14) {
+            grid-row: 512;
+          }
+          &:nth-child(15) {
+            grid-row: 572;
+          }
+          &:nth-child(16) {
+            grid-row: 632;
+          } */
+        }
+
+        .event {
+          position: absolute;
+          left: 60px;
+          right: 10px;
+          min-height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 1rem;
+          z-index: 2;
+        }
+
+        .timeBar {
+          display: flex;
+          justify-content: flex-end;
+          grid-column-start: 2;
+          background-color: #a3a3a3;
+
+          &:nth-of-type(14) {
+            grid-row: 2;
+            height: 2.5px;
+          }
+          &:nth-of-type(15) {
+            grid-row: 32;
+            height: 2.5px;
+          }
+          &:nth-of-type(16) {
+            grid-row: 62;
+          }
+          &:nth-of-type(17) {
+            grid-row: 32;
+            height: 2.5px;
+          }
+          &:nth-of-type(18) {
+            grid-row: 62;
+          }
+          &:nth-of-type(19) {
+            grid-row: 92;
+            height: 2.5px;
+          }
+          &:nth-of-type(20) {
+            grid-row: 122;
+          }
+          &:nth-of-type(21) {
+            grid-row: 152;
+            height: 2.5px;
+          }
+          &:nth-of-type(22) {
+            grid-row: 182;
+          }
+          &:nth-of-type(23) {
+            grid-row: 212;
+            height: 2.5px;
+          }
+          &:nth-of-type(24) {
+            grid-row: 242;
+          }
+          &:nth-of-type(25) {
+            grid-row: 272;
+            height: 2.5px;
+          }
+          &:nth-of-type(26) {
+            grid-row: 302;
+          }
+          &:nth-of-type(27) {
+            grid-row: 332;
+            height: 2.5px;
+          }
+          &:nth-of-type(28) {
+            grid-row: 362;
+          }
+          &:nth-of-type(29) {
+            grid-row: 392;
+            height: 2.5px;
+          }
+          &:nth-of-type(30) {
+            grid-row: 422;
+          }
+        }
+
+        .loading, .error, .loadingOverlay {
+          text-align: center;
+          margin: 2rem;
+          font-size: 1.2rem;
+        }
+
+        @media screen and (max-width: 1200px) {
+          .eventContentWrapper {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        @media screen and (max-width: 768px) {
+          .eventContentWrapper {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+          }
         }
       }
     }

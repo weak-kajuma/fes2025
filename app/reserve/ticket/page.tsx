@@ -12,11 +12,23 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { fetchWithCache } from "@/lib/fetchWithCache";
 
 
 export default function TicketPage() {
+
+  // リハーサル申込モーダル・日時選択・開放判定ロジック
+  const [isRehearsalModalOpen, setIsRehearsalModalOpen] = useState(false);
+  const [selectedRehearsalTime, setSelectedRehearsalTime] = useState("");
+  const router = useRouter();
+  // クリック可能期間: 9月4日12:40〜9月10日13:00
+  const rehearsalStart = new Date("2025-09-04T12:40:00+09:00");
+  const rehearsalEnd = new Date("2025-09-10T13:00:00+09:00");
+  const now = new Date();
+  const isRehearsalOpen = now.getTime() >= rehearsalStart.getTime() && now.getTime() <= rehearsalEnd.getTime();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -263,7 +275,7 @@ export default function TicketPage() {
                       </div>
                     </div>
 
-                    <div className={styles.arrows_event}>
+                    {/* <div className={styles.arrows_event}>
                       <div className={styles.arrows_title}>
                         <span>■</span>
                         イベントの予約
@@ -380,6 +392,90 @@ export default function TicketPage() {
                             />
                             <Link className={styles.arrow_middle} href="/reserve/first-come-served/ticketselect">
                               <div>空き枠先着申込<br/>(受付中)</div>
+                            </Link>
+                            <Image
+                              src="/images/arrow_red_right.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                          </>
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                      </div>
+                    </div> */}
+
+                    <div className={styles.arrows_event}>
+                      <div className={styles.arrows_title}>
+                        <span>■</span>
+                        リハーサルの予約
+                      </div>
+                      <div className={styles.arrow}>
+                        <Image
+                          className={styles.arrow_gray_left}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="左矢印"
+                        />
+                        <Image
+                          className={styles.arrow_gray_right}
+                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                          width={15}
+                          height={40}
+                          alt="右矢印"
+                        />
+                          <>
+                            <Image
+                              src="/images/arrow_red_left.png"
+                              width={15}
+                              height={40}
+                              alt="右矢印"
+                            />
+                            <Link
+                              className={styles.arrow_middle}
+                              href={isRehearsalOpen ? "/reserve/first-come-served/ticketselect" : "#"}
+                              style={isRehearsalOpen ? {} : { pointerEvents: "none" }}
+                              tabIndex={isRehearsalOpen ? 0 : -1}
+                            >
+                              <div>
+                                リハーサル先着申込<br/>
+                                {now.getTime() < rehearsalStart.getTime() && (
+                                  <span>(受付前)</span>
+                                )}
+                                {now.getTime() > rehearsalEnd.getTime() && (
+                                  <span>(受付終了)</span>
+                                )}
+                                {isRehearsalOpen && (
+                                  <span>(受付中)</span>
+                                )}
+                              </div>
                             </Link>
                             <Image
                               src="/images/arrow_red_right.png"

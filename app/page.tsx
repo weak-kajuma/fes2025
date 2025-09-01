@@ -47,11 +47,13 @@ export default function Home() {
   const itemBorderRefs = useRef<(SVGRectElement | null)[]>([]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // SSR対応: isMobile判定はuseEffectで
+  // SSR対応: isMobile/isTablet判定はuseEffectで
   const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsMobile(window.matchMedia('(max-width: 900px)').matches);
+      setIsTablet(window.matchMedia('(max-width: 1200px)').matches);
     }
   }, []);
 
@@ -153,7 +155,7 @@ export default function Home() {
       end: "bottom bottom",
       pin: `.${styles.top_inner}`,
       onLeave: () => gsap.set(`.${styles.bg}`, { marginTop: -1 }),
-      onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: isMobile ? '-.7px' : 0 })
+      onEnterBack: () => gsap.set(`.${styles.bg}`, { marginTop: isMobile ? '-.9px' : 0 })
     });
 
     const ellipseTextPaths = ellipseRef.current?.querySelectorAll('textPath');
@@ -192,7 +194,7 @@ export default function Home() {
       const x = targetCenterX - logoCenterX;
       const y = targetCenterY - logoCenterY;
 
-      const logoScale = isMobile ? 2.3 : 1; // スマホ時は縮小倍率を小さく（大きく表示）
+      const logoScale = (isMobile || isTablet) ? 2.3 : 1; // スマホ・タブレット時は縮小倍率を小さく（大きく表示）
       tl
         .to(logoEl, { x, y, scaleX: scaleX * 1.5, scaleY: scaleY * 1.5, ease: 'none' })
         .fromTo(textEls, {
@@ -245,7 +247,7 @@ export default function Home() {
 
     const cleanup = ensureSmoother();
     return typeof cleanup === 'function' ? cleanup : undefined;
-  }, [opening, pathname, isMobile]);
+  }, [opening, pathname, isMobile, isTablet]);
 
   // ellipseのなんか
   useEffect(() => {
@@ -431,7 +433,7 @@ export default function Home() {
           tl.to(title,   { y: 0, opacity: 1 })
             .to(subtitle,{ y: 0, opacity: 1 }, '-=0.2')
             .to(items,   { y: 0, opacity: 1, stagger: 0.18 }, '-=0.3');
-          if (isMobile) {
+          if (isMobile || isTablet) {
             tl.to(allTexts, { fontSize: '5rem' }, '+=0.1')
               .to(allItems, { marginBottom: '2rem' }, '<');
             allTags.forEach(tag => {
@@ -450,7 +452,7 @@ export default function Home() {
 
     const cleanup = ensureSmoother();
     return typeof cleanup === 'function' ? cleanup : undefined;
-  }, [opening, isMobile]);
+  }, [opening, isMobile, isTablet]);
 
   // functionItemホバーアニメーション（stateは使うが他エフェクトに影響しない）
   const handleTextWrapperHover = (index: number, hover: boolean) => {
@@ -476,13 +478,13 @@ export default function Home() {
     const imgs = itemEl.querySelectorAll(`.${styles.img}`);
 
     gsap.to(text, {
-      fontSize: isMobile ? (hover ? '5rem' : '4rem') : (hover ? '10rem' : '8rem'),
+      fontSize: (isMobile || isTablet) ? (hover ? '5rem' : '4rem') : (hover ? '10rem' : '8rem'),
       // color: hover ? 'rgb(203, 163, 115)' : '#fff',
       duration: 0.4,
       ease: "power2.out",
     });
     gsap.to(itemEl, {
-      marginBottom: isMobile ? (hover ? 0 : '-10rem') : (hover ? 0 : '-2.2rem'),
+      marginBottom: (isMobile || isTablet) ? (hover ? 0 : '-10rem') : (hover ? 0 : '-2.2rem'),
     });
     tags.forEach((tag) => {
       gsap.to(tag, {
@@ -621,20 +623,17 @@ export default function Home() {
                 </div>
 
                 <div className={styles.items}>
-
                   {[0,1,2,3,4].map((i) => (
                     <div
                       className={styles.item}
                       ref={el => { itemRefs.current[i] = el; }}
                       key={i}
                     >
-                      <div
-                        className={styles.item_grid}
-                      >
+                      <div className={styles.item_grid}>
                         <div className={styles.img}>
                           <div className={styles.img_inner}></div>
                         </div>
-                        {!isMobile && (
+                        {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}></div>
                           </div>
@@ -645,10 +644,10 @@ export default function Home() {
                             <h2
                               className={styles.text}
                               onMouseEnter={() => {
-                                if (!isMobile) handleTextWrapperHover(i, true)
+                                if (!(isMobile || isTablet)) handleTextWrapperHover(i, true)
                               }}
                               onMouseLeave={() => {
-                                if (!isMobile) handleTextWrapperHover(i, false)
+                                if (!(isMobile || isTablet)) handleTextWrapperHover(i, false)
                               }}
                             >
                                 {i === 0 && "TIME TABLE"}
@@ -667,7 +666,7 @@ export default function Home() {
                             </div>
                           </div>
                         </div>
-                        {!isMobile && (
+                        {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}></div>
                           </div>
