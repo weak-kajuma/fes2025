@@ -14,6 +14,7 @@ import { fetchLocalJson } from "@/lib/fetchLocalJson";
 import NewsSlider from "@/components/NewsSlider/NewsSlider";
 
 import AnimatedLink from "@/components/AnimatedLink";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -535,6 +536,32 @@ export default function Home() {
 
 
 
+   // .linksのアニメーション
+  const linksRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (opening) return;
+    if (!linksRef.current) return;
+    const links = Array.from(linksRef.current.querySelectorAll(`.${styles.link}`));
+    gsap.set(links, { opacity: 0, y: 60 });
+    gsap.to(links, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.18,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: linksRef.current,
+        start: 'top 20%',
+        toggleActions: 'play none none none',
+      },
+    });
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, [opening]);
+
+
+
 
 
   return (
@@ -612,6 +639,29 @@ export default function Home() {
                 </div>
 
               </div>
+            </div>
+
+            <div className={styles.links} ref={linksRef}>
+              <a
+                className={styles.link}
+                href="https://www.takatsuki.ed.jp/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <Image src="/icon/school.svg" alt="Description" width={80} height={80} />
+                <p>SchoolHomePage</p>
+              </a>
+              <a
+                className={styles.link}
+                href="https://www.instagram.com/seikasai_takatsuki/#"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <Image src="/icon/instagram.svg" alt="Description" width={80} height={80} />
+                <p>OfficialInstagram</p>
+              </a>
             </div>
 
             <div className={styles.tools} ref={toolsRootRef}>

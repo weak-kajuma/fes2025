@@ -170,6 +170,34 @@
     }
   }
 
+  .links {
+    width: 100%;
+    background-color: #141414;
+    margin-top: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80dvh;
+    gap: 10vw;
+
+    .link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        font-size: 1.5rem;
+        color: var(--text);
+        margin-top: 1rem;
+        line-height: 1.5;
+        max-width: 600px;
+        font-family: var(--mincho);
+      }
+    }
+
+  }
+
   .tools {
     margin-top: -1px;
     width: 100%;
