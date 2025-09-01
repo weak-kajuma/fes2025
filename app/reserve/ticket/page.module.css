@@ -801,7 +801,7 @@
     width: 335px;
     max-width: calc(-24px + 100dvw);
     height: auto;
-    max-height: calc(-24px + 100ddvh);
+    max-height: calc(-24px + 100dvh);
     transform: translate(-50%, -50%);
 
     .modal_inner {

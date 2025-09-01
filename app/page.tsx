@@ -631,11 +631,15 @@ export default function Home() {
                     >
                       <div className={styles.item_grid}>
                         <div className={styles.img}>
-                          <div className={styles.img_inner}></div>
+                          <div className={styles.img_inner}>
+                            comingsoon
+                          </div>
                         </div>
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
-                            <div className={styles.img_inner}></div>
+                            <div className={styles.img_inner}>
+                              comingsoon
+                            </div>
                           </div>
                         )}
                         <div className={styles.text_wrapper}>
@@ -668,7 +672,9 @@ export default function Home() {
                         </div>
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
-                            <div className={styles.img_inner}></div>
+                            <div className={styles.img_inner}>
+                              comingsoon
+                            </div>
                           </div>
                         )}
                       </div>
@@ -686,7 +692,7 @@ export default function Home() {
                   <p id="news-subtitle">最新情報をお届けします</p>
                 </div>
 
-                <div className={styles.news_list_wrapper}>
+                {/* <div className={styles.news_list_wrapper}>
 
                   <NewsSlider items={newsItems} isMobile={isMobile} />
 
@@ -698,7 +704,6 @@ export default function Home() {
                         <div className={styles.prev}>
                           <span className={styles.button_inner}>
                             <svg className={styles.icon}>
-                              {/* <use xlinkHref="/sprite.svg#icon-arrow-left"></use> */}
                             </svg>
                           </span>
                         </div>
@@ -706,7 +711,6 @@ export default function Home() {
                         <div className={styles.next}>
                           <span className={styles.button_inner}>
                             <svg className={styles.icon}>
-                              {/* <use xlinkHref="/sprite.svg#icon-arrow-right"></use> */}
                             </svg>
                           </span>
                         </div>
@@ -719,6 +723,29 @@ export default function Home() {
 
                     </div>
                   )}
+                </div> */}
+
+                <div>
+                  <div
+                    style={{
+                      width: '100%',
+                      minHeight: '40vh',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#fff',
+                      fontSize: '4rem',
+                      fontWeight: 'bold',
+                      letterSpacing: '0.1em',
+                      borderRadius: '2rem',
+                      margin: '3rem 0',
+                      textAlign: 'center',
+                      userSelect: 'none',
+                      fontFamily: "var(--mincho)"
+                    }}
+                  >
+                    COMING SOON
+                  </div>
                 </div>
 
               </div>

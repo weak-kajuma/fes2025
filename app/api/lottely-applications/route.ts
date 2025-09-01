@@ -60,7 +60,7 @@ async function getUserContext() {
       .from('user_uuids')
       .select('uuid')
       .eq('email', email)
-      .single();
+      .single<{ uuid: string }>();
     if (data?.uuid) {
       return { userId: data.uuid, client: supabase } as const;
     }

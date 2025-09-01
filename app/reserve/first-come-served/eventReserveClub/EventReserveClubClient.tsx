@@ -17,7 +17,7 @@ export default function EventReserveClient() {
   // 予約者名は不要
   const [groupId, setGroupId] = useState<string>("");
   const [groupName, setGroupName] = useState<string>("");
-  const [groupOptions, setGroupOptions] = useState<{ group_name: string; group_id: number }[]>([]);
+  const [groupOptions, setGroupOptions] = useState<any[]>([]);
   const { event, setEvent } = useEventContext();
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
@@ -79,6 +79,30 @@ export default function EventReserveClient() {
         }
       })();
     }, []);
+
+    // イベントidごとに選択可能なグループをフィルタ
+    const filteredGroupOptions = useMemo(() => {
+      const eid = Number(eventId);
+      if (!eid || groupOptions.length === 0) return [];
+      if (eid === 1) {
+        // group_idの百の位が1
+        return groupOptions.filter(opt => Math.floor(opt.group_id / 100) === 1);
+      }
+      if (eid === 3) {
+        // location: "中庭"
+        return groupOptions.filter(opt => opt.location === "中庭");
+      }
+      if (eid === 4) {
+        // location: "体育館"
+        return groupOptions.filter(opt => opt.location === "体育館");
+      }
+      if (eid === 2) {
+        // locationプロパティがない かつ group_id百の位が2
+        return groupOptions.filter(opt => (!('location' in opt) || opt.location === undefined || opt.location === "") && Math.floor(opt.group_id / 100) === 2);
+      }
+      // それ以外は全て
+      return groupOptions;
+    }, [eventId, groupOptions]);
 
 
   useEffect(() => {
@@ -366,7 +390,7 @@ export default function EventReserveClient() {
                     }}
                   >
                     <option value="">選択してください</option>
-                    {groupOptions.map(opt => (
+                    {filteredGroupOptions.map(opt => (
                       <option key={String(opt.group_id) + '_' + opt.group_name} value={opt.group_name}>{opt.group_name}</option>
                     ))}
                   </select>

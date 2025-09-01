@@ -405,7 +405,8 @@
   },
   {
     "group_name": "Charlie",
-    "group_id": 232
+    "group_id": 232,
+    "location": "体育館"
   },
   {
     "group_name": "Digital Delay",
@@ -418,11 +419,13 @@
   },
   {
     "group_name": "Fluvia",
-    "group_id": 235
+    "group_id": 235,
+    "location": "体育館"
   },
   {
     "group_name": "grazioso",
-    "group_id": 237
+    "group_id": 237,
+    "location": "体育館"
   },
   {
     "group_name": "Harry Threaders",
@@ -450,7 +453,8 @@
   },
   {
     "group_name": "SANDY",
-    "group_id": 244
+    "group_id": 244,
+    "location": "体育館"
   },
   {
     "group_name": "School Days",
@@ -466,7 +470,8 @@
   },
   {
     "group_name": "Tosca",
-    "group_id": 248
+    "group_id": 248,
+    "location": "体育館"
   },
   {
     "group_name": "Treasure plum",
