@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="460.88544"
+   height="188.07263"
+   viewBox="0 0 460.88545 188.07263"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="swatch9">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop9" />
+    </linearGradient>
+  </defs>
+  <g
+     id="layer2"
+     transform="translate(-14.734164,-10.231657)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:condensed;font-size:210.032px;font-family:'Bernard MT Condensed';-inkscape-font-specification:'Bernard MT Condensed,  Condensed';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.975676;fill:#000000;fill-opacity:1;stroke:none;stroke-width:16.6702;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       x="19.122852"
+       y="154.95746"
+       id="text14"
+       transform="scale(1.0643544,0.93953669)"><tspan
+         id="tspan14"
+         x="19.122852"
+         y="154.95746"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Freestyle Script';-inkscape-font-specification:'Freestyle Script';stroke-width:16.6702">Sparkle</tspan></text>
+  </g>
+  <g
+     id="layer3"
+     style="display:inline;fill:none;stroke:none;stroke-width:10;stroke-dasharray:none"
+     transform="translate(-14.734164,-10.231657)">
+    <path
+       style="opacity:0.505405;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:14.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 85.158784,63.945946 C 154.63851,32.89527 131.27365,-4.3040541 77.472973,33.817568 c 0,0 -36.277027,29.206081 -5.533784,55.952702 0,0 34.432431,33.51014 -13.219594,47.03716 0,0 -22.75,6.14865 -34.739865,-9.83784 0,0 -9.530406,-15.06418 14.756757,-22.13513 L 137.11486,73.783784 c 0,0 -43.347968,59.949326 -64.560806,117.131756 l 40.888516,-81.16216 c 0,0 32.58784,-38.121623 38.42905,-19.368245 0,0 -16.29392,59.027025 -47.95946,37.506755 0,0 182.9223,-195.219593 106.67906,-36.584458 0,0 -2.7669,-27.054054 -33.20271,6.456082 0,0 -30.43581,68.864866 15.37163,20.290536 l 16.90878,-24.287158 c 0,0 -22.44257,50.111488 -4.91892,43.040538 0,0 59.64189,-181.385133 44.88514,-52.263511 0,0 -22.75,19.368241 -30.43582,53.493241 0,0 25.82433,-43.655403 58.41217,-54.722971 0,0 -44.27027,39.351351 10.4527,14.449325 l 25.51689,-8.300676 c 3.07433,-0.922297 62.10135,-35.969595 63.63851,-64.560811 -5.53378,4.611487 -8.6081,-24.59459457 -63.94594,63.638514 l -23.36487,43.962839 c 0,0 30.43581,-44.270272 61.17906,-47.037164 l -26.43919,12.297298 c 2.76689,2.766896 -24.28716,75.320946 37.81419,12.604726 l 22.13513,-12.297294 c 0,0 51.64865,-28.898649 62.40879,-75.628378 0,0 -28.28379,0 -62.10135,73.476351 0,0 -34.73987,74.091221 18.44594,12.912161 l 16.29392,6.76351 c 0,0 39.65878,-11.06756 35.66216,-29.513509 v 0 C 420.875,72.861487 387.6723,179.54054 468.21959,110.67568"
+       id="path17" />
+  </g>
+</svg>

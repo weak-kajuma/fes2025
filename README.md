@@ -20,6 +20,39 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Google Authentication Setup
+
+To enable Google authentication for the admin page, you need to set up the following environment variables:
+
+1. Create a `.env.local` file in the root directory
+2. Add the following variables:
+
+```env
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3001
+NEXTAUTH_SECRET=your_nextauth_secret_here
+```
+
+### How to get Google OAuth credentials:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API
+4. Go to "Credentials" and create an OAuth 2.0 Client ID
+5. Add `http://localhost:3001/api/auth/callback/google` to the authorized redirect URIs
+6. Copy the Client ID and Client Secret to your `.env.local` file
+
+### Generate NextAuth Secret:
+
+You can generate a secure secret using:
+```bash
+openssl rand -base64 32
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

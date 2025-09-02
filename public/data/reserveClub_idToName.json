@@ -1,0 +1,528 @@
+[
+  {
+    "group_name": "08JUMP!",
+    "group_id": 101
+  },
+  {
+    "group_name": "167°",
+    "group_id": 102
+  },
+  {
+    "group_name": "サイまんじゅう",
+    "group_id": 103
+  },
+  {
+    "group_name": "スケバン戦隊",
+    "group_id": 105
+  },
+  {
+    "group_name": "Cheer Bears",
+    "group_id": 106
+  },
+  {
+    "group_name": "つきプリ",
+    "group_id": 107
+  },
+  {
+    "group_name": "ぷろちょる",
+    "group_id": 109
+  },
+  {
+    "group_name": "旧帝ストリート",
+    "group_id": 110
+  },
+  {
+    "group_name": "修行boy",
+    "group_id": 111
+  },
+  {
+    "group_name": "放課後補習クラブ",
+    "group_id": 112
+  },
+  {
+    "group_name": "Attiy*",
+    "group_id": 113
+  },
+  {
+    "group_name": "BAKUSOU!",
+    "group_id": 114
+  },
+  {
+    "group_name": "BLACKNOVA",
+    "group_id": 115
+  },
+  {
+    "group_name": "BLOOM",
+    "group_id": 116
+  },
+  {
+    "group_name": "Boys be ambitious",
+    "group_id": 117
+  },
+  {
+    "group_name": "Bubble Monster",
+    "group_id": 118
+  },
+  {
+    "group_name": "Cheery Lush",
+    "group_id": 119
+  },
+  {
+    "group_name": "Ciely",
+    "group_id": 120
+  },
+  {
+    "group_name": "DANDY STREET",
+    "group_id": 121
+  },
+  {
+    "group_name": "FEARNOT",
+    "group_id": 122
+  },
+  {
+    "group_name": "FIVE",
+    "group_id": 123
+  },
+  {
+    "group_name": "Gummiiiiies",
+    "group_id": 124
+  },
+  {
+    "group_name": "HEARTies",
+    "group_id": 125
+  },
+  {
+    "group_name": "JUNEL",
+    "group_id": 126
+  },
+  {
+    "group_name": "KONMAT",
+    "group_id": 127
+  },
+  {
+    "group_name": "Last class",
+    "group_id": 128
+  },
+  {
+    "group_name": "Lucky GirlS",
+    "group_id": 129
+  },
+  {
+    "group_name": "Lumina",
+    "group_id": 130
+  },
+  {
+    "group_name": "MeLLow",
+    "group_id": 131
+  },
+  {
+    "group_name": "Memory",
+    "group_id": 132
+  },
+  {
+    "group_name": "Merony",
+    "group_id": 133
+  },
+  {
+    "group_name": "MUSE",
+    "group_id": 134
+  },
+  {
+    "group_name": "MVA",
+    "group_id": 135
+  },
+  {
+    "group_name": "Neimy",
+    "group_id": 136
+  },
+  {
+    "group_name": "Nexus",
+    "group_id": 137
+  },
+  {
+    "group_name": "NOVAIR",
+    "group_id": 138
+  },
+  {
+    "group_name": "ONCE",
+    "group_id": 139
+  },
+  {
+    "group_name": "peeech",
+    "group_id": 140
+  },
+  {
+    "group_name": "九州男児",
+    "group_id": 141
+  },
+  {
+    "group_name": "SAI",
+    "group_id": 142
+  },
+  {
+    "group_name": "Salvia",
+    "group_id": 143
+  },
+  {
+    "group_name": "SCRAM",
+    "group_id": 144
+  },
+  {
+    "group_name": "Spice up",
+    "group_id": 145
+  },
+  {
+    "group_name": "stayc",
+    "group_id": 146
+  },
+  {
+    "group_name": "SUNNYS",
+    "group_id": 147
+  },
+  {
+    "group_name": "The Formaliner",
+    "group_id": 148
+  },
+  {
+    "group_name": "Tiarece",
+    "group_id": 149
+  },
+  {
+    "group_name": "tLiFE!",
+    "group_id": 150
+  },
+  {
+    "group_name": "To-LIKE",
+    "group_id": 151
+  },
+  {
+    "group_name": "twist girls",
+    "group_id": 152
+  },
+  {
+    "group_name": "Velce",
+    "group_id": 153
+  },
+  {
+    "group_name": "Vista",
+    "group_id": 154
+  },
+  {
+    "group_name": "Wonder",
+    "group_id": 155
+  },
+  {
+    "group_name": "おにぎりザウルス",
+    "group_id": 301
+  },
+  {
+    "group_name": "サウスポー",
+    "group_id": 302
+  },
+  {
+    "group_name": "ちょもらんま",
+    "group_id": 303
+  },
+  {
+    "group_name": "モアイ",
+    "group_id": 304
+  },
+  {
+    "group_name": "ヨカヨカ財務省",
+    "group_id": 305
+  },
+  {
+    "group_name": "れいちゃま",
+    "group_id": 306
+  },
+  {
+    "group_name": "我らカイワレ",
+    "group_id": 307
+  },
+  {
+    "group_name": "禁錮ちゃん",
+    "group_id": 308
+  },
+  {
+    "group_name": "焼きそばパン",
+    "group_id": 309
+  },
+  {
+    "group_name": "爆裂どうふ",
+    "group_id": 310
+  },
+  {
+    "group_name": "野うさぎ",
+    "group_id": 311
+  },
+  {
+    "group_name": "Санкт-Петербург",
+    "group_id": 312
+  },
+  {
+    "group_name": "あさかつ",
+    "group_id": 313
+  },
+  {
+    "group_name": "クマゼミ",
+    "group_id": 314
+  },
+  {
+    "group_name": "りな",
+    "group_id": 315
+  },
+  {
+    "group_name": "Ipone",
+    "group_id": 316
+  },
+  {
+    "group_name": "やればできる",
+    "group_id": 201
+  },
+  {
+    "group_name": "&ever",
+    "group_id": 202
+  },
+  {
+    "group_name": "# to you",
+    "group_id": 203
+  },
+  {
+    "group_name": "アルテミック・レディ",
+    "group_id": 204,
+    "location": "中庭"
+  },
+  {
+    "group_name": "オドリドリ",
+    "group_id": 205
+  },
+  {
+    "group_name": "クロチャンズ",
+    "group_id": 206
+  },
+  {
+    "group_name": "コーネリアス",
+    "group_id": 207
+  },
+  {
+    "group_name": "サカナリズム",
+    "group_id": 208
+  },
+  {
+    "group_name": "サヘラントロプス・チャデンシス",
+    "group_id": 209
+  },
+  {
+    "group_name": "しゅーどにむ",
+    "group_id": 210
+  },
+  {
+    "group_name": "セツナシュギ",
+    "group_id": 211
+  },
+  {
+    "group_name": "ちょっくらバンド",
+    "group_id": 212
+  },
+  {
+    "group_name": "なまものがかり",
+    "group_id": 213
+  },
+  {
+    "group_name": "バイナリー",
+    "group_id": 214,
+    "location": "中庭"
+  },
+  {
+    "group_name": "ばんどぉ",
+    "group_id": 215
+  },
+  {
+    "group_name": "ひげひげ音楽隊",
+    "group_id": 216
+  },
+  {
+    "group_name": "ふしぎなアメ",
+    "group_id": 217
+  },
+  {
+    "group_name": "ホルン王女と愉快な仲間たち",
+    "group_id": 218,
+    "location": "中庭"
+  },
+  {
+    "group_name": "ミックスベリー",
+    "group_id": 219
+  },
+  {
+    "group_name": "みりんこびっち",
+    "group_id": 220
+  },
+  {
+    "group_name": "メタルカモノハシ",
+    "group_id": 221
+  },
+  {
+    "group_name": "モルダウの流れ",
+    "group_id": 222
+  },
+  {
+    "group_name": "よだか",
+    "group_id": 223
+  },
+  {
+    "group_name": "ルイ＝Big",
+    "group_id": 224
+  },
+  {
+    "group_name": "夏色レモン",
+    "group_id": 225
+  },
+  {
+    "group_name": "空音",
+    "group_id": 226
+  },
+  {
+    "group_name": "深海魚",
+    "group_id": 227
+  },
+  {
+    "group_name": "連帯無責任",
+    "group_id": 228
+  },
+  {
+    "group_name": "Always by You",
+    "group_id": 229,
+    "location": "体育館"
+  },
+  {
+    "group_name": "ANZ",
+    "group_id": 230
+  },
+  {
+    "group_name": "Bocta tides",
+    "group_id": 231
+  },
+  {
+    "group_name": "Charlie",
+    "group_id": 232,
+    "location": "体育館"
+  },
+  {
+    "group_name": "Digital Delay",
+    "group_id": 233
+  },
+  {
+    "group_name": "EcstAsy",
+    "group_id": 234,
+    "location": "中庭"
+  },
+  {
+    "group_name": "Fluvia",
+    "group_id": 235,
+    "location": "体育館"
+  },
+  {
+    "group_name": "grazioso",
+    "group_id": 237,
+    "location": "体育館"
+  },
+  {
+    "group_name": "Harry Threaders",
+    "group_id": 238
+  },
+  {
+    "group_name": "lazuli",
+    "group_id": 239
+  },
+  {
+    "group_name": "Pietari",
+    "group_id": 240
+  },
+  {
+    "group_name": "ピチピチデニム",
+    "group_id": 241
+  },
+  {
+    "group_name": "Re:ばうんでぃ",
+    "group_id": 242
+  },
+  {
+    "group_name": "Rinn5",
+    "group_id": 243
+  },
+  {
+    "group_name": "SANDY",
+    "group_id": 244,
+    "location": "体育館"
+  },
+  {
+    "group_name": "School Days",
+    "group_id": 245
+  },
+  {
+    "group_name": "げば",
+    "group_id": 246
+  },
+  {
+    "group_name": "T-Recs",
+    "group_id": 247
+  },
+  {
+    "group_name": "Tosca",
+    "group_id": 248,
+    "location": "体育館"
+  },
+  {
+    "group_name": "Treasure plum",
+    "group_id": 249
+  },
+  {
+    "group_name": "UMHOA(ユーモア)",
+    "group_id": 250
+  },
+  {
+    "group_name": "UNBALANCE",
+    "group_id": 251
+  },
+  {
+    "group_name": "「あ」",
+    "group_id": 400
+  },
+  {
+    "group_name": "Hot ホルマリアン",
+    "group_id": 401
+  },
+  {
+    "group_name": "ライスボール",
+    "group_id": 402
+  },
+  {
+    "group_name": "豊中",
+    "group_id": 403
+  },
+  {
+    "group_name": "MMD",
+    "group_id": 404
+  },
+  {
+    "group_name": "いなかのビタミンC",
+    "group_id": 405
+  },
+  {
+    "group_name": "Not found",
+    "group_id": 406
+  },
+  {
+    "group_name": "ボイロ実況",
+    "group_id": 407
+  },
+  {
+    "group_name": "TAKELLIT",
+    "group_id": 408
+  },
+  {
+    "group_name": "ナマモノ動画",
+    "group_id": 409
+  }
+]

@@ -11,4 +11,14 @@
     "eslint.validate": ["html", "javascriptreact", "typescriptreact"],
     "css.validate": false,
     "scss.validate": false,
+    "[html]": {
+      "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "cSpell.words": [
+      "lottely",
+      "qrcode",
+      "submited",
+      "ticketselect",
+      "withlist"
+    ],
   }

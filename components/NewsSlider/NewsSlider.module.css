@@ -1,0 +1,140 @@
+
+.list {
+	display: flex;
+	list-style-type: none;
+	will-change: transform;
+	user-select: none;
+	white-space: nowrap;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.list_item {
+	min-width: 30rem;
+	display: inline-block;
+	margin-right: 1.25rem;
+	flex-shrink: 0;
+
+	@media screen and (max-width: 1000px) {
+		min-width: 75vw;
+		max-width: 75vw;
+		margin-right: 0 !important;
+	}
+}
+.news_list_wrapper {
+	width: auto;
+  /* display: flex; */
+  height: 50dvh;
+  position: relative;
+
+	@media screen and (max-width: 1000px) {
+		height: 100dvh;
+	}
+}
+
+.list {
+	display: flex;
+	list-style-type: none;
+	will-change: transform;
+	user-select: none;
+
+	@media screen and (max-width: 1000px) {
+		width: 100%;
+		flex-direction: column;
+		align-items: center;
+	}
+}
+.list.grabbing {
+	cursor: grabbing;
+}
+
+.list_item {
+	width: 30rem;
+	margin-right: 1.25rem;
+	flex-shrink: 0;
+
+	@media screen and (max-width: 1000px) {
+		width: 100%;
+		margin-top: 2rem;
+	}
+}
+.image {
+	height: 20rem;
+	border-radius: .625rem;
+	width: 100%;
+	object-fit: cover;
+	position: relative;
+	overflow: hidden;
+	transition: transform .6s cubic-bezier(.16,1,.3,1),
+				border-radius 1s cubic-bezier(.16,1,.3,1);
+	background-color: #fff;
+
+	@media screen and (max-width: 600px) {
+		height: 15rem;
+	}
+
+	&:hover {
+		transform: scale(.9);
+		filter: brightness(.7);
+		border-radius: 3rem;
+	}
+
+	img {
+		user-drag: none;
+		user-select: none;
+		pointer-events: none;
+	}
+}
+.type_text {
+	font-size: .8125rem;
+	margin-top: 1.0625rem;
+	font-weight: 600;
+	color: #fff;
+	font-family: var(--mincho);
+
+	@media screen and (max-width: 1000px) {
+		margin-top: .3rem;
+	}
+}
+.main_text {
+	display: flex;
+	margin-top: .875rem;
+
+	@media screen and (max-width: 1000px) {
+		margin-top: .5rem;
+	}
+}
+.title {
+	font-size: 1.5rem;
+	line-height: 1.5;
+	letter-spacing: -.02em;
+	font-weight: 600;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	flex: 1;
+	color: #fff;
+	font-family: var(--mincho);
+
+	@media screen and (max-width: 1000px) {
+		font-size: 1.0625rem;
+		margin-top: .1rem;
+		line-height: 1.5882352941;
+	}
+}
+.button {
+	flex-shrink: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid rgba(40, 40, 40, .2);
+	border-radius: 50%;
+	width: 2.5rem;
+	height: 2.5rem;
+	margin-top: .375rem;
+	margin-inline: .625rem .8125rem;
+	overflow: hidden;
+	transition: .2s;
+	transition-property: background, color;
+}

@@ -1,0 +1,54 @@
+
+
+/* locationごとの固有色（キャメルケースクラス名に統一） */
+.locationStage {
+  --location-primary-color: var(--location-primary-color-stage);
+  --location-secondary-color: var(--location-secondary-color-stage);
+}
+
+.locationYard {
+  --location-primary-color: var(--location-primary-color-yard);
+  --location-secondary-color: var(--location-secondary-color-yard);
+}
+
+.locationHole {
+  --location-primary-color: var(--location-primary-color-hole);
+  --location-secondary-color: var(--location-secondary-color-hole);
+}
+
+.locationGym {
+  --location-primary-color: var(--location-primary-color-gym);
+  --location-secondary-color: var(--location-secondary-color-gym);
+}
+
+/* 他のロケーションに対応するクラスと色定義を追加 */
+
+.locationDefault { /* locationが不明な場合やデフォルトのスタイル */
+  --location-primary-color: #555555;
+  --location-secondary-color: #e0e0e0;
+}
+
+
+
+.wrapper {
+  /* background-color: var(--location-primary-color); */
+  /* background-color: rgb(226, 226, 226); */
+  border: 2px solid var(--text);
+  border-radius: 10px;
+  margin: 2px auto;
+  width: 90%;
+  grid-column-start: 3;
+  position: relative;
+
+  .time {
+    margin: 0.5rem;
+  }
+
+  .title {
+    position: absolute;
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+}
