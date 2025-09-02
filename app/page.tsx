@@ -543,22 +543,29 @@ export default function Home() {
     if (!linksRef.current) return;
     const links = Array.from(linksRef.current.querySelectorAll(`.${styles.link}`));
     gsap.set(links, { opacity: 0, y: 60 });
-    gsap.to(links, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      stagger: 0.18,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: linksRef.current,
-        start: 'top 20%',
-        toggleActions: 'play none none none',
-      },
-    });
+
+    if (isMobile || isTablet) {
+      // スマホ・タブレットはアニメーションなしで最初から表示
+      gsap.set(links, { opacity: 1, y: 0 });
+    } else {
+      // PCはScrollTrigger
+      gsap.to(links, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.18,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: linksRef.current,
+          start: 'top 20%',
+          toggleActions: 'play none none none',
+        },
+      });
+    }
     return () => {
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
-  }, [opening]);
+  }, [opening, isMobile, isTablet]);
 
 
 

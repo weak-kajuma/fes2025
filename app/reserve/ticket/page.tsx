@@ -108,6 +108,21 @@ export default function TicketPage() {
     return <div>{error || "イベントの取得に失敗しました。"}</div>;
   }
 
+  // Googleアカウントのメールアドレス制限
+  let isAllowedUser = false;
+  if (session?.user?.email) {
+    const email = session.user.email;
+    const match = email.match(/^([0-9]{8})@tak\.ed\.jp$/);
+    if (match) {
+      const year = match[1].slice(0, 4);
+      if (year === "2021" || year === "2022") {
+        isAllowedUser = true;
+      }
+    }
+  }
+
+
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
@@ -460,9 +475,9 @@ export default function TicketPage() {
                             />
                             <Link
                               className={styles.arrow_middle}
-                              href={isRehearsalOpen ? "/reserve/first-come-served/ticketselect" : "#"}
-                              style={isRehearsalOpen ? {} : { pointerEvents: "none" }}
-                              tabIndex={isRehearsalOpen ? 0 : -1}
+                              href={isRehearsalOpen && isAllowedUser ? "/reserve/first-come-served/ticketselect" : "#"}
+                              style={isRehearsalOpen && isAllowedUser ? {} : { pointerEvents: "none"}}
+                              tabIndex={isRehearsalOpen && isAllowedUser ? 0 : -1}
                             >
                               <div>
                                 リハーサル先着申込<br/>

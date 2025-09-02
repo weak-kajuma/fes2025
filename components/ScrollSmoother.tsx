@@ -40,7 +40,23 @@ export const useScrollSmoother = () => {
 				return;
 			}
 
-			const isMobile = window.innerWidth <= 768;
+			// 画面幅ごとにScrollSmootherのパラメータを分岐
+			const width = window.innerWidth;
+			let smooth = 2;
+			let smoothTouch = 0.1;
+			if (width <= 768) {
+				// スマホ
+				smooth = 1;
+				smoothTouch = 0.01;
+			} else if (width > 768 && width <= 1200) {
+				// タブレット
+				smooth = 1;
+				smoothTouch = 0.01;
+			} else {
+				// PC
+				smooth = 2;
+				smoothTouch = 0.1;
+			}
 
 			let SmootherMod: any = null;
 			try {
@@ -56,8 +72,8 @@ export const useScrollSmoother = () => {
 			const smoother = SmootherMod.create({
 				wrapper: wrapperEl!,
 				content: contentEl,
-				smooth: isMobile ? 1 : 2,
-				smoothTouch: isMobile ? 0.01 : 0.1,
+				smooth,
+				smoothTouch,
 				effects: true,
 				normalizeScroll: true,
 			});
