@@ -108,7 +108,7 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
       <div className={styles.main}>
         <div className={styles.main_inner}>
           <div className={styles.top}>
-            <h1 className={styles.top_title}><span>＜空き枠先着＞</span><br/>チケットの選択</h1>
+            <h1 className={styles.top_title}><span>＜先着＞</span><br/>チケットの選択</h1>
             <div className={styles.top_info}>申し込むチケットを選択してください。<br/>
               予約･抽選の確認や変更･取消は<br/>
               <span>マイチケット</span>から行えます 。</div>
@@ -201,7 +201,7 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
                   </div>
                   <div className={styles.ticket_list_info_detail}>
                     <div className={styles.ticket_id}>チケットID：{ticket.ticketId}</div>
-                    <div className={styles.entry_date}>来場日時：{ticket.entryDate}</div>
+                    {/* <div className={styles.entry_date}>来場日時：{ticket.entryDate}</div> */}
                   </div>
                 </div>
               </div>
