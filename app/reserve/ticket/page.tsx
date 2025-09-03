@@ -95,12 +95,24 @@ export default function TicketPage() {
     }
   }, [status, session]);
 
+
   const handleQRClick = () => {
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  // エラーメッセージ表示用
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // リハーサル申込リンククリック時のハンドラ
+  const handleRehearsalClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!isAllowedUser) {
+      e.preventDefault();
+      setErrorMessage("学校のアカウントでログインしてください。");
+    }
   };
 
 
@@ -473,19 +485,26 @@ export default function TicketPage() {
                             <Link
                               className={styles.arrow_middle}
                               href={isRehearsalOpen && isAllowedUser ? "/reserve/first-come-served/ticketselect" : "#"}
-                              style={isRehearsalOpen && isAllowedUser ? {} : { pointerEvents: "none"}}
-                              tabIndex={isRehearsalOpen && isAllowedUser ? 0 : -1}
+                              style={isRehearsalOpen ? {} : { pointerEvents: "none" }}
+                              tabIndex={isRehearsalOpen ? 0 : -1}
+                              onClick={handleRehearsalClick}
                             >
                               <div>
-                                リハーサル先着申込<br/>
-                                {now.getTime() < rehearsalStart.getTime() && (
-                                  <span>(受付前)</span>
-                                )}
-                                {now.getTime() > rehearsalEnd.getTime() && (
-                                  <span>(受付終了)</span>
-                                )}
-                                {isRehearsalOpen && (
-                                  <span>(受付中)</span>
+                                {errorMessage ? (
+                                  <span style={{ color: 'white' }}>{errorMessage}</span>
+                                ) : (
+                                  <>
+                                    リハーサル先着申込<br/>
+                                    {now.getTime() < rehearsalStart.getTime() && (
+                                      <span>(受付前)</span>
+                                    )}
+                                    {now.getTime() > rehearsalEnd.getTime() && (
+                                      <span>(受付終了)</span>
+                                    )}
+                                    {isRehearsalOpen && (
+                                      <span>(受付中)</span>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </Link>
@@ -574,7 +593,6 @@ export default function TicketPage() {
 
       <div className={styles.footer}>
         <div className={styles.footer_inner}>
-
         </div>
       </div>
 
