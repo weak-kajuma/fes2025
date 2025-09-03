@@ -4,11 +4,14 @@ import styles from "./timetable_client.module.css";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { EventsByLocation } from "./ServerAction";
 import { fetchLocalJson } from "@/lib/fetchLocalJson";
+import { supabase } from '@/lib/supabaseClient';
 import Link from "next/link";
-import TimeTableContent from "./timetable_content";
+import TimeTableContent from "./content/timetable_content";
+import TimeTableContentDetail from "./content_detail/timetable_content_detail";
 import { useScrollSmoother } from "@/components/ScrollSmoother";
 
 import useRevealer from "@/app/hooks/useRevealer";
+import { b } from "framer-motion/client";
 
 // 日付・エリアボタン定義
 const dateOptions = [
@@ -23,6 +26,8 @@ const areaOptions = [
 ];
 
 export default function Timetable_Client() {
+  // 表示モード: 通常/詳細
+  const [isDetailMode, setIsDetailMode] = useState(false);
   useRevealer();
 
   const title_Ref = useRef<HTMLHeadingElement>(null);
@@ -71,20 +76,25 @@ export default function Timetable_Client() {
       setIsInitialLoading(true);
       setErrorLoading(null);
       try {
-        // ローカルJSON（配列）から全データ取得
-        const timetableData = await fetchLocalJson<Array<any>>("/data/timetable.json");
-        console.log("timetableData", timetableData);
-        // 日付ごと・エリアごとにEventsByLocation型へ変換
+        // --- 切り替え用 ---
+        // ▼ローカルJSONからフェッチする場合はこちらを有効化
+        // const timetableData = await fetchLocalJson<Array<any>>("/data/timetable.json");
+        // const newData: { [date: string]: EventsByLocation[] } = {};
+        // dateOptions.forEach(dateOpt => {
+        //   const dateStr = `2025-09-${dateOpt.value}`;
+        //   const filtered = timetableData.filter(ev => ev.startDate.startsWith(dateStr));
+        //   newData[dateOpt.value] = areaOptions.map(opt => {
+        //     const events = filtered.filter(ev => ev.locationType === opt.value);
+        //     return { locationType: opt.value, events };
+        //   });
+        // });
+
+        // ▼一時公開用（空データ即返却）
         const newData: { [date: string]: EventsByLocation[] } = {};
         dateOptions.forEach(dateOpt => {
-          const dateStr = `2025-09-${dateOpt.value}`;
-          const filtered = timetableData.filter(ev => ev.startDate.startsWith(dateStr));
-          newData[dateOpt.value] = areaOptions.map(opt => {
-            const events = filtered.filter(ev => ev.locationType === opt.value);
-            return { locationType: opt.value, events };
-          });
+          newData[dateOpt.value] = areaOptions.map(opt => ({ locationType: opt.value, events: [] }));
         });
-        console.log("newData", newData);
+
         if (mounted) {
           setAllEventsData(prev => JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData);
           if (areaOptions.length > 0 && maxSelectableAreas > 0) {
@@ -297,6 +307,37 @@ export default function Timetable_Client() {
     })();
   }, []);
 
+
+  type NowEvent = {
+    id: number;
+    locationType: string;
+    eventId: number;
+    groupIndex?: number;
+    updatedAt?: string;
+  };
+  const [nowEvents, setNowEvents] = useState<NowEvent[]>([]);
+  useEffect(() => {
+    // Supabaseからnow_eventsをフェッチ
+    const fetchNowEvents = async () => {
+      const { data, error } = await supabase.from('now_events').select('*');
+      if (error) {
+        console.error('now_events fetch error:', error);
+        return;
+      }
+      setNowEvents((data ?? []).map(ev => ({
+        id: ev.id,
+        locationType: ev.locationtype,
+        eventId: ev.eventid,
+        groupIndex: ev.groupindex,
+        updatedAt: ev.updatedat,
+      })));
+    };
+    fetchNowEvents();
+    // 10秒ごとにポーリング
+    const intervalId = setInterval(fetchNowEvents, 10000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   return (
     <>
       <div className={styles.revealer} data-reveal></div>
@@ -310,6 +351,53 @@ export default function Timetable_Client() {
               <h4 className={styles.rail_text}>Time Table</h4>
               <h4 className={styles.rail_text}>Time Table</h4>
             </div>
+          </div>
+
+          {/* タイムテーブル表示切替ボタン */}
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
+            {[{ label: 'Normal', value: false }, { label: 'Detail', value: true }].map(btn => (
+              <div
+                key={btn.label}
+                onClick={() => setIsDetailMode(btn.value)}
+                style={{
+                  color: "black",
+                  padding: '0.5rem 1.5rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  backgroundColor: "transparent",
+                  fontSize: "2rem",
+                  fontFamily: "var(--mincho)",
+                  position: 'relative',
+                  display: 'inline-block',
+                  transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => {
+                  const underline = e.currentTarget.querySelector('.underline-anim') as HTMLElement | null;
+                  if (underline) underline.style.transform = 'scaleX(1)';
+                }}
+                onMouseLeave={e => {
+                  const underline = e.currentTarget.querySelector('.underline-anim') as HTMLElement | null;
+                  if (underline) underline.style.transform = 'scaleX(0)';
+                }}
+              >
+                {btn.label}
+                <span
+                  className="underline-anim"
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    bottom: 0,
+                    width: '100%',
+                    height: '1px',
+                    background: 'black',
+                    transform: 'scaleX(0)',
+                    transformOrigin: 'left',
+                    transition: 'transform 0.3s cubic-bezier(.4,0,.2,1)',
+                    borderRadius: '2px',
+                  }}
+                />
+              </div>
+            ))}
           </div>
 
           <div className={styles.nav}>
@@ -365,37 +453,106 @@ export default function Timetable_Client() {
             {errorLoading && <div className={styles.error}>{errorLoading}</div>}
             {!isInitialLoading && !errorLoading && (
               currentDisplayEvents.length > 0 && currentDisplayEvents.map(({ locationType, events }) => (
-                <div
-                  key={`${selectedDate}-${locationType}`}
-                  style={{ display: selectedArea.includes(locationType) ? 'grid' : 'none' }}
-                  className={`${styles.eventLocationContainer} ${formatLocationToClassName(locationType)}`}
-                >
-                  <div className={styles.bar} style={{ '--current-row': currentRow } as React.CSSProperties}></div>
-                  <div className={styles.label}>
-                    <Link href="">
-                      <div className={styles.label_inner}>
-                        {locationType}
+                isDetailMode ? (
+                  selectedArea.includes(locationType) ? (
+                    <div className={styles.detail_wrapper} key={`${selectedDate}-${locationType}`}>
+                      <p>現在行われている演目</p>
+                      <div className={styles.nowEvent}>
+                        {(() => {
+                          // --- 切り替え用 ---
+                          // ▼ローカルJSONからフェッチする場合はこちらを有効化
+                          // const timetable = require("@/public/data/timetable.json");
+
+                          // ▼一時公開用（空データ即返却）
+                          const timetable: any[] = [];
+
+                          const nowEvent = nowEvents.find(ev => (ev.locationType ?? '').toLowerCase().trim() === (locationType ?? '').toLowerCase().trim());
+                          if (typeof window !== 'undefined') {
+                            console.log('[nowEvent判定]', { locationType, nowEvents, nowEvent });
+                          }
+                          if (!nowEvent) return <span>なし</span>;
+                          const event = timetable.find((ev: any) => ev.id === nowEvent.eventId);
+                          if (!event) return <span>なし</span>;
+                          const title = event.title || "タイトルなし";
+                          let groupName = null;
+                          if (event.groups && Array.isArray(event.groups) && typeof nowEvent.groupIndex === "number") {
+                            groupName = event.groups[nowEvent.groupIndex] || null;
+                          }
+                          if (!title && !groupName) return <span>なし</span>;
+                          return (
+                            <>
+                              <span>{title}</span>
+                              {groupName && <span style={{marginLeft: '1em'}}>{groupName}</span>}
+                            </>
+                          );
+                        })()}
                       </div>
-                    </Link>
+                      <div
+                        key={`${selectedDate}-${locationType}`}
+                        style={{ display: 'grid' }}
+                        className={`${styles.eventLocationContainer_detail} ${formatLocationToClassName(locationType)}`}
+                      >
+                        <div className={styles.bar} style={{ '--current-row': currentRow } as React.CSSProperties}></div>
+                        <div className={styles.label}>
+                          <Link href="">
+                            <div className={styles.label_inner}>
+                              {locationType}
+                            </div>
+                          </Link>
+                        </div>
+                        <div className={styles.box}></div>
+                        <div className={styles.background}></div>
+                        <div className={styles.timeText}>8:30</div>
+                        <div className={styles.timeText}>9:00</div>
+                        <div className={styles.timeText}>10:00</div>
+                        <div className={styles.timeText}>11:00</div>
+                        <div className={styles.timeText}>12:00</div>
+                        <div className={styles.timeText}>13:00</div>
+                        <div className={styles.timeText}>14:00</div>
+                        <div className={styles.timeText}>15:00</div>
+                        <div className={styles.timeText}>15:30</div>
+                        {[...Array(17)].map((_, i) => (
+                          <div key={i} className={styles.timeBar}></div>
+                        ))}
+                        {events.map(event => (
+                          <TimeTableContentDetail key={event.id} eventData={event} nowEvents={nowEvents} locationType={locationType} />
+                        ))}
+                      </div>
+                    </div>
+                  ) : null
+                ) : (
+                  <div
+                    key={`${selectedDate}-${locationType}`}
+                    style={{ display: selectedArea.includes(locationType) ? 'grid' : 'none' }}
+                    className={`${styles.eventLocationContainer} ${formatLocationToClassName(locationType)}`}
+                  >
+                    <div className={styles.bar} style={{ '--current-row': currentRow } as React.CSSProperties}></div>
+                    <div className={styles.label}>
+                      <Link href="">
+                        <div className={styles.label_inner}>
+                          {locationType}
+                        </div>
+                      </Link>
+                    </div>
+                    <div className={styles.box}></div>
+                    <div className={styles.background}></div>
+                    <div className={styles.timeText}>8:30</div>
+                    <div className={styles.timeText}>9:00</div>
+                    <div className={styles.timeText}>10:00</div>
+                    <div className={styles.timeText}>11:00</div>
+                    <div className={styles.timeText}>12:00</div>
+                    <div className={styles.timeText}>13:00</div>
+                    <div className={styles.timeText}>14:00</div>
+                    <div className={styles.timeText}>15:00</div>
+                    <div className={styles.timeText}>15:30</div>
+                    {[...Array(17)].map((_, i) => (
+                      <div key={i} className={styles.timeBar}></div>
+                    ))}
+                    {!isDetailMode && events.map(event => (
+                      <TimeTableContent key={event.id} eventData={event} />
+                    ))}
                   </div>
-                  <div className={styles.box}></div>
-                  <div className={styles.background}></div>
-                  <div className={styles.timeText}>8:30</div>
-                  <div className={styles.timeText}>9:00</div>
-                  <div className={styles.timeText}>10:00</div>
-                  <div className={styles.timeText}>11:00</div>
-                  <div className={styles.timeText}>12:00</div>
-                  <div className={styles.timeText}>13:00</div>
-                  <div className={styles.timeText}>14:00</div>
-                  <div className={styles.timeText}>15:00</div>
-                  <div className={styles.timeText}>15:30</div>
-                  {[...Array(17)].map((_, i) => (
-                    <div key={i} className={styles.timeBar}></div>
-                  ))}
-                  {events.map(event => (
-                    <TimeTableContent key={event.id} eventData={event} />
-                  ))}
-                </div>
+                )
               ))
             )}
             {isTransitioningDate && !isInitialLoading && <div className={styles.loadingOverlay}>情報を更新中...</div>}

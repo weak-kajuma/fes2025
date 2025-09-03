@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import ComingSoonOverlayClient from "./ComingSoonOverlayClient";
 import { Geist, Geist_Mono } from "next/font/google"
 import { Noto_Sans_JP } from 'next/font/google'
 import { BIZ_UDMincho } from 'next/font/google'
@@ -62,6 +63,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable} `}>
+        <ComingSoonOverlayClient />
         <SessionProvider>
           <TabBarProvider>
             <ViewTransition>
@@ -72,6 +74,5 @@ export default function RootLayout({
         </SessionProvider>
       </body>
     </html>
-      // ...existing code...
   );
 }

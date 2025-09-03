@@ -1,0 +1,71 @@
+/* 管理画面全体ラッパー */
+.adminWrapper {
+	max-width: 900px;
+	margin: 2rem auto;
+	padding: 2rem;
+	background: #f8f8f8;
+	border-radius: 16px;
+	box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+.locationBlock {
+	margin-bottom: 2rem;
+	padding: 1rem;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+
+.eventBlock {
+	margin-bottom: 1rem;
+	padding: 0.5rem 1rem;
+	border-bottom: 1px solid #eee;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.eventTitle {
+	font-weight: bold;
+	font-size: 1.1rem;
+	margin-bottom: 0.5rem;
+}
+
+.groupBoxWrapper {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.groupBox {
+	background: #e0e0e0;
+	color: #333;
+	border: none;
+	border-radius: 8px;
+	padding: 0.5em 1.2em;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+}
+
+.groupBox:hover {
+	background: #b3d4fc;
+	color: #222;
+}
+
+.selectedGroup {
+	background: var(--text, #222);
+	color: #fff;
+	font-weight: bold;
+	box-shadow: 0 0 0 2px var(--text, #222) inset;
+}
+
+.message {
+	margin-top: 2rem;
+	padding: 1rem;
+	background: #ffe;
+	border-radius: 8px;
+	color: #333;
+	font-weight: bold;
+	text-align: center;
+}

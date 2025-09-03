@@ -129,7 +129,18 @@
     "startDate": "2025-09-20 09:10:00",
     "endDate": "2025-09-20 09:55:00",
     "locationType": "野外ステージ",
-    "imageUrl": "url12"
+    "imageUrl": "url12",
+    "groups": [
+      "ONCE",
+      "167°",
+      "サイまんじゅう",
+      "Cheer Bears",
+      "つきプリ",
+      "SUNNYS_2",
+      "FEARNOT",
+      "BAKUSOU!",
+      "BLACKNOVA"
+    ]
   },
   {
     "idx": 12,
@@ -140,7 +151,15 @@
     "startDate": "2025-09-20 10:00:00",
     "endDate": "2025-09-20 10:30:00",
     "locationType": "野外ステージ",
-    "imageUrl": "url13"
+    "imageUrl": "url13",
+    "groups": [
+      "サウスポー",
+      "ちょもらんま",
+      "我らカイワレ",
+      "禁錮ちゃん",
+      "爆裂どうふ",
+      "りな"
+    ]
   },
   {
     "idx": 13,

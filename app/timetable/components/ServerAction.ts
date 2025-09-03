@@ -9,6 +9,9 @@ type EventDataForClient = {
   endDate: Date | null;
   location: string | null;
   imageUrl: string | null;
+  groups?: {
+    name: string;
+  }[];
 };
 
 export type EventsByLocation = {

@@ -305,7 +305,6 @@
           .list_title {
             z-index: 3;
             position: absolute;
-            height: -moz-fit-content;
             height: fit-content;
             margin: auto auto calc(2.78vw + .9em);
             top: 0;
@@ -315,22 +314,24 @@
             text-align: center;
             clip-path: inset(0 0 0 0);
             display: block;
-            --fs-min: 19;
-            --fs-max: 31;
             line-height: 1.4;
             font-family: var(--font-en);
             letter-spacing: .03em;
-            --fs-center: 25;
-            font-size: 2rem;
-            break-word: break-word;
+            font-size: clamp(1rem, 2vw, 2rem);
+            max-width: 90%;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
-
+            word-break: break-all;
+            /* はみ出し時に自動で縮小 */
+            -webkit-hyphens: auto;
+            hyphens: auto;
             @media screen and (max-width: 1200px) {
               font-size: 1.3rem;
             }
-
-            @media screen and (max-width: 768px) {
-              font-size: 1.5rem;
+            @media screen and (max-width: 800px) {
+              font-size: 1.4rem;
             }
           }
 

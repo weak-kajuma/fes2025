@@ -133,18 +133,17 @@
         align-items: center;
         justify-content: stretch;
 
+
         .bg {
+          flex: 1;
           width: 100%;
-          height: calc(100dvh / 15 + 1px);
+          margin: 0;
+          height: auto !important;
           opacity: 0;
           background-color: #141414;
 
           @media screen and (max-width: 1200px) {
             margin-top: -1px;
-          }
-
-          @media screen and (max-width: 768px) {
-            margin-top: -.7px;
           }
         }
       }
@@ -171,6 +170,35 @@
     }
   }
 
+  .links {
+    width: 100%;
+    background-color: #141414;
+    margin-top: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80dvh;
+    gap: 10vw;
+    z-index: 100;
+
+    .link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        font-size: 1.5rem;
+        color: var(--text);
+        margin-top: 1rem;
+        line-height: 1.5;
+        max-width: 600px;
+        font-family: var(--mincho);
+      }
+    }
+
+  }
+
   .tools {
     margin-top: -1px;
     width: 100%;
@@ -181,8 +209,8 @@
     background-color: #141414;
     /* border: solid 1px white; */
 
-    @media screen and (max-width: 900px) {
-      height: 230dvh;
+    @media screen and (max-width: 1200px) {
+      height: 270dvh;
     }
 
     .tools_inner {
@@ -196,8 +224,8 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+        justify-content: flex-start;
+        align-items: flex-start;
 
         .tools_title {
           font-size: 3rem;
@@ -230,8 +258,12 @@
           pointer-events: none;
           margin-bottom: -2.2rem;
 
-          @media screen and (max-width: 768px) {
-            margin-bottom: -10rem;
+          @media screen and (max-width: 1200px) {
+            margin-bottom: -18rem;
+          }
+
+          @media screen and (max-width: 800px) {
+            margin-bottom: -15rem;
           }
 
           .item_grid {
@@ -290,7 +322,9 @@
                 justify-content: center;
                 position: relative;
                 overflow: hidden;
-                background-color: red;
+                border-radius: 10px;
+                border: 1px solid white;
+                color: white;
               }
             }
 
