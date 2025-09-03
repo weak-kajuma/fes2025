@@ -24,7 +24,7 @@ export default function TicketPage() {
   const [selectedRehearsalTime, setSelectedRehearsalTime] = useState("");
   const router = useRouter();
   // クリック可能期間: 9月4日12:40〜9月10日13:00
-  const rehearsalStart = new Date("2025-08-04T12:40:00+09:00");
+  const rehearsalStart = new Date("2025-09-04T12:40:00+09:00");
   const rehearsalEnd = new Date("2025-09-10T13:00:00+09:00");
   const now = new Date();
   const isRehearsalOpen = now.getTime() >= rehearsalStart.getTime() && now.getTime() <= rehearsalEnd.getTime();
