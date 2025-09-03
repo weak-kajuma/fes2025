@@ -9,12 +9,12 @@ import { serializeEvent } from "../eventReserveUtils";
 import { supabase } from "@/lib/supabaseClient";
 
 type Event = {
-  id: number;
+  id: number; // 6桁のランダム数値
   name: string;
-  time: string; // timeプロパティを必須とする
+  time?: string;
   capacity: number;
-  reserved_count: number;
-  reservation_type: "first-come" | "lottery";
+  reserved_count?: number;
+  reservation_type?: "first-come" | "lottery";
   date?: string | number;
   ImplementationTime?: string;
 };
@@ -58,6 +58,7 @@ function EventSelectInner() {
     const fetchReservationCounts = async () => {
       if (events.length === 0) return;
       const eventIds = events.map(e => e.id);
+      // event_idは6桁の数値型でクエリ
       const { data, error } = await supabase
         .from('reservations')
         .select('event_id')
@@ -66,10 +67,12 @@ function EventSelectInner() {
         console.error('Error fetching reservations:', error);
         return;
       }
-      // data: [{ event_id: 1, ... }, ...]
+      // data: [{ event_id: 384921, ... }, ...]
       const counts: Record<number, number> = {};
       data?.forEach((row: any) => {
-        counts[row.event_id] = (counts[row.event_id] || 0) + 1;
+        if (typeof row.event_id === 'number') {
+          counts[row.event_id] = (counts[row.event_id] || 0) + 1;
+        }
       });
       setReservationCounts(counts);
     };
@@ -86,12 +89,14 @@ function EventSelectInner() {
 
   // 表示期間ロジック
   const now = new Date();
-  const id1Start = new Date("2025-09-04T12:30:00+09:00");
+  const id1Start = new Date("2025-09-04T12:40:00+09:00");
   const id1End = new Date("2025-09-06T14:00:00+09:00");
   const otherStart = new Date("2025-09-08T12:30:00+09:00");
   const otherEnd = new Date("2025-09-10T13:00:00+09:00");
   const filteredEvents = events.filter((event) => {
-    if (event.id === 1) {
+    // idが6桁数値になったので、最初のイベントだけ特別扱いする場合はidを直接指定
+    const firstId = 384921; // reserveClub.jsonの最初のid
+    if (event.id === firstId) {
       return now.getTime() >= id1Start.getTime() && now.getTime() <= id1End.getTime();
     } else {
       return now.getTime() >= otherStart.getTime() && now.getTime() <= otherEnd.getTime();
@@ -224,7 +229,7 @@ function EventSelectInner() {
           <div className={styles.top}>
             <h1 className={styles.top_title}><span>＜リハーサル先着＞</span><br/>
             リハーサルを選択する</h1>
-            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)</div>
+            {/* <div className={styles.entrance_date}>来場日時：2025年8月10日(日)</div> */}
             <div className={styles.search}>
               <div className={styles.search_inner}>
                 <span className={styles.search_label}>リハーサルを検索</span>

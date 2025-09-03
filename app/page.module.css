@@ -179,6 +179,7 @@
     justify-content: center;
     height: 80dvh;
     gap: 10vw;
+    z-index: 100;
 
     .link {
       display: flex;
@@ -209,7 +210,7 @@
     /* border: solid 1px white; */
 
     @media screen and (max-width: 1200px) {
-      height: 230dvh;
+      height: 270dvh;
     }
 
     .tools_inner {
@@ -223,8 +224,8 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+        justify-content: flex-start;
+        align-items: flex-start;
 
         .tools_title {
           font-size: 3rem;

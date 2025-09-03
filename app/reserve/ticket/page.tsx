@@ -108,6 +108,21 @@ export default function TicketPage() {
     return <div>{error || "イベントの取得に失敗しました。"}</div>;
   }
 
+  // Googleアカウントのメールアドレス制限
+  let isAllowedUser = false;
+  if (session?.user?.email) {
+    const email = session.user.email;
+    const match = email.match(/^([0-9]{8})@tak\.ed\.jp$/);
+    if (match) {
+      const year = match[1].slice(0, 4);
+      if (year === "2021" || year === "2022") {
+        isAllowedUser = true;
+      }
+    }
+  }
+
+
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
@@ -168,17 +183,14 @@ export default function TicketPage() {
         <div className={styles.main_inner}>
           <div className={styles.top}>
             <h1 className={styles.top_title}>マイチケット</h1>
-            <div className={styles.top_info}>お持ちのチケットを確認できます。<br />
-              複数のチケットにまとめて予約･抽選を<br />
-              申し込むことができます。<br />
-              入場および予約したイベントに入館する際には、QRコード表示ボタンを押してQRコードを提示してください。<br />
-              予約･抽選の確認や変更･取消は、チケットを選択して1枚ずつ行ってください。<br />
-              まとめて申し込んだ内容を変更する場合は<br />
-              チケット毎に取り消し、再度まとめてお申し込みください。</div>
+            <div className={styles.top_info}>文化祭の様々な予約をすることができます。<br />
+              複数人で予約･抽選を申し込む場合は、<br />
+              代表者1名が予約を行ってください。<br />
+            </div>
             <div className={styles.top_summaryButton}>まとめて予約･抽選に申し込む</div>
             <ul className={styles.top_note}>
-              <li>まとめて申し込んだ内容を変更する場合は、チケット毎に取消を行ったうえで再度まとめてお申し込みください。チケットを1枚だけ選択して変更すると、別の申し込みになるのでご注意ください。予約の変更･取消は内容によりできないものもあります。</li>
-              <li>3歳以下無料券の予約･抽選は必ず大人･中人と一緒に行う必要があります。3歳以下無料券の入手はチケットの購入から。 </li>
+              {/* <li>まとめて申し込んだ内容を変更する場合は、チケット毎に取消を行ったうえで再度まとめてお申し込みください。チケットを1枚だけ選択して変更すると、別の申し込みになるのでご注意ください。予約の変更･取消は内容によりできないものもあります。</li>
+              <li>3歳以下無料券の予約･抽選は必ず大人･中人と一緒に行う必要があります。3歳以下無料券の入手はチケットの購入から。 </li> */}
             </ul>
             <div className={styles.top_ticketCount}>1枚 のチケットをお持ちです。</div>
           </div>
@@ -265,7 +277,7 @@ export default function TicketPage() {
                           height={40}
                           alt="左矢印"
                         />
-                        <div className={styles.arrow_middle}>2025年8月10日(日) 11:00-<br/>[正門]</div>
+                        <div className={styles.arrow_middle}>2025年9月20日(土) 21日(日)<br/>[正門]</div>
                         <Image
                           src="/images/arrow_right.png"
                           width={15}
@@ -460,9 +472,9 @@ export default function TicketPage() {
                             />
                             <Link
                               className={styles.arrow_middle}
-                              href={isRehearsalOpen ? "/reserve/first-come-served/ticketselect" : "#"}
-                              style={isRehearsalOpen ? {} : { pointerEvents: "none" }}
-                              tabIndex={isRehearsalOpen ? 0 : -1}
+                              href={isRehearsalOpen && isAllowedUser ? "/reserve/first-come-served/ticketselect" : "#"}
+                              style={isRehearsalOpen && isAllowedUser ? {} : { pointerEvents: "none"}}
+                              tabIndex={isRehearsalOpen && isAllowedUser ? 0 : -1}
                             >
                               <div>
                                 リハーサル先着申込<br/>
@@ -525,7 +537,7 @@ export default function TicketPage() {
                       />
                     </div>
                     <div className={styles.ticket_bottom_text_info}>
-                      <p>７日前抽選の申込は2025年8月2日(土)まで！</p>
+                      {/* <p>リハーサルの申込は2025年8月2日(土)まで！</p> */}
                     </div>
                   </div>
                 </div>
@@ -541,7 +553,9 @@ export default function TicketPage() {
           </div>
           <div className={styles.buttons}>
             <div className={styles.button_top}>
-              <div className={styles.button_more}>　　　　　　　</div>
+                <Link href="/reserve/resultClub">
+                <div className={styles.button_more}>リハーサル登録状況</div>
+                </Link>
             </div>
             <ul className={styles.button_bottom}>
               <li>

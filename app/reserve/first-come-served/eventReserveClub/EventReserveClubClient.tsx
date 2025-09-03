@@ -52,14 +52,14 @@ export default function EventReserveClient() {
       (async () => {
         try {
           const events = await import("@/public/data/reserveClub.json");
-          const found = events.default?.find((ev: any) => String(ev.id) === String(eventId));
-          if (found) setEvent(found);
+          const found = events.default?.find((ev: any) => Number(ev.id) === Number(eventId));
+          if (found) setEvent({ ...found, id: Number(found.id) });
         } catch (e) {
           // fallback: fetchLocalJson
           try {
             const events = await (await fetch("/data/reserveClub.json")).json();
-            const found = events.find((ev: any) => String(ev.id) === String(eventId));
-            if (found) setEvent(found);
+            const found = events.find((ev: any) => Number(ev.id) === Number(eventId));
+            if (found) setEvent({ ...found, id: Number(found.id) });
           } catch {}
         }
       })();
@@ -84,19 +84,20 @@ export default function EventReserveClient() {
     const filteredGroupOptions = useMemo(() => {
       const eid = Number(eventId);
       if (!eid || groupOptions.length === 0) return [];
-      if (eid === 1) {
+      // 6桁idに合わせて条件分岐（id値はreserveClub.json参照）
+      if (eid === 384921) {
         // group_idの百の位が1
         return groupOptions.filter(opt => Math.floor(opt.group_id / 100) === 1);
       }
-      if (eid === 3) {
+      if (eid === 107283) {
         // location: "中庭"
         return groupOptions.filter(opt => opt.location === "中庭");
       }
-      if (eid === 4) {
+      if (eid === 845219) {
         // location: "体育館"
         return groupOptions.filter(opt => opt.location === "体育館");
       }
-      if (eid === 2) {
+      if (eid === 592134) {
         // locationプロパティがない かつ group_id百の位が2
         return groupOptions.filter(opt => (!('location' in opt) || opt.location === undefined || opt.location === "") && Math.floor(opt.group_id / 100) === 2);
       }
@@ -122,7 +123,7 @@ export default function EventReserveClient() {
     const { data: reservations, error } = await supabase
       .from('reservations_club')
       .select('*')
-      .eq('event_id', event.id)
+      .eq('event_id', Number(event.id))
       .eq('event_time', selectedTime);
     if (error) {
       setErrorMsg('予約状況の取得に失敗しました');
@@ -134,7 +135,7 @@ export default function EventReserveClient() {
     try {
       const res = await fetch('/data/reserveClub.json');
       const eventsJson = await res.json();
-      const eventObj = eventsJson.find((e: any) => String(e.id) === String(event.id));
+      const eventObj = eventsJson.find((e: any) => Number(e.id) === Number(event.id));
       if (eventObj && typeof eventObj.capacity === 'number') {
         capacity = eventObj.capacity;
       }
@@ -292,7 +293,7 @@ export default function EventReserveClient() {
             <h1 className={styles.top_title}><span>＜リハーサル先着＞</span><br/>
             時間帯を選択する</h1>
 
-            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)</div>
+            {/* <div className={styles.entrance_date}>来場日時：2025年8月10日(日)</div> */}
 
             <h1 className={styles.top_title}>{event ? event.name : ""}</h1>
 
@@ -301,15 +302,10 @@ export default function EventReserveClient() {
               <p>{event ? event.description : ""}</p>
             </div>
 
-            <h2 className={styles.top_sub_title}>時間帯</h2>
+            <h2 className={styles.top_sub_title}>注意事項</h2>
             <div className={styles.top_sub_text}>
-              <p>観覧の所要時間は別に必要なのでご注意ください。<br/>
-                所要時間は上記お知らせや<br/>
-                前画面「イベント選択」の案内<br/>
-                またはVisitorsの各イベント情報の「詳細情報を確認する」からご確認ください。<br/>
-                イベントは 開演-終演時間(開場時間) を表示、<br/>
-                または 開演-終演時間 を表示しています。<br/>
-                詳細はVisitorsの各イベント情報をご確認ください。</p>
+              <p>よく確認して登録してください。<br/>
+                自身の所属チーム名だけを選択してください。</p>
             </div>
           </div>
 
@@ -479,7 +475,7 @@ export default function EventReserveClient() {
                       <ul className={styles.buttons}>
                         <li>
                           <button className={styles.button} onClick={() => { setShowModal(false); }}>
-                            <span className={styles.button_text}>同じイベントで別の時間帯を選ぶ</span>
+                            <span className={styles.button_text}>別の時間帯を選び直す</span>
                           </button>
                         </li>
                         <li>
