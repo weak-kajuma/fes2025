@@ -1,3 +1,49 @@
+  // Googleアカウントのemailからuuidを取得・新規登録する関数
+  async function getOrCreateUserUuid(email: string): Promise<string | null> {
+    if (!email) return null;
+    const encodedEmail = encodeURIComponent(email);
+    const url = `/rest/v1/user_uuids?select=uuid&email=eq.${encodedEmail}`;
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+          'Accept': 'application/json'
+        }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.length > 0) {
+          return json[0].uuid;
+        }
+      } else if (res.status === 406) {
+        // 406エラー時はnull返却
+        return null;
+      }
+    } catch (e) {}
+    // uuidがなければ新規登録
+    const newUuid = window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+    try {
+      const postRes = await fetch('/rest/v1/user_uuids', {
+        method: 'POST',
+        headers: {
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email, uuid: newUuid })
+      });
+      if (postRes.ok) {
+        return newUuid;
+      } else if (postRes.status === 409) {
+        // 409エラー（重複）時は再度GETで取得
+        return await getOrCreateUserUuid(email);
+      }
+    } catch (e) {}
+    return null;
+  }
 "use client";
 import Image from "next/image";
 import Link from "next/link";
@@ -143,11 +189,19 @@ export default function EventReserveClient() {
     // 3. 予約数 < capacity ならPOST
     if (reservedCount < capacity) {
       // 予約登録前に同じevent_id, event_time, group_id, group_nameのデータがあれば削除
-      const user_id = window.localStorage.getItem('user_id');
+      // Googleアカウントのemailからuuidを取得
+      let user_id = window.localStorage.getItem('user_id');
       const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
       if (!user_id || !uuidRegex.test(user_id)) {
-        setErrorMsg('Googleアカウントでログインしてください（IDが不正です）');
-        return;
+        // emailはGoogleログイン情報から取得（例: window.localStorage.getItem('google_user_email')）
+        const email = window.localStorage.getItem('google_user_email');
+        user_id = await getOrCreateUserUuid(email || '');
+        if (user_id) {
+          window.localStorage.setItem('user_id', user_id);
+        } else {
+          setErrorMsg('Googleアカウントでログインしてください（IDが不正です）');
+          return;
+        }
       }
       // 既存予約の削除
       const { error: deleteError } = await supabase
