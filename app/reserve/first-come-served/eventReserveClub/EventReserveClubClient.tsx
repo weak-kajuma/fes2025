@@ -1,4 +1,5 @@
-  // Googleアカウントのemailからuuidを取得・新規登録する関数
+"use client";
+// Googleアカウントのemailからuuidを取得・新規登録する関数
   async function getOrCreateUserUuid(email: string): Promise<string | null> {
     if (!email) return null;
     const encodedEmail = encodeURIComponent(email);
@@ -44,7 +45,7 @@
     } catch (e) {}
     return null;
   }
-"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams , useRouter } from "next/navigation";
