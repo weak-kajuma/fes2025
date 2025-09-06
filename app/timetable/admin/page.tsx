@@ -1,21 +1,22 @@
 "use client";
 
 
-import styles from "../components/timetable_client.module.css";
-import { useEffect, useState } from "react";
-import { supabase } from '@/lib/supabaseClient';
 import Link from "next/link";
-import timetable from "@/public/data/timetable.json";
-import TimeTableContentDetail from "../components/content_detail/timetable_content_detail";
-import AdminTimeTableContentDetail from "../components/content_detail/admin_timetable_content_detail";
+import { useEffect, useState } from "react";
+
 import { useScrollSmoother } from "@/components/ScrollSmoother";
+import { supabase } from '@/lib/supabaseClient';
+import timetable from "@/public/data/timetable.json";
+
+import AdminTimeTableContentDetail from "../components/content_detail/admin_timetable_content_detail";
+import styles from "../components/timetable_client.module.css";
 
 const dateOptions = [
   { label: "20(Sat)", value: "20" },
   { label: "21(Sun)", value: "21" },
 ];
 const areaOptions = [
-  { label: "ステージ", value: "野外ステージ" },
+  { label: "ステージ", value: "グラウンドステージ" },
   { label: "コナコピア", value: "コナコピアホール" },
   { label: "中庭", value: "中庭" },
   { label: "体育館", value: "体育館" },
@@ -82,7 +83,7 @@ export default function AdminTimetablePage() {
         <input
           type="password"
           value={inputPassword}
-          onChange={e => setInputPassword(e.target.value)}
+          onChange={e => { setInputPassword(e.target.value); }}
           placeholder="パスワード"
           style={{ fontSize: "1.5rem", padding: "0.5rem", marginBottom: "1rem" }}
         />
@@ -132,7 +133,7 @@ export default function AdminTimetablePage() {
                 <div
                   key={dateOpt.label}
                   className={`${styles.nav_item} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
-                  onClick={() => setSelectedDate(dateOpt.value)}
+                  onClick={() => { setSelectedDate(dateOpt.value); }}
                 >
                   {dateOpt.label}
                 </div>
@@ -206,9 +207,9 @@ export default function AdminTimetablePage() {
                       key={event.id}
                       eventData={{
                         ...event,
-                        location: event.locationType,
-                        startDate: event.startDate ? new Date(event.startDate.replace(' ', 'T')) : null,
-                        endDate: event.endDate ? new Date(event.endDate.replace(' ', 'T')) : null
+                        locationType: event.locationType,
+                        startDate: event.startDate ? event.startDate.replace(' ', 'T') : null,
+                        endDate: event.endDate ? event.endDate.replace(' ', 'T') : null
                       }}
                       nowEvents={nowEvents}
                       locationType={areaOpt.value}
