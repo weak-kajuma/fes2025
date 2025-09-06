@@ -1,17 +1,19 @@
 "use client";
 
-import styles from "./timetable_client.module.css";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { EventsByLocation } from "./ServerAction";
-import { fetchLocalJson } from "@/lib/fetchLocalJson";
-import { supabase } from '@/lib/supabaseClient';
 import Link from "next/link";
-import TimeTableContent from "./content/timetable_content";
-import TimeTableContentDetail from "./content_detail/timetable_content_detail";
-import { useScrollSmoother } from "@/components/ScrollSmoother";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 import useRevealer from "@/app/hooks/useRevealer";
-import { b } from "framer-motion/client";
+import { useScrollSmoother } from "@/components/ScrollSmoother";
+import { fetchLocalJson } from "@/lib/fetchLocalJson";
+import { supabase } from '@/lib/supabaseClient';
+
+
+import TimeTableContent from "./content/timetable_content";
+import TimeTableContentDetail from "./content_detail/timetable_content_detail";
+import styles from "./timetable_client.module.css";
+
+
 
 // 日付・エリアボタン定義
 const dateOptions = [
@@ -19,11 +21,28 @@ const dateOptions = [
   { label: "21(Sun)", value: "21", className: styles.secondDate },
 ];
 const areaOptions = [
-  { label: "ステージ", value: "野外ステージ", className: styles.stage },
+  { label: "ステージ", value: "グラウンドステージ", className: styles.stage },
   { label: "コナコピア", value: "コナコピアホール", className: styles.hole },
   { label: "中庭", value: "中庭", className: styles.yard },
   { label: "体育館", value: "体育館", className: styles.gym },
 ];
+
+type EventData = {
+  idx: number;
+  id: number;
+  title: string | null;
+  subtitle: string | null;
+  description: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  locationType: string | null;
+  groups?: { name: string, startDate: string, endDate: string }[];
+}
+
+type EventsByLocation = {
+  locationType: string;
+  events: EventData[];
+};
 
 export default function Timetable_Client() {
   // 表示モード: 通常/詳細
@@ -35,7 +54,7 @@ export default function Timetable_Client() {
   const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0].value);
   const [selectedArea, setSelectedArea] = useState<string[]>([]);
   const [maxSelectableAreas, setMaxSelectableAreas] = useState<number>(3);
-  const [allEventsData, setAllEventsData] = useState<{ [date: string]: EventsByLocation[] | undefined }>({});
+  const [allEventsData, setAllEventsData] = useState<Record<string, EventsByLocation[] | undefined>>({});
   const [currentDisplayEvents, setCurrentDisplayEvents] = useState<EventsByLocation[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [errorLoading, setErrorLoading] = useState<string | null>(null);
@@ -66,7 +85,7 @@ export default function Timetable_Client() {
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => { window.removeEventListener("resize", handleResize); };
   }, []);
 
   // 初期データロード
@@ -78,22 +97,22 @@ export default function Timetable_Client() {
       try {
         // --- 切り替え用 ---
         // ▼ローカルJSONからフェッチする場合はこちらを有効化
-        // const timetableData = await fetchLocalJson<Array<any>>("/data/timetable.json");
-        // const newData: { [date: string]: EventsByLocation[] } = {};
-        // dateOptions.forEach(dateOpt => {
-        //   const dateStr = `2025-09-${dateOpt.value}`;
-        //   const filtered = timetableData.filter(ev => ev.startDate.startsWith(dateStr));
-        //   newData[dateOpt.value] = areaOptions.map(opt => {
-        //     const events = filtered.filter(ev => ev.locationType === opt.value);
-        //     return { locationType: opt.value, events };
-        //   });
-        // });
+        const timetableData = await fetchLocalJson<any[]>("/data/timetable.json");
+        const newData: Record<string, EventsByLocation[]> = {};
+        dateOptions.forEach(dateOpt => {
+          const dateStr = `2025-09-${dateOpt.value}`;
+          const filtered = timetableData.filter(ev => ev.startDate.startsWith(dateStr));
+          newData[dateOpt.value] = areaOptions.map(opt => {
+            const events = filtered.filter(ev => ev.locationType === opt.value);
+            return { locationType: opt.value, events };
+          });
+        });
 
         // ▼一時公開用（空データ即返却）
-        const newData: { [date: string]: EventsByLocation[] } = {};
-        dateOptions.forEach(dateOpt => {
-          newData[dateOpt.value] = areaOptions.map(opt => ({ locationType: opt.value, events: [] }));
-        });
+        // const newData: { [date: string]: EventsByLocation[] } = {};
+        // dateOptions.forEach(dateOpt => {
+        //   newData[dateOpt.value] = areaOptions.map(opt => ({ locationType: opt.value, events: [] }));
+        // });
 
         if (mounted) {
           setAllEventsData(prev => JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData);
@@ -166,7 +185,7 @@ export default function Timetable_Client() {
 
     calculateCurrentRow();
     const intervalId = setInterval(calculateCurrentRow, 60000);
-    return () => clearInterval(intervalId);
+    return () => { clearInterval(intervalId); };
   }, []);
 
   // イベントカード
@@ -226,7 +245,7 @@ export default function Timetable_Client() {
       // horizontalLoop関数
       function horizontalLoop(items: Element[], config: any = {}) {
         items = Array.from(items);
-        let tl = gsap.timeline({
+        const tl = gsap.timeline({
           repeat: config.repeat,
           paused: config.paused,
           defaults: { ease: "none" },
@@ -243,7 +262,7 @@ export default function Timetable_Client() {
           totalWidth, curX, distanceToStart, distanceToLoop, item, i;
         gsap.set(items, {
           xPercent: (i: number, el: Element) => {
-            let w = widths[i] = parseFloat(gsap.getProperty(el, "width", "px") as string);
+            const w = widths[i] = parseFloat(gsap.getProperty(el, "width", "px") as string);
             xPercents[i] = snap(parseFloat(gsap.getProperty(el, "x", "px") as string) / w * 100 + (gsap.getProperty(el, "xPercent") as number));
             return xPercents[i];
           }
@@ -335,7 +354,7 @@ export default function Timetable_Client() {
     fetchNowEvents();
     // 10秒ごとにポーリング
     const intervalId = setInterval(fetchNowEvents, 10000);
-    return () => clearInterval(intervalId);
+    return () => { clearInterval(intervalId); };
   }, []);
 
   return (
@@ -358,7 +377,7 @@ export default function Timetable_Client() {
             {[{ label: 'Normal', value: false }, { label: 'Detail', value: true }].map(btn => (
               <div
                 key={btn.label}
-                onClick={() => setIsDetailMode(btn.value)}
+                onClick={() => { setIsDetailMode(btn.value); }}
                 style={{
                   color: "black",
                   padding: '0.5rem 1.5rem',
@@ -372,12 +391,12 @@ export default function Timetable_Client() {
                   transition: 'color 0.2s',
                 }}
                 onMouseEnter={e => {
-                  const underline = e.currentTarget.querySelector('.underline-anim') as HTMLElement | null;
-                  if (underline) underline.style.transform = 'scaleX(1)';
+                  const underline = e.currentTarget.querySelector('.underline-anim');
+                  if (underline) (underline as HTMLElement).style.transform = 'scaleX(1)';
                 }}
                 onMouseLeave={e => {
-                  const underline = e.currentTarget.querySelector('.underline-anim') as HTMLElement | null;
-                  if (underline) underline.style.transform = 'scaleX(0)';
+                  const underline = e.currentTarget.querySelector('.underline-anim');
+                  if (underline) (underline as HTMLElement).style.transform = 'scaleX(0)';
                 }}
               >
                 {btn.label}
@@ -408,7 +427,7 @@ export default function Timetable_Client() {
                     <div
                       key={dateOpt.label}
                       className={`${dateOpt.className} ${styles.nav_item} ${styles.nav_item_back} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
-                      onClick={() => setSelectedDate(dateOpt.value)}
+                      onClick={() => { setSelectedDate(dateOpt.value); }}
                     >
                       {dateOpt.label}
                     </div>
@@ -461,10 +480,10 @@ export default function Timetable_Client() {
                         {(() => {
                           // --- 切り替え用 ---
                           // ▼ローカルJSONからフェッチする場合はこちらを有効化
-                          // const timetable = require("@/public/data/timetable.json");
+                          const timetable: EventData[] = require("@/public/data/timetable.json");
 
                           // ▼一時公開用（空データ即返却）
-                          const timetable: any[] = [];
+                          // const timetable: any[] = [];
 
                           const nowEvent = nowEvents.find(ev => (ev.locationType ?? '').toLowerCase().trim() === (locationType ?? '').toLowerCase().trim());
                           if (typeof window !== 'undefined') {
@@ -476,7 +495,7 @@ export default function Timetable_Client() {
                           const title = event.title || "タイトルなし";
                           let groupName = null;
                           if (event.groups && Array.isArray(event.groups) && typeof nowEvent.groupIndex === "number") {
-                            groupName = event.groups[nowEvent.groupIndex] || null;
+                            groupName = event.groups[nowEvent.groupIndex].name || null;
                           }
                           if (!title && !groupName) return <span>なし</span>;
                           return (

@@ -1,29 +1,27 @@
 "use client"
 
-import { is } from '@react-three/fiber/dist/declarations/src/core/utils';
 import styles from './timetable_content_detail.module.css'
 
-interface EventData {
-  id: string | number; // id の型に合わせて string か number にしてください
-  title: string | null; // null の可能性を許容
-  subtitle: string | null; // 他のフィールドも Prisma の型に合わせる
+type EventData = {
+  idx: number;
+  id: number;
+  title: string | null;
+  subtitle: string | null;
   description: string | null;
-  startDate: Date | null;
-  endDate: Date | null;
-  location: string | null;
-  imageUrl: string | null;
-  displayTimeStartTime?: string; // 追加: サーバーで生成された表示用時刻
-  displayTimeEndTime?: string;   // 追加: サーバーで生成された表示用時刻
+  startDate: string | null;
+  endDate: string | null;
+  locationType: string | null;
+  groups?: { name: string, startDate: string, endDate: string }[];
 }
 
-interface NowEvent {
+type NowEvent = {
   locationType: string;
   eventId: number;
   groupIndex?: number;
   updatedAt?: string;
 }
 
-interface TimeTableContentDetailProps {
+type TimeTableContentDetailProps = {
   eventData: EventData;
   nowEvents: NowEvent[];
   locationType: string;
@@ -32,7 +30,7 @@ interface TimeTableContentDetailProps {
 
 // 日本語→英語変換テーブル（キャメルケース）
 const locationTypeMap: Record<string, string> = {
-  '野外ステージ': 'Stage',
+  'グラウンドステージ': 'Stage',
   '中庭': 'Yard',
   'コナコピアホール': 'Hole',
   '体育館': 'Gym',
@@ -64,7 +62,7 @@ export default function TimeTableContentDetail ({ eventData, nowEvents, location
       });
     }
     // locationTypeClassName
-    const locationClassName = formatLocationToClassName((eventData as any).locationType ?? eventData.location);
+    const locationClassName = formatLocationToClassName(eventData.locationType ?? null);
     // gridRow計算
     const getGridRow = (timeStr?: string | null) => {
       if (!timeStr) return 2;
@@ -74,20 +72,8 @@ export default function TimeTableContentDetail ({ eventData, nowEvents, location
       return 2 + (eventMinutes - baseMinutes);
     };
 
-    const gridRowStart = getGridRow(
-      typeof eventData.startDate === "string"
-        ? eventData.startDate
-        : eventData.startDate
-        ? eventData.startDate.toISOString().replace("T", " ").slice(0, 19)
-        : undefined
-    );
-    const gridRowEnd = getGridRow(
-      typeof eventData.endDate === "string"
-        ? eventData.endDate
-        : eventData.endDate
-        ? eventData.endDate.toISOString().replace("T", " ").slice(0, 19)
-        : undefined
-    );
+    const gridRowStart = getGridRow(eventData.startDate);
+    const gridRowEnd = getGridRow(eventData.endDate);
 
     // 時刻フォーマット
     const formatTime = (date: Date | string | null | undefined) => {
@@ -104,7 +90,7 @@ export default function TimeTableContentDetail ({ eventData, nowEvents, location
     };
 
   // groups安全定義
-  const groups = Array.isArray((eventData as any).groups) ? (eventData as any).groups : undefined;
+  const groups = Array.isArray(eventData.groups) ? eventData.groups : undefined;
 
     if (groups && groups.length > 0) {
       // groups分岐: groupindexが一致するgroupBoxのみレイアウト変更
@@ -130,19 +116,20 @@ export default function TimeTableContentDetail ({ eventData, nowEvents, location
               ))}
           </p>
           <div className={styles.groupBox_wrapper}>
-            {groups.map((name: string, idx: number) => {
+            {groups.map((groupdata: { name: string, startDate: string, endDate: string }, idx: number) => {
+              const name = groupdata.name;
               const isNow = nowEvents.some(
                 (ne) => (ne.locationType ?? '').toString().toLowerCase().trim() === locationTypeLower && Number(ne.eventId) === eventIdNum && ne.groupIndex === idx
               );
               return (
                 <div
                   className={isNow ? `${styles.groupBox} ${styles.nowEvent}` : styles.groupBox}
-                  key={name + '-' + idx}
+                  key={`${name}-${String(idx)}`}
                   style={{
                     borderBottom: idx !== groups.length - 1 ? '1px solid #aaa' : 'none',
                     ...(isNow && { backgroundColor: 'var(--text)', color: 'black', zIndex: 2 })
                   }}
-                  onClick={() => onRegister && onRegister(locationType, Number(eventData.id), idx)}
+                  onClick={() => onRegister?.(locationType, Number(eventData.id), idx)}
                 >
                   <span style={{width: '100%'}}>{name}</span>
                 </div>
@@ -160,7 +147,7 @@ export default function TimeTableContentDetail ({ eventData, nowEvents, location
             gridRowStart: gridRowStart,
             gridRowEnd: gridRowEnd,
           }}
-          onClick={() => onRegister && onRegister(locationType, Number(eventData.id))}
+          onClick={() => onRegister?.(locationType, Number(eventData.id))}
         >
           <p className={styles.time}>
             {formatTime(eventData.startDate) + ' - ' + formatTime(eventData.endDate)}
