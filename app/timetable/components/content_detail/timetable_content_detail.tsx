@@ -14,12 +14,15 @@ type EventData = {
   groups?: { name: string, startDate: string, endDate: string }[];
 }
 
-type NowEvent = {
-  locationType: string;
-  eventId: number;
-  groupIndex?: number;
-  updatedAt?: string;
-}
+  type NowEvent = {
+    id: number;
+    locationType: string;
+    eventId: number;
+    groupIndex?: number | null;
+    updatedAt?: string;
+    startDate?: string;
+    endDate?: string;
+  };
 
 type TimeTableContentDetailProps = {
   eventData: EventData;
@@ -51,16 +54,6 @@ export default function TimeTableContentDetail ({ eventData, nowEvents, location
     const nowEvent = nowEvents.find(
       (ne) => (ne.locationType ?? '').toString().toLowerCase().trim() === locationTypeLower && Number(ne.eventId) === eventIdNum
     );
-    if (typeof window !== 'undefined') {
-      console.log('[nowEvent判定]', {
-        eventIdNum,
-        locationTypeLower,
-        nowEvents,
-        nowEvent,
-        eventData,
-        locationType,
-      });
-    }
     // locationTypeClassName
     const locationClassName = formatLocationToClassName(eventData.locationType ?? null);
     // gridRow計算
