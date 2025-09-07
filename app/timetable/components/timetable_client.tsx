@@ -30,12 +30,12 @@ const areaOptions = [
 type EventData = {
   idx: number;
   id: number;
-  title: string | null;
+  title: string;
   subtitle: string | null;
   description: string | null;
-  startDate: string | null;
-  endDate: string | null;
-  locationType: string | null;
+  startDate: string;
+  endDate: string;
+  locationType: string;
   groups?: { name: string, startDate: string, endDate: string }[];
 }
 
@@ -97,11 +97,11 @@ export default function Timetable_Client() {
       try {
         // --- 切り替え用 ---
         // ▼ローカルJSONからフェッチする場合はこちらを有効化
-        const timetableData = await fetchLocalJson<any[]>("/data/timetable.json");
+        const timetableData = await fetchLocalJson<EventData[]>("/data/timetable.json");
         const newData: Record<string, EventsByLocation[]> = {};
         dateOptions.forEach(dateOpt => {
           const dateStr = `2025-09-${dateOpt.value}`;
-          const filtered = timetableData.filter(ev => ev.startDate.startsWith(dateStr));
+          const filtered = timetableData.filter(ev => ev.startDate?.startsWith(dateStr));
           newData[dateOpt.value] = areaOptions.map(opt => {
             const events = filtered.filter(ev => ev.locationType === opt.value);
             return { locationType: opt.value, events };
@@ -326,13 +326,22 @@ export default function Timetable_Client() {
     })();
   }, []);
 
+  type SupabaseNowEvent = {
+    id: number;
+    locationtype: string;
+    eventid: number;
+    groupindex?: number | null;
+    updatedat: string; 
+  };
 
   type NowEvent = {
     id: number;
     locationType: string;
     eventId: number;
-    groupIndex?: number;
+    groupIndex?: number | null;
     updatedAt?: string;
+    startDate?: string;
+    endDate?: string;
   };
   const [nowEvents, setNowEvents] = useState<NowEvent[]>([]);
   useEffect(() => {
@@ -343,15 +352,144 @@ export default function Timetable_Client() {
         console.error('now_events fetch error:', error);
         return;
       }
-      setNowEvents((data ?? []).map(ev => ({
-        id: ev.id,
-        locationType: ev.locationtype,
-        eventId: ev.eventid,
-        groupIndex: ev.groupindex,
-        updatedAt: ev.updatedat,
-      })));
+
+      // --- eventとgroupを平らに並べる
+      const timetableData = await fetchLocalJson<EventData[]>("/data/timetable.json");
+      const flat: NowEvent[] = timetableData.flatMap((ev) => {
+        if (ev.groups && ev.groups.length > 0) {
+          return ev.groups.map((g, gi) => ({
+            id: ev.id * 100 + (gi + 1), // 例: eventId=12, gi=0 → 1201
+            locationType: ev.locationType,
+            eventId: ev.id,
+            groupIndex: gi,
+            startDate: g.startDate,
+            endDate: g.endDate,
+          }));
+        } else {
+          return [
+            {
+              id: ev.id * 100, // グループ無しは "xx00"
+              locationType: ev.locationType,
+              eventId: ev.id,
+              groupIndex: -1, // グループ無しは -1
+              startDate: ev.startDate,
+              endDate: ev.endDate,
+            },
+          ];
+        }
+      });
+      const byLocation = flat.reduce<Record<string, NowEvent[]>>((acc, cur) => {
+        (acc[cur.locationType] ??= []).push(cur);
+        return acc;
+      }, {});
+      for (const key of Object.keys(byLocation)) {
+        byLocation[key].sort((a, b) => a.startDate && b.startDate ? new Date(a.startDate).getTime() - new Date(b.startDate).getTime() : 0);
+      }
+
+      const getEventById = (
+        byLocation: Record<string, NowEvent[]>,
+        location: string,
+        eventId: number,
+        groupIndex?: number
+      ): NowEvent | undefined => {
+        const list = byLocation[location];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!list) return undefined;
+
+        const gi = groupIndex ?? -1; // undefined を -1 に潰して比較
+        return list.find(
+          (e) => e.eventId === eventId && ((e.groupIndex ?? -1) === gi)
+        );
+      };
+
+      const getEventByTime = (
+        byLocation: Record<string, NowEvent[]>,
+        location: string,
+        time: Date
+      ): NowEvent | undefined => {
+        const list = byLocation[location];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!list) return undefined;
+
+        // 1) 正常な区間のみ抽出し、必要ならソート
+        const validEvents = list.filter(e => e.startDate && e.endDate).sort((a, b) => {
+          if (!a.startDate || !b.startDate) return 0;
+          return (new Date(a.startDate).getTime()) - (new Date(b.startDate).getTime());
+        });
+        // 2) timeがstart-endの間にある最初のイベントを返す
+        for (const ev of validEvents) {
+          if (!ev.startDate || !ev.endDate) continue;
+          const start = new Date(ev.startDate);
+          const end = new Date(ev.endDate);
+          if (start <= time && time <= end) {
+            return ev;
+          }
+        }
+        // 3) もしどのイベントにも属さない場合、2分以内の隙間なら一番近い側を返す
+        const GAP_MS = 2 * 60 * 1000; // 2分
+        const t = time.getTime();
+
+        // 二分探索: startDate > t となる最初のインデックス
+        let lo = 0, hi = validEvents.length;
+        while (lo < hi) {
+          const mid = (lo + hi) >>> 1;
+          const ms = validEvents[mid].startDate ? (new Date(validEvents[mid].startDate)).getTime() : 0;
+          if (ms > t) hi = mid;
+          else lo = mid + 1;
+        }
+        const idx = lo;
+
+        const toMs = (s?: string) => (s ? (new Date(s)).getTime() : Number.NaN);
+        const prev = idx - 1 >= 0 ? validEvents[idx - 1] : undefined;
+        const next = idx < validEvents.length ? validEvents[idx] : undefined;
+
+        // 先頭より前：最初の開始に近ければ採用
+        if (!prev && next) {
+          const d = Math.abs(toMs(next.startDate) - t);
+          if (d <= GAP_MS) return next;
+          return undefined;
+        }
+
+        // 末尾より後：最後の終了に近ければ採用
+        if (prev && !next) {
+          const d = Math.abs(t - toMs(prev.endDate));
+          if (d <= GAP_MS) return prev;
+          return undefined;
+        }
+
+        // 2つの区間に挟まれている場合：両端の近い方（同距離は未来側）を返す
+        if (prev && next) {
+          const endPrev = toMs(prev.endDate);
+          const startNext = toMs(next.startDate);
+          if (t >= endPrev && t <= startNext) {
+            const dPrev = Math.abs(t - endPrev);
+            const dNext = Math.abs(startNext - t);
+            const minD = Math.min(dPrev, dNext);
+            if (minD <= GAP_MS) return dNext <= dPrev ? next : prev;
+          }
+        }
+
+        return undefined;
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      const now_events = (data as SupabaseNowEvent[] ?? []).map(ev => {
+        const ne = getEventById(byLocation, ev.locationtype, ev.eventid, ev.groupindex ?? undefined);
+        
+        // TODO: テスト用に現在時刻を固定（本番ではコメントアウトして実際の現在時刻を使う）
+        const now_time = new Date("2025-09-20T13:00:00+09:00"); // テスト用固定時刻
+        // const now_time = new Date(); // 実際の現在時刻
+
+        const updatedAtMs = Date.parse(ev.updatedat); 
+        const startMs = Date.parse((ne?.startDate ?? '').replace(' ', 'T') + '+09:00');
+        const expect_now_time = new Date(now_time.getTime() - updatedAtMs + startMs);
+        return getEventByTime(byLocation, ev.locationtype, expect_now_time);
+      });
+
+
+      setNowEvents(now_events.filter((ev): ev is NowEvent => !!ev));
     };
-    fetchNowEvents();
+    void fetchNowEvents();
     // 10秒ごとにポーリング
     const intervalId = setInterval(fetchNowEvents, 10000);
     return () => { clearInterval(intervalId); };
@@ -486,9 +624,6 @@ export default function Timetable_Client() {
                           // const timetable: any[] = [];
 
                           const nowEvent = nowEvents.find(ev => (ev.locationType ?? '').toLowerCase().trim() === (locationType ?? '').toLowerCase().trim());
-                          if (typeof window !== 'undefined') {
-                            console.log('[nowEvent判定]', { locationType, nowEvents, nowEvent });
-                          }
                           if (!nowEvent) return <span>なし</span>;
                           const event = timetable.find((ev: any) => ev.id === nowEvent.eventId);
                           if (!event) return <span>なし</span>;
