@@ -14,5 +14,13 @@
     "main": "校内マップを公開しました。拡大縮小が感覚的にできます。",
     "imgUrl": "/news_images/map_first.png",
     "updatedAt": "2025-09-02"
+  },
+  {
+    "id": 3,
+    "title": "【高槻高校生向け】リハーサルの時間予約を開始しました",
+    "type": "予約",
+    "main": "高槻高校生向けのリハーサルの時間予約を開始しました。万博風のUIで悪夢を思い出す人もいるかもしれませんが、頑張って予約してください。",
+    "imgUrl": "/news_images/rehearsal_reservation.png",
+    "updatedAt": "2025-09-04"
   }
 ]
