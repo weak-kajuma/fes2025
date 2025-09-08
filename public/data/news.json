@@ -6,5 +6,13 @@
     "main": "文化祭公式HPを公開しました。今はまだ多くの機能が使用できませんが、文化祭までに随時追加していきます。",
     "imgUrl": "/news_images/seikasai_top.png",
     "updatedAt": "2025-09-02"
+  },
+    {
+    "id": 2,
+    "title": "校内マップを公開しました",
+    "type": "サイト機能",
+    "main": "校内マップを公開しました。拡大縮小が感覚的にできます。",
+    "imgUrl": "/news_images/map_first.png",
+    "updatedAt": "2025-09-02"
   }
 ]
