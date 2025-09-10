@@ -47,7 +47,7 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
 
         <div className={styles.image}>
           {item.imgUrl &&
-            <Image width={500} height={300} src={item.imgUrl} alt={item.title} />
+            <Image width={1500} height={900} src={item.imgUrl} alt={item.title} />
           }
         </div>
 

@@ -749,7 +749,7 @@ export default function Home() {
                   <p id="news-subtitle">最新情報をお届けします</p>
                 </div>
 
-                {/* <div className={styles.news_list_wrapper}>
+                <div className={styles.news_list_wrapper}>
 
                   <NewsSlider items={newsItems} isMobile={isMobile} />
 
@@ -780,9 +780,9 @@ export default function Home() {
 
                     </div>
                   )}
-                </div> */}
+                </div>
 
-                <div>
+                {/* <div>
                   <div
                     style={{
                       width: '100%',
@@ -803,7 +803,7 @@ export default function Home() {
                   >
                     COMING SOON
                   </div>
-                </div>
+                </div> */}
 
               </div>
             </div>

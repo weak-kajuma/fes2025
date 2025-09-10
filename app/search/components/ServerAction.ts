@@ -44,14 +44,13 @@ export async function getEventsWithFilters(
   //     .lte('startDate', dateEnd.toISOString());
   // }
 
-  // 日付絞り込み（startDateがその日の範囲）
+  // 日付絞り込み（dateプロパティで）
   let filtered = allData;
-    if (targetDate) {
-      filtered = filtered.filter((ev: EventRow) => {
-        if (!('startDate' in ev) || !ev.startDate) return false;
-        return ev.startDate.startsWith(`2025-09-${targetDate}`);
-      });
-    }
+  if (targetDate) {
+    // 20→2025-09-20, 21→2025-09-21
+    const dateStr = targetDate === "20" ? "2025-09-20" : targetDate === "21" ? "2025-09-21" : "";
+    filtered = filtered.filter((ev: any) => ev.date === dateStr);
+  }
 
   // ② エリアでの絞り込み (RPCの結果に対してさらに絞り込み)
   if (selectedAreas.length > 0) {
@@ -71,14 +70,20 @@ export async function getEventsWithFilters(
   }
 
 
+  // 日付で昇順ソート（dateプロパティがある場合）
+  filtered = filtered.sort((a: any, b: any) => {
+    if (!a.date || !b.date) return 0;
+    return a.date.localeCompare(b.date);
+  });
+
   // 型変換
-    return filtered.map((row: EventRow) => ({
-      id: row.id,
-      title: row.title,
-      host: row.host,
-      intro: row.intro,
-      brief_intro: row.brief_intro,
-      locationType: row.locationType,
-      tags: row.tags ?? [],
-    }));
+  return filtered.map((row: any) => ({
+    id: row.id,
+    title: row.title,
+    host: row.host,
+    intro: row.intro,
+    brief_intro: row.brief_intro,
+    locationType: row.locationType,
+    tags: row.tags ?? [],
+  }));
 }

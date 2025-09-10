@@ -97,22 +97,22 @@ export default function Timetable_Client() {
       try {
         // --- 切り替え用 ---
         // ▼ローカルJSONからフェッチする場合はこちらを有効化
-        const timetableData = await fetchLocalJson<EventData[]>("/data/timetable.json");
-        const newData: Record<string, EventsByLocation[]> = {};
-        dateOptions.forEach(dateOpt => {
-          const dateStr = `2025-09-${dateOpt.value}`;
-          const filtered = timetableData.filter(ev => ev.startDate?.startsWith(dateStr));
-          newData[dateOpt.value] = areaOptions.map(opt => {
-            const events = filtered.filter(ev => ev.locationType === opt.value);
-            return { locationType: opt.value, events };
-          });
-        });
+        // const timetableData = await fetchLocalJson<EventData[]>("/data/timetable.json");
+        // const newData: Record<string, EventsByLocation[]> = {};
+        // dateOptions.forEach(dateOpt => {
+        //   const dateStr = `2025-09-${dateOpt.value}`;
+        //   const filtered = timetableData.filter(ev => ev.startDate?.startsWith(dateStr));
+        //   newData[dateOpt.value] = areaOptions.map(opt => {
+        //     const events = filtered.filter(ev => ev.locationType === opt.value);
+        //     return { locationType: opt.value, events };
+        //   });
+        // });
 
         // ▼一時公開用（空データ即返却）
-        // const newData: { [date: string]: EventsByLocation[] } = {};
-        // dateOptions.forEach(dateOpt => {
-        //   newData[dateOpt.value] = areaOptions.map(opt => ({ locationType: opt.value, events: [] }));
-        // });
+        const newData: { [date: string]: EventsByLocation[] } = {};
+        dateOptions.forEach(dateOpt => {
+          newData[dateOpt.value] = areaOptions.map(opt => ({ locationType: opt.value, events: [] }));
+        });
 
         if (mounted) {
           setAllEventsData(prev => JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData);
@@ -331,7 +331,7 @@ export default function Timetable_Client() {
     locationtype: string;
     eventid: number;
     groupindex?: number | null;
-    updatedat: string; 
+    updatedat: string;
   };
 
   type NowEvent = {
@@ -475,12 +475,12 @@ export default function Timetable_Client() {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       const now_events = (data as SupabaseNowEvent[] ?? []).map(ev => {
         const ne = getEventById(byLocation, ev.locationtype, ev.eventid, ev.groupindex ?? undefined);
-        
+
         // TODO: テスト用に現在時刻を固定（本番ではコメントアウトして実際の現在時刻を使う）
         const now_time = new Date("2025-09-20T13:00:00+09:00"); // テスト用固定時刻
         // const now_time = new Date(); // 実際の現在時刻
 
-        const updatedAtMs = Date.parse(ev.updatedat); 
+        const updatedAtMs = Date.parse(ev.updatedat);
         const startMs = Date.parse((ne?.startDate ?? '').replace(' ', 'T') + '+09:00');
         const expect_now_time = new Date(now_time.getTime() - updatedAtMs + startMs);
         return getEventByTime(byLocation, ev.locationtype, expect_now_time);
@@ -618,10 +618,10 @@ export default function Timetable_Client() {
                         {(() => {
                           // --- 切り替え用 ---
                           // ▼ローカルJSONからフェッチする場合はこちらを有効化
-                          const timetable: EventData[] = require("@/public/data/timetable.json");
+                          // const timetable: EventData[] = require("@/public/data/timetable.json");
 
                           // ▼一時公開用（空データ即返却）
-                          // const timetable: any[] = [];
+                          const timetable: any[] = [];
 
                           const nowEvent = nowEvents.find(ev => (ev.locationType ?? '').toLowerCase().trim() === (locationType ?? '').toLowerCase().trim());
                           if (!nowEvent) return <span>なし</span>;

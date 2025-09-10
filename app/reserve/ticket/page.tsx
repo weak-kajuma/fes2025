@@ -299,163 +299,182 @@ export default function TicketPage() {
                       </div>
                     </div>
 
+                    {/* 時間指定で表示 */}
+                    {(() => {
+                      const showStart = new Date("2025-09-20T00:00:00+09:00");
+                      const showEnd = new Date("2025-09-30T23:59:59+09:00");
+                      if (now.getTime() >= showStart.getTime() && now.getTime() <= showEnd.getTime()) {
+                        return <>
+                          <div className={styles.arrows_event}>
+                            <div className={styles.arrows_title}>
+                              <span>■</span>
+                              イベントの予約
+                            </div>
+                            <div className={styles.arrow}>
+                              <Image
+                                className={styles.arrow_gray_left}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="左矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_right}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="右矢印"
+                              />
+                              {alreadyApplied ? (
+                                <>
+                                  <Image
+                                    src="/images/arrow_left.png"
+                                    width={15}
+                                    height={40}
+                                    alt="左矢印"
+                                  />
+                                  <Link className={styles.arrow_middle_submited} href="/reserve/result">
+                                    <div>7日前抽選申込<br/>(申込済みの内容を確認)</div>
+                                  </Link>
+                                  <Image
+                                    src="/images/arrow_right.png"
+                                    width={15}
+                                    height={40}
+                                    alt="右矢印"
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <Image
+                                    src="/images/arrow_red_left.png"
+                                    width={15}
+                                    height={40}
+                                    alt="右矢印"
+                                  />
+                                  <Link className={styles.arrow_middle} href="/reserve/7days-before-reservation/ticketselect">
+                                    <div>7日前抽選申込<br/>(受付中)</div>
+                                  </Link>
+                                  <Image
+                                    src="/images/arrow_red_right.png"
+                                    width={15}
+                                    height={40}
+                                    alt="右矢印"
+                                  />
+                                </>
+                              )}
+                              <Image
+                                className={styles.arrow_gray_left}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="左矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_right}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="右矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_left}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="左矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_right}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="右矢印"
+                              />
+                            </div>
+                          </div>
+                        </>;
+                      }
+                      return null;
+                    })()}
+
+                    {(() => {
+                      const showStart = new Date("2025-09-20T00:00:00+09:00");
+                      const showEnd = new Date("2025-09-30T23:59:59+09:00");
+                      if (now.getTime() >= showStart.getTime() && now.getTime() <= showEnd.getTime()) {
+                        return <>
+                          <div className={styles.arrows_event}>
+                            <div className={styles.arrows_title}>
+                              <span>■</span>
+                              イベントの予約
+                            </div>
+                            <div className={styles.arrow}>
+                              <Image
+                                className={styles.arrow_gray_left}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="左矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_right}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="右矢印"
+                              />
+                                <>
+                                  <Image
+                                    src="/images/arrow_red_left.png"
+                                    width={15}
+                                    height={40}
+                                    alt="右矢印"
+                                  />
+                                  <Link className={styles.arrow_middle} href="/reserve/first-come-served/ticketselect">
+                                    <div>空き枠先着申込<br/>(受付中)</div>
+                                  </Link>
+                                  <Image
+                                    src="/images/arrow_red_right.png"
+                                    width={15}
+                                    height={40}
+                                    alt="右矢印"
+                                  />
+                                </>
+                              <Image
+                                className={styles.arrow_gray_left}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="左矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_right}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="右矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_left}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="左矢印"
+                              />
+                              <Image
+                                className={styles.arrow_gray_right}
+                                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
+                                width={15}
+                                height={40}
+                                alt="右矢印"
+                              />
+                            </div>
+                          </div>
+                        </>;
+                      }
+                      return null;
+                    })()}
+
                     {/* <div className={styles.arrows_event}>
-                      <div className={styles.arrows_title}>
-                        <span>■</span>
-                        イベントの予約
-                      </div>
-                      <div className={styles.arrow}>
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        {alreadyApplied ? (
-                          <>
-                            <Image
-                              src="/images/arrow_left.png"
-                              width={15}
-                              height={40}
-                              alt="左矢印"
-                            />
-                            <Link className={styles.arrow_middle_submited} href="/reserve/result">
-                              <div>7日前抽選申込<br/>(申込済みの内容を確認)</div>
-                            </Link>
-                            <Image
-                              src="/images/arrow_right.png"
-                              width={15}
-                              height={40}
-                              alt="右矢印"
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <Image
-                              src="/images/arrow_red_left.png"
-                              width={15}
-                              height={40}
-                              alt="右矢印"
-                            />
-                            <Link className={styles.arrow_middle} href="/reserve/7days-before-reservation/ticketselect">
-                              <div>7日前抽選申込<br/>(受付中)</div>
-                            </Link>
-                            <Image
-                              src="/images/arrow_red_right.png"
-                              width={15}
-                              height={40}
-                              alt="右矢印"
-                            />
-                          </>
-                        )}
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.arrows_event}>
-                      <div className={styles.arrows_title}>
-                        <span>■</span>
-                        イベントの予約
-                      </div>
-                      <div className={styles.arrow}>
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                          <>
-                            <Image
-                              src="/images/arrow_red_left.png"
-                              width={15}
-                              height={40}
-                              alt="右矢印"
-                            />
-                            <Link className={styles.arrow_middle} href="/reserve/first-come-served/ticketselect">
-                              <div>空き枠先着申込<br/>(受付中)</div>
-                            </Link>
-                            <Image
-                              src="/images/arrow_red_right.png"
-                              width={15}
-                              height={40}
-                              alt="右矢印"
-                            />
-                          </>
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_left}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="左矢印"
-                        />
-                        <Image
-                          className={styles.arrow_gray_right}
-                          src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='40'><rect fill-opacity='0'/></svg>"
-                          width={15}
-                          height={40}
-                          alt="右矢印"
-                        />
-                      </div>
-                    </div> */}
-
-                    <div className={styles.arrows_event}>
                       <div className={styles.arrows_title}>
                         <span>■</span>
                         リハーサルの予約
@@ -544,7 +563,7 @@ export default function TicketPage() {
                           alt="右矢印"
                         />
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div className={styles.ticket_bottom_text}>
                     <div className={styles.ticket_bottom_text_icon}>
@@ -572,8 +591,8 @@ export default function TicketPage() {
           </div>
           <div className={styles.buttons}>
             <div className={styles.button_top}>
-                <Link href="/reserve/resultClub">
-                <div className={styles.button_more}>リハーサル登録状況</div>
+                <Link href="/reserve/result">
+                <div className={styles.button_more}>抽選登録状況</div>
                 </Link>
             </div>
             <ul className={styles.button_bottom}>

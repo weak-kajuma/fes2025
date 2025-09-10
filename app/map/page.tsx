@@ -116,19 +116,14 @@ export default function MapPage() {
   return (
     <div className={styles.mapContainer}>
       {/* フロア選択ボタン 左上配置 */}
-      <div style={{ position: 'fixed', top: 16, left: 16, zIndex: 10, display: 'flex', gap: '0.5rem' }}>
+      <div className={styles.floorSelect}>
         {['1F', '2F', '3F', '4F'].map(f => (
           <button
+            className={styles.floorButton}
             key={f}
             style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '1rem',
               border: floor === f ? '2px solid #007aff' : '1px solid #ccc',
-              background: floor === f ? '#e6f0ff' : '#fff',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-              color: 'black'
+              background: floor === f ? '#e6f0ff' : '#fff'
             }}
             onClick={() => setFloor(f as '1F' | '2F' | '3F' | '4F')}
           >

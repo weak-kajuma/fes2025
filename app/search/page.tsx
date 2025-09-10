@@ -32,10 +32,11 @@ export default function Search() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  // 初回・セレクター変更時に自動検索
   useEffect(() => {
     handleSearch(keyword);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedDate, selectedArea]);
 
 
 
@@ -52,13 +53,12 @@ export default function Search() {
     setResults(data);
   };
 
-  // 詳細表示divのアニメーション開始
-  const handleEventCardClick = (event: EventDataForClient) => {
-    // TabBarのアニメーション関数を呼び出し
-    if ((window as any).__TAB_BAR_CONTEXT__?.triggerAnimation) {
-      (window as any).__TAB_BAR_CONTEXT__.triggerAnimation(event);
-    }
-  };
+  // 詳細表示divのアニメーション開始（TabBar展開UIはコメントアウトで無効化）
+  // const handleEventCardClick = (event: EventDataForClient) => {
+  //   if ((window as any).__TAB_BAR_CONTEXT__?.triggerAnimation) {
+  //     (window as any).__TAB_BAR_CONTEXT__.triggerAnimation(event);
+  //   }
+  // };
 
   // 共通のタブコンテンツ
   const renderTabContent = () => (
@@ -105,21 +105,22 @@ export default function Search() {
           </div>
         </Tab>
       </div>
-      <div className={styles.tab_row}>
+      {/* <div className={styles.tab_row}>
         <Tab title={"title"}>children</Tab>
         <Tab title={"title"}>children</Tab>
-      </div>
+      </div> */}
     </>
   );
 
-  // 共通の結果表示
+  // 共通の結果表示（EventCardクリック時のTabBar展開UIは無効化）
   const renderResults = () => (
     <div className={styles.results}>
       <div className={styles.results_inner}>
         {results.length > 0 ? (
           results.map(event => (
             <div className={styles.card} key={event.id}>
-              <EventCard event={event} onClick={handleEventCardClick} />
+              {/* <EventCard event={event} onClick={handleEventCardClick} /> */}
+              <EventCard event={event} />
             </div>
           ))
         ) : (
@@ -237,11 +238,11 @@ export default function Search() {
           </div>
         </div>
 
-        <SearchBar
+        {/* <SearchBar
           value={keyword}
           onSubmit={handleSearch}
           onChange={setKeyword}
-        />
+        /> */}
 
         {isMobile ? (
           // スマホサイズ用の構造
