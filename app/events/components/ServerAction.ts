@@ -9,6 +9,7 @@ export type EventDataForClient = {
   brief_intro: string | null;
   locationType: string | null;
   tags: string[] | null;
+  date: string | null;
 };
 
 type EventRow = {
@@ -85,5 +86,6 @@ export async function getEventsWithFilters(
     brief_intro: row.brief_intro,
     locationType: row.locationType,
     tags: row.tags ?? [],
+    date: row.date ?? null,
   }));
 }

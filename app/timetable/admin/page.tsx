@@ -105,18 +105,19 @@ export default function AdminTimetablePage() {
             });
             const result = await res.json();
 
-            // デバッグログ追加
-            const normalized = normalizeLocationName(result.location_name);
-            console.log("DEBUG location_name from API:", result.location_name, "-> normalized:", normalized);
-
             if (result.success) {
+              // ★ 修正ポイント：location_name が未設定/空文字のときは "全選択" にしない
+              // DBの値を正規化し、マッチしない場合は未選択として扱う
+              const normalized = normalizeLocationName(result.location_name);
+
               if (normalized) {
                 setSelectedLocation(normalized);
               } else {
                 setSelectedLocation(undefined);
                 setAuthError("このアカウントに紐づくロケーションが不正です。管理者に確認してください。");
-                return;
+                return; // ロケーションが確定しない限り認証状態にしない
               }
+
               setIsAuthenticated(true);
               setMode(result.mode);
             } else {
