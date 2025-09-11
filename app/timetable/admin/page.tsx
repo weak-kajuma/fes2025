@@ -1,6 +1,5 @@
 "use client";
 
-
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -16,16 +15,33 @@ const dateOptions = [
   { label: "21(Sun)", value: "21" },
 ];
 const areaOptions = [
-  { label: "ステージ", value: "グラウンドステージ" },
-  { label: "コナコピア", value: "コナコピアホール" },
-  { label: "中庭", value: "中庭" },
-  { label: "体育館", value: "体育館" },
+  { label: "ステージ", value: "stage" },
+  { label: "コナコピア", value: "hole" },
+  { label: "中庭", value: "yard" },
+  { label: "体育館", value: "gym" },
 ];
 
+// ★ 追加: DBの location_name（label だったり value だったり/空白含む）を
+// タイムテーブルで使う正規化済み value に揃える
+const normalizeLocationName = (name?: string | null): string | undefined => {
+  if (!name) return undefined;
+  const trimmed = `${name}`.trim();
+  if (trimmed === "all") return "all"; // 明示的な全選択だけ許可
+  const hit = areaOptions.find(opt => opt.value === trimmed || opt.label === trimmed);
+  return hit?.value; // 見つかったら canonical value を返す
+};
 
 export default function AdminTimetablePage() {
-    // ロケーションtypeを固定するstate
-  const [selectedLocationType, setSelectedLocationType] = useState<string | null>(null);
+  // location_nameの値（APIレスポンス）
+  const [selectedLocation, setSelectedLocation] = useState<string | undefined>(undefined); // 初期は未選択
+  const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0].value);
+  const [inputPassword, setInputPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [mode, setMode] = useState<string>("");
+  const [nowEvents, setNowEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   useScrollSmoother();
 
@@ -36,17 +52,6 @@ export default function AdminTimetablePage() {
     const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
   }
-  const [inputPassword, setInputPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authError, setAuthError] = useState("");
-  const [mode, setMode] = useState<string>("");
-
-  // 管理画面のstate
-  const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0].value);
-  const [selectedArea, setSelectedArea] = useState<string[]>(areaOptions.map(opt => opt.value));
-  const [nowEvents, setNowEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -75,7 +80,7 @@ export default function AdminTimetablePage() {
     }
   };
 
-  // パスワード未認証の場合はフォーム表示
+  // 認証前
   if (!isAuthenticated) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}>
@@ -90,6 +95,7 @@ export default function AdminTimetablePage() {
         <button
           style={{ fontSize: "1.2rem", padding: "0.5rem 1rem" }}
           onClick={async () => {
+            setAuthError("");
             const inputHash = await hashPassword(inputPassword);
             // APIへPOST
             const res = await fetch("/api/admin-login", {
@@ -98,18 +104,21 @@ export default function AdminTimetablePage() {
               body: JSON.stringify({ password: inputHash })
             });
             const result = await res.json();
+
+            // デバッグログ追加
+            const normalized = normalizeLocationName(result.location_name);
+            console.log("DEBUG location_name from API:", result.location_name, "-> normalized:", normalized);
+
             if (result.success) {
+              if (normalized) {
+                setSelectedLocation(normalized);
+              } else {
+                setSelectedLocation(undefined);
+                setAuthError("このアカウントに紐づくロケーションが不正です。管理者に確認してください。");
+                return;
+              }
               setIsAuthenticated(true);
               setMode(result.mode);
-              setAuthError("");
-              // location_nameの値だけsetSelectedLocationTypeにセットし、選択バーは非表示
-              if (result.location_name == null) {
-                setSelectedArea(areaOptions.map(opt => opt.value));
-                setSelectedLocationType(null);
-              } else {
-                setSelectedLocationType(result.location_name);
-                setSelectedArea([result.location_name]);
-              }
             } else {
               setAuthError(result.error || "パスワードが違います");
             }
@@ -120,8 +129,118 @@ export default function AdminTimetablePage() {
     );
   }
 
-  // 認証済みの場合は管理画面表示
-  // timetable_clientと同じ詳細レイアウト
+  // 認証後
+  // location未選択なら何も表示しない
+  if (selectedLocation === undefined) {
+    return (
+      <div data-smooth-wrapper>
+        <div className={styles.main} data-scroll-container>
+          <div className={styles.nav}>
+            <div className={styles.nav_content}>
+              <div className={`${styles.nav_item} ${styles.pre}`}>Date</div>
+              <div className={styles.nav_item_back_wrapper}>
+                {dateOptions.map(dateOpt => (
+                  <div
+                    key={dateOpt.label}
+                    className={`${styles.nav_item} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
+                    onClick={() => { setSelectedDate(dateOpt.value); }}
+                  >
+                    {dateOpt.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className={styles.eventContentWrapper}>
+            {/* 許可されたロケーションが未設定 */}
+            {authError && <div style={{ color: "red", marginTop: "1rem" }}>{authError}</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // location_nameが"全選択"なら全ロケーション表示（★ 明示的に指定された場合のみ）
+  if (selectedLocation === "all") {
+    return (
+      <div data-smooth-wrapper>
+        <div className={styles.main} data-scroll-container>
+          <div className={styles.nav}>
+            <div className={styles.nav_content}>
+              <div className={`${styles.nav_item} ${styles.pre}`}>Date</div>
+              <div className={styles.nav_item_back_wrapper}>
+                {dateOptions.map(dateOpt => (
+                  <div
+                    key={dateOpt.label}
+                    className={`${styles.nav_item} ${selectedDate === dateOpt.value ? styles.selected : ""}`}
+                    onClick={() => { setSelectedDate(dateOpt.value); }}
+                  >
+                    {dateOpt.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className={styles.eventContentWrapper}>
+            {areaOptions.map(areaOpt => {
+              const events = (timetable as any[]).filter(ev => {
+                return ev.locationType === areaOpt.value && ev.startDate.startsWith(`2025-09-${selectedDate}`);
+              });
+              return (
+                <div key={areaOpt.value} className={styles.detail_wrapper}>
+                  <div className={styles.eventLocationContainer_detail}>
+                    <div className={styles.bar}></div>
+                    <div className={styles.label}>
+                      <Link href="">
+                        <div className={styles.label_inner}>{areaOpt.value}</div>
+                      </Link>
+                    </div>
+                    <div className={styles.box}></div>
+                    <div className={styles.background}></div>
+                    <div className={styles.timeText}>8:30</div>
+                    <div className={styles.timeText}>9:00</div>
+                    <div className={styles.timeText}>10:00</div>
+                    <div className={styles.timeText}>11:00</div>
+                    <div className={styles.timeText}>12:00</div>
+                    <div className={styles.timeText}>13:00</div>
+                    <div className={styles.timeText}>14:00</div>
+                    <div className={styles.timeText}>15:00</div>
+                    <div className={styles.timeText}>15:30</div>
+                    {[...Array(17)].map((_, i) => (
+                      <div key={i} className={styles.timeBar}></div>
+                    ))}
+                    {events.map(event => (
+                      <AdminTimeTableContentDetail
+                        key={event.id}
+                        eventData={{
+                          ...event,
+                          locationType: event.locationType,
+                          startDate: event.startDate ? event.startDate.replace(' ', 'T') : null,
+                          endDate: event.endDate ? event.endDate.replace(' ', 'T') : null
+                        }}
+                        nowEvents={nowEvents}
+                        locationType={areaOpt.value}
+                        onRegister={handleRegister}
+                        loading={loading}
+                      />
+                    ))}
+                  </div>
+                  {message && <div className={styles.message}>{message}</div>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 通常はlocation_nameに対応したlocationのみ表示
+  const areaOpt = areaOptions.find(opt => opt.value === selectedLocation);
+  if (!areaOpt) return null;
+  const events = (timetable as any[]).filter(ev => {
+    return ev.locationType === areaOpt.value && ev.startDate.startsWith(`2025-09-${selectedDate}`);
+  });
   return (
     <div data-smooth-wrapper>
       <div className={styles.main} data-scroll-container>
@@ -140,88 +259,48 @@ export default function AdminTimetablePage() {
               ))}
             </div>
           </div>
-          {/* location_nameがnull（全表示）の場合のみロケーション選択UIを表示。 */}
-          {selectedLocationType === null && selectedArea.length > 0 && (
-            <div className={styles.nav_content}>
-              <div className={`${styles.nav_item} ${styles.pre}`}>Location</div>
-              <div className={styles.nav_item_back_wrapper}>
-                {areaOptions.map(areaOpt => (
-                  <div
-                    key={areaOpt.label}
-                    className={`${styles.nav_item} ${selectedArea.includes(areaOpt.value) ? styles.selected : ""}`}
-                    onClick={() => {
-                      setSelectedArea(prev => {
-                        const idx = prev.indexOf(areaOpt.value);
-                        const newSelected = [...prev];
-                        if (idx > -1) {
-                          // 1つだけ残る場合は消さない
-                          if (prev.length === 1) return prev;
-                          newSelected.splice(idx, 1);
-                        } else {
-                          newSelected.push(areaOpt.value);
-                        }
-                        return newSelected;
-                      });
-                    }}
-                  >
-                    {areaOpt.label}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
         <div className={styles.eventContentWrapper}>
-          {areaOptions.map(areaOpt => {
-            // location_nameが指定されている場合はそのロケーションtypeのみ表示
-            if (selectedLocationType && areaOpt.value !== selectedLocationType) return null;
-            if (!selectedArea.includes(areaOpt.value)) return null;
-            const events = timetable.filter(ev => {
-              return ev.locationType === areaOpt.value && ev.startDate.startsWith(`2025-09-${selectedDate}`);
-            });
-            return (
-              <div key={areaOpt.value} className={styles.detail_wrapper}>
-                <div className={styles.eventLocationContainer_detail}>
-                  <div className={styles.bar}></div>
-                  <div className={styles.label}>
-                    <Link href="">
-                      <div className={styles.label_inner}>{areaOpt.value}</div>
-                    </Link>
-                  </div>
-                  <div className={styles.box}></div>
-                  <div className={styles.background}></div>
-                  <div className={styles.timeText}>8:30</div>
-                  <div className={styles.timeText}>9:00</div>
-                  <div className={styles.timeText}>10:00</div>
-                  <div className={styles.timeText}>11:00</div>
-                  <div className={styles.timeText}>12:00</div>
-                  <div className={styles.timeText}>13:00</div>
-                  <div className={styles.timeText}>14:00</div>
-                  <div className={styles.timeText}>15:00</div>
-                  <div className={styles.timeText}>15:30</div>
-                  {[...Array(17)].map((_, i) => (
-                    <div key={i} className={styles.timeBar}></div>
-                  ))}
-                  {events.map(event => (
-                    <AdminTimeTableContentDetail
-                      key={event.id}
-                      eventData={{
-                        ...event,
-                        locationType: event.locationType,
-                        startDate: event.startDate ? event.startDate.replace(' ', 'T') : null,
-                        endDate: event.endDate ? event.endDate.replace(' ', 'T') : null
-                      }}
-                      nowEvents={nowEvents}
-                      locationType={areaOpt.value}
-                      onRegister={handleRegister}
-                      loading={loading}
-                    />
-                  ))}
-                </div>
-                {message && <div className={styles.message}>{message}</div>}
+          <div key={areaOpt.value} className={styles.detail_wrapper}>
+            <div className={styles.eventLocationContainer_detail}>
+              <div className={styles.bar}></div>
+              <div className={styles.label}>
+                <Link href="">
+                  <div className={styles.label_inner}>{areaOpt.value}</div>
+                </Link>
               </div>
-            );
-          })}
+              <div className={styles.box}></div>
+              <div className={styles.background}></div>
+              <div className={styles.timeText}>8:30</div>
+              <div className={styles.timeText}>9:00</div>
+              <div className={styles.timeText}>10:00</div>
+              <div className={styles.timeText}>11:00</div>
+              <div className={styles.timeText}>12:00</div>
+              <div className={styles.timeText}>13:00</div>
+              <div className={styles.timeText}>14:00</div>
+              <div className={styles.timeText}>15:00</div>
+              <div className={styles.timeText}>15:30</div>
+              {[...Array(17)].map((_, i) => (
+                <div key={i} className={styles.timeBar}></div>
+              ))}
+              {events.map(event => (
+                <AdminTimeTableContentDetail
+                  key={event.id}
+                  eventData={{
+                    ...event,
+                    locationType: event.locationType,
+                    startDate: event.startDate ? event.startDate.replace(' ', 'T') : null,
+                    endDate: event.endDate ? event.endDate.replace(' ', 'T') : null
+                  }}
+                  nowEvents={nowEvents}
+                  locationType={areaOpt.value}
+                  onRegister={handleRegister}
+                  loading={loading}
+                />
+              ))}
+            </div>
+            {message && <div className={styles.message}>{message}</div>}
+          </div>
         </div>
       </div>
     </div>
