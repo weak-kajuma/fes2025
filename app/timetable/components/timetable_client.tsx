@@ -97,22 +97,22 @@ export default function Timetable_Client() {
       try {
         // --- 切り替え用 ---
         // ▼ローカルJSONからフェッチする場合はこちらを有効化
-        const timetableData = await fetchLocalJson<EventData[]>("/data/timetable.json");
-        const newData: Record<string, EventsByLocation[]> = {};
-        dateOptions.forEach(dateOpt => {
-          const dateStr = `2025-09-${dateOpt.value}`;
-          const filtered = timetableData.filter(ev => ev.startDate?.startsWith(dateStr));
-          newData[dateOpt.value] = areaOptions.map(opt => {
-            const events = filtered.filter(ev => ev.locationType === opt.value);
-            return { locationType: opt.value, events };
-          });
-        });
+        // const timetableData = await fetchLocalJson<EventData[]>("/data/timetable.json");
+        // const newData: Record<string, EventsByLocation[]> = {};
+        // dateOptions.forEach(dateOpt => {
+        //   const dateStr = `2025-09-${dateOpt.value}`;
+        //   const filtered = timetableData.filter(ev => ev.startDate?.startsWith(dateStr));
+        //   newData[dateOpt.value] = areaOptions.map(opt => {
+        //     const events = filtered.filter(ev => ev.locationType === opt.value);
+        //     return { locationType: opt.value, events };
+        //   });
+        // });
 
         // ▼一時公開用（空データ即返却）
-        // const newData: { [date: string]: EventsByLocation[] } = {};
-        // dateOptions.forEach(dateOpt => {
-        //   newData[dateOpt.value] = areaOptions.map(opt => ({ locationType: opt.value, events: [] }));
-        // });
+        const newData: { [date: string]: EventsByLocation[] } = {};
+        dateOptions.forEach(dateOpt => {
+          newData[dateOpt.value] = areaOptions.map(opt => ({ locationType: opt.value, events: [] }));
+        });
 
         if (mounted) {
           setAllEventsData(prev => JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData);
@@ -618,10 +618,10 @@ export default function Timetable_Client() {
                         {(() => {
                           // --- 切り替え用 ---
                           // ▼ローカルJSONからフェッチする場合はこちらを有効化
-                          const timetable: EventData[] = require("@/public/data/timetable.json");
+                          // const timetable: EventData[] = require("@/public/data/timetable.json");
 
                           // ▼一時公開用（空データ即返却）
-                          // const timetable: any[] = [];
+                          const timetable: any[] = [];
 
                           const nowEvent = nowEvents.find(ev => (ev.locationType ?? '').toLowerCase().trim() === (locationType ?? '').toLowerCase().trim());
                           if (!nowEvent) return <span>なし</span>;
