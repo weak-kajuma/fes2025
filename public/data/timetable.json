@@ -7,8 +7,7 @@
     "description": "説明1",
     "startDate": "2025-09-20 08:50:00",
     "endDate": "2025-09-20 10:30:00",
-    "locationType": "体育館",
-    "imageUrl": "url1"
+    "locationType": "体育館"
   },
   {
     "idx": 1,
@@ -17,9 +16,16 @@
     "subtitle": "サブタイトル",
     "description": "説明2",
     "startDate": "2025-09-20 10:50:00",
-    "endDate": "2025-09-20 11:30:00",
+    "endDate": "2025-09-20 11:44:00",
     "locationType": "体育館",
-    "imageUrl": "url2"
+    "groups": [
+      {"name": "SANDY", "startDate": "2025-09-20 10:50:00", "endDate": "2025-09-20 11:02:00"},
+      {"name": "Charlie", "startDate": "2025-09-20 11:02:00", "endDate": "2025-09-20 11:12:00"},
+      {"name": "Fluvia", "startDate": "2025-09-20 11:12:00", "endDate": "2025-09-20 11:16:00"},
+      {"name": "grazioso", "startDate": "2025-09-20 11:16:00", "endDate": "2025-09-20 11:28:00"},
+      {"name": "Always by You", "startDate": "2025-09-20 11:28:00", "endDate": "2025-09-20 11:32:30"},
+      {"name": "Tosca", "startDate": "2025-09-20 11:35:00", "endDate": "2025-09-20 11:44:00"}
+    ]
   },
   {
     "idx": 2,
@@ -29,19 +35,30 @@
     "description": "説明3",
     "startDate": "2025-09-20 12:10:00",
     "endDate": "2025-09-20 13:10:00",
-    "locationType": "体育館",
-    "imageUrl": "url3"
+    "locationType": "体育館"
   },
   {
     "idx": 3,
     "id": 4,
-    "title": "吹奏楽部",
+    "title": "吹奏楽部\n二人のプリンセスと音の魔法",
     "subtitle": "二人のプリンセスと音の魔法",
     "description": "説明4",
     "startDate": "2025-09-20 13:40:00",
     "endDate": "2025-09-20 14:30:00",
-    "locationType": "体育館",
-    "imageUrl": "url4"
+    "locationType": "体育館"
+  },
+  {
+    "idx": 35,
+    "id": 36,
+    "title": "ミュージックコンサート",
+    "subtitle": "サブタイトル",
+    "description": "説明36",
+    "startDate": "2025-09-20 10:00:00",
+    "endDate": "2025-09-20 10:13:00",
+    "locationType": "中庭",
+    "groups": [
+      {"name": "ホルン王女と愉快な仲間たち", "startDate": "2025-09-20 10:00:00", "endDate": "2025-09-20 10:13:00"}
+    ]
   },
   {
     "idx": 4,
@@ -49,10 +66,13 @@
     "title": "ミュージックコンサート",
     "subtitle": "サブタイトル",
     "description": "説明5",
-    "startDate": "2025-09-20 10:30:00",
-    "endDate": "2025-09-20 11:25:00",
+    "startDate": "2025-09-20 10:45:00",
+    "endDate": "2025-09-20 11:15:00",
     "locationType": "中庭",
-    "imageUrl": "url5"
+    "groups": [
+      {"name": "バイナリー", "startDate": "2025-09-20 10:45:00", "endDate": "2025-09-20 11:00:00"},
+      {"name": "アルテミック・レディ", "startDate": "2025-09-20 11:00:00", "endDate": "2025-09-20 11:15:00"}
+    ]
   },
   {
     "idx": 5,
@@ -62,8 +82,7 @@
     "description": "説明6",
     "startDate": "2025-09-20 13:10:00",
     "endDate": "2025-09-20 13:40:00",
-    "locationType": "中庭",
-    "imageUrl": "url6"
+    "locationType": "中庭"
   },
   {
     "idx": 6,
@@ -72,9 +91,11 @@
     "subtitle": "サブタイトル",
     "description": "説明7",
     "startDate": "2025-09-20 14:00:00",
-    "endDate": "2025-09-20 14:30:00",
+    "endDate": "2025-09-20 14:15:30",
     "locationType": "中庭",
-    "imageUrl": "url7"
+    "groups": [
+      {"name": "EcstAsy", "startDate": "2025-09-20 14:00:00", "endDate": "2025-09-20 14:15:30"}
+    ]
   },
   {
     "idx": 7,
@@ -83,20 +104,42 @@
     "subtitle": "サブタイトル",
     "description": "説明8",
     "startDate": "2025-09-20 09:10:00",
-    "endDate": "2025-09-20 11:20:00",
+    "endDate": "2025-09-20 11:29:30",
     "locationType": "コナコピアホール",
-    "imageUrl": "url8"
+    "groups": [
+      { "name": "Re:ばうんでぃ", "startDate": "2025-09-20 09:10:00", "endDate": "2025-09-20 09:25:00" },
+      { "name": "Rinn5", "startDate": "2025-09-20 09:25:00", "endDate": "2025-09-20 09:38:00" },
+      { "name": "空音", "startDate": "2025-09-20 09:38:00", "endDate": "2025-09-20 09:53:00" },
+      { "name": "げば", "startDate": "2025-09-20 09:53:00", "endDate": "2025-09-20 10:06:00" },
+      { "name": "T-Recs", "startDate": "2025-09-20 10:06:00", "endDate": "2025-09-20 10:18:30" },
+      { "name": "Treasure plum", "startDate": "2025-09-20 10:18:30", "endDate": "2025-09-20 10:32:00" },
+      { "name": "UMHOA(ユーモア)", "startDate": "2025-09-20 10:32:00", "endDate": "2025-09-20 10:45:30" },
+      { "name": "ミックスベリー", "startDate": "2025-09-20 10:45:30", "endDate": "2025-09-20 11:00:30" },
+      { "name": "&ever", "startDate": "2025-09-20 11:00:30", "endDate": "2025-09-20 11:16:00" },
+      { "name": "オドリドリ", "startDate": "2025-09-20 11:16:00", "endDate": "2025-09-20 11:29:30" }
+    ]
   },
   {
     "idx": 8,
     "id": 9,
-    "title": "高槻大作戦\nCブロック",
+    "title": "高槻大作戦\nゴールデンブロック",
     "subtitle": "サブタイトル",
     "description": "説明9",
-    "startDate": "2025-09-20 11:30:00",
-    "endDate": "2025-09-20 12:10:00",
+    "startDate": "2025-09-20 11:32:30",
+    "endDate": "2025-09-20 12:04:30",
     "locationType": "コナコピアホール",
-    "imageUrl": "url9"
+    "groups": [
+      {
+        "name": "しゅーどにむ",
+        "startDate": "2025-09-20 11:32:30",
+        "endDate": "2025-09-20 11:47:30"
+      },
+      {
+        "name": "クロチャンズ",
+        "startDate": "2025-09-20 11:50:30",
+        "endDate": "2025-09-20 12:04:30"
+      }
+    ]
   },
   {
     "idx": 9,
@@ -104,10 +147,22 @@
     "title": "高槻大作戦\n～バンド編～\n午後の部",
     "subtitle": "サブタイトル",
     "description": "説明10",
-    "startDate": "2025-09-20 12:30:00",
-    "endDate": "2025-09-20 14:30:00",
+    "startDate": "2025-09-20 12:05:30",
+    "endDate": "2025-09-20 14:40:30",
     "locationType": "コナコピアホール",
-    "imageUrl": "url10"
+    "groups": [
+      { "name": "コーネリアス", "startDate": "2025-09-20 12:05:30", "endDate": "2025-09-20 12:20:30" },
+      { "name": "セツナシュギ", "startDate": "2025-09-20 12:20:30", "endDate": "2025-09-20 12:35:30" },
+      { "name": "ちょっくらバンド", "startDate": "2025-09-20 12:35:30", "endDate": "2025-09-20 12:45:30" },
+      { "name": "なまものがかり", "startDate": "2025-09-20 12:45:30", "endDate": "2025-09-20 13:00:30" },
+      { "name": "ばんどぉ", "startDate": "2025-09-20 13:00:30", "endDate": "2025-09-20 13:14:00" },
+      { "name": "ひげひげ音楽隊", "startDate": "2025-09-20 13:14:00", "endDate": "2025-09-20 13:29:00" },
+      { "name": "School Days", "startDate": "2025-09-20 13:29:00", "endDate": "2025-09-20 13:44:00" },
+      { "name": "サカナリズム", "startDate": "2025-09-20 13:44:00", "endDate": "2025-09-20 13:57:30" },
+      { "name": "ふしぎなアメ", "startDate": "2025-09-20 13:58:00", "endDate": "2025-09-20 14:13:00" },
+      { "name": "深海魚", "startDate": "2025-09-20 14:13:00", "endDate": "2025-09-20 14:28:00" },
+      { "name": "モルダウの流れ", "startDate": "2025-09-20 14:28:00", "endDate": "2025-09-20 14:40:30" }
+    ]
   },
   {
     "idx": 10,
@@ -117,8 +172,7 @@
     "description": "説明11",
     "startDate": "2025-09-20 08:40:00",
     "endDate": "2025-09-20 09:05:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url11"
+    "locationType": "グラウンドステージ"
   },
   {
     "idx": 11,
@@ -126,20 +180,19 @@
     "title": "T-POP Aブロック",
     "subtitle": "サブタイトル",
     "description": "説明12",
-    "startDate": "2025-09-20 09:10:00",
-    "endDate": "2025-09-20 09:55:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url12",
+    "startDate": "2025-09-20 09:14:00",
+    "endDate": "2025-09-20 09:53:00",
+    "locationType": "グラウンドステージ",
     "groups": [
-      "ONCE",
-      "167°",
-      "サイまんじゅう",
-      "Cheer Bears",
-      "つきプリ",
-      "SUNNYS_2",
-      "FEARNOT",
-      "BAKUSOU!",
-      "BLACKNOVA"
+      {"name": "DANDY STREET", "startDate":"2025-09-20 09:14:00", "endDate":"2025-09-20 09:18:00"},
+      {"name": "167°", "startDate":"2025-09-20 09:19:00", "endDate":"2025-09-20 09:23:30"},
+      {"name": "サイまんじゅう", "startDate":"2025-09-20 09:24:00", "endDate":"2025-09-20 09:26:30"},
+      {"name": "Cheer Bears", "startDate":"2025-09-20 09:27:30", "endDate":"2025-09-20 09:31:00"},
+      {"name": "つきプリ", "startDate":"2025-09-20 09:31:30", "endDate":"2025-09-20 09:36:00"},
+      {"name": "SUNNYS", "startDate":"2025-09-20 09:36:30", "endDate":"2025-09-20 09:40:30"},
+      {"name": "FEARNOT", "startDate":"2025-09-20 09:41:00", "endDate":"2025-09-20 09:44:30"},
+      {"name": "BAKUSOU!", "startDate":"2025-09-20 09:45:00", "endDate":"2025-09-20 09:49:30"},
+      {"name": "BLACKNOVA", "startDate":"2025-09-20 09:50:00", "endDate":"2025-09-20 09:53:00"}
     ]
   },
   {
@@ -149,16 +202,15 @@
     "subtitle": "サブタイトル",
     "description": "説明13",
     "startDate": "2025-09-20 10:00:00",
-    "endDate": "2025-09-20 10:30:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url13",
+    "endDate": "2025-09-20 10:24:00",
+    "locationType": "グラウンドステージ",
     "groups": [
-      "サウスポー",
-      "ちょもらんま",
-      "我らカイワレ",
-      "禁錮ちゃん",
-      "爆裂どうふ",
-      "りな"
+      {"name": "サウスポー", "startDate": "2025-09-20 10:00:00", "endDate": "2025-09-20 10:04:00"},
+      {"name": "ちょもらんま", "startDate": "2025-09-20 10:04:00", "endDate": "2025-09-20 10:08:00"},
+      {"name": "我らカイワレ", "startDate": "2025-09-20 10:08:00", "endDate": "2025-09-20 10:12:00"},
+      {"name": "禁錮ちゃん", "startDate": "2025-09-20 10:12:00", "endDate": "2025-09-20 10:16:00"},
+      {"name": "爆裂どうふ", "startDate": "2025-09-20 10:16:00", "endDate": "2025-09-20 10:20:00"},
+      {"name": "りな", "startDate": "2025-09-20 10:20:00", "endDate": "2025-09-20 10:24:00"}
     ]
   },
   {
@@ -167,10 +219,22 @@
     "title": "T-POP Bブロック",
     "subtitle": "サブタイトル",
     "description": "説明14",
-    "startDate": "2025-09-20 10:30:00",
-    "endDate": "2025-09-20 11:20:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url14"
+    "startDate": "2025-09-20 10:35:00",
+    "endDate": "2025-09-20 11:24:00",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "Lucky GirlS", "startDate": "2025-09-20 10:35:00", "endDate": "2025-09-20 10:39:00"},
+      {"name": "Bubble Monster", "startDate": "2025-09-20 10:39:30", "endDate": "2025-09-20 10:42:00"},
+      {"name": "MeLLow", "startDate": "2025-09-20 10:42:30", "endDate": "2025-09-20 10:47:00"},
+      {"name": "Ciely", "startDate": "2025-09-20 10:47:30", "endDate": "2025-09-20 10:51:30"},
+      {"name": "ぷろちょる", "startDate": "2025-09-20 10:52:00", "endDate": "2025-09-20 10:56:00"},
+      {"name": "Attiy*", "startDate": "2025-09-20 10:57:00", "endDate": "2025-09-20 11:00:30"},
+      {"name": "KONMAT", "startDate": "2025-09-20 11:01:00", "endDate": "2025-09-20 11:05:00"},
+      {"name": "Velce", "startDate": "2025-09-20 11:05:30", "endDate": "2025-09-20 11:09:30"},
+      {"name": "Merony", "startDate": "2025-09-20 11:10:30", "endDate": "2025-09-20 11:14:30"},
+      {"name": "08JUMP!", "startDate": "2025-09-20 11:15:00", "endDate": "2025-09-20 11:19:30"},
+      {"name": "スケバン戦隊", "startDate": "2025-09-20 11:20:00", "endDate": "2025-09-20 11:24:00"}
+    ]
   },
   {
     "idx": 14,
@@ -179,9 +243,30 @@
     "subtitle": "サブタイトル",
     "description": "説明15",
     "startDate": "2025-09-20 12:10:00",
-    "endDate": "2025-09-20 12:30:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url15"
+    "endDate": "2025-09-20 12:29:00",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {
+        "name": "Cheery Lush",
+        "startDate": "2025-09-20 12:10:00",
+        "endDate": "2025-09-20 12:14:30"
+      },
+      {
+        "name": "SCRAM_2",
+        "startDate": "2025-09-20 12:15:00",
+        "endDate": "2025-09-20 12:19:00"
+      },
+      {
+        "name": "Wonder_2",
+        "startDate": "2025-09-20 12:19:30",
+        "endDate": "2025-09-20 12:24:00"
+      },
+      {
+        "name": "JUNEL",
+        "startDate": "2025-09-20 12:24:30",
+        "endDate": "2025-09-20 12:29:00"
+      }
+    ]
   },
   {
     "idx": 15,
@@ -191,8 +276,19 @@
     "description": "説明16",
     "startDate": "2025-09-20 12:30:00",
     "endDate": "2025-09-20 13:15:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url16"
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "FIVE", "startDate":"2025-09-20 12:30:00", "endDate":"2025-09-20 12:34:00"},
+      {"name": "Last class", "startDate":"2025-09-20 12:34:30", "endDate":"2025-09-20 12:38:00"},
+      {"name": "BLOOM", "startDate":"2025-09-20 12:38:30", "endDate":"2025-09-20 12:42:30"},
+      {"name": "Gummiiiiies", "startDate":"2025-09-20 12:43:00", "endDate":"2025-09-20 12:47:30"},
+      {"name": "peeech", "startDate":"2025-09-20 12:47:30", "endDate":"2025-09-20 12:52:00"},
+      {"name": "修行boy", "startDate":"2025-09-20 12:52:30", "endDate":"2025-09-20 12:56:30"},
+      {"name": "HEARTies", "startDate":"2025-09-20 12:57:30", "endDate":"2025-09-20 13:01:30"},
+      {"name": "MUSE", "startDate":"2025-09-20 13:02:00", "endDate":"2025-09-20 13:06:00"},
+      {"name": "MVA", "startDate":"2025-09-20 13:06:30", "endDate":"2025-09-20 13:10:30"},
+      {"name": "Neimy", "startDate":"2025-09-20 13:11:00", "endDate":"2025-09-20 13:15:00"}
+    ]
   },
   {
     "idx": 16,
@@ -201,9 +297,15 @@
     "subtitle": "サブタイトル",
     "description": "説明17",
     "startDate": "2025-09-20 13:20:00",
-    "endDate": "2025-09-20 13:50:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url17"
+    "endDate": "2025-09-20 13:44:00",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "モアイ", "startDate": "2025-09-20 13:20:00", "endDate": "2025-09-20 13:24:00"},
+      {"name": "ヨカヨカ財務省", "startDate": "2025-09-20 13:25:00", "endDate": "2025-09-20 13:29:00"},
+      {"name": "れいちゃま", "startDate": "2025-09-20 13:30:00", "endDate": "2025-09-20 13:34:00"},
+      {"name": "Санкт-Петербург", "startDate": "2025-09-20 13:35:00", "endDate": "2025-09-20 13:39:00"},
+      {"name": "クマゼミ", "startDate": "2025-09-20 13:40:00", "endDate": "2025-09-20 13:44:00"}
+    ]
   },
   {
     "idx": 17,
@@ -213,8 +315,14 @@
     "description": "説明18",
     "startDate": "2025-09-20 13:55:00",
     "endDate": "2025-09-20 14:30:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url18"
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "NOVAIR", "startDate": "2025-09-20 13:55:00", "endDate": "2025-09-20 13:59:30"},
+      {"name": "Memory", "startDate": "2025-09-20 14:00:00", "endDate": "2025-09-20 14:04:30"},
+      {"name": "SAI", "startDate": "2025-09-20 14:05:30", "endDate": "2025-09-20 14:09:00"},
+      {"name": "Vista_2", "startDate": "2025-09-20 14:20:30", "endDate": "2025-09-20 14:25:00"},
+      {"name": "tLiFE!_2", "startDate": "2025-09-20 14:25:30", "endDate": "2025-09-20 14:30:00"}
+    ]
   },
   {
     "idx": 18,
@@ -224,8 +332,7 @@
     "description": "説明19",
     "startDate": "2025-09-20 14:45:00",
     "endDate": "2025-09-20 15:00:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url19"
+    "locationType": "グラウンドステージ"
   },
   {
     "idx": 19,
@@ -235,8 +342,7 @@
     "description": "説明20",
     "startDate": "2025-09-21 08:50:00",
     "endDate": "2025-09-21 10:30:00",
-    "locationType": "体育館",
-    "imageUrl": "url20"
+    "locationType": "体育館"
   },
   {
     "idx": 20,
@@ -246,8 +352,7 @@
     "description": "説明21",
     "startDate": "2025-09-21 11:20:00",
     "endDate": "2025-09-21 12:20:00",
-    "locationType": "体育館",
-    "imageUrl": "url21"
+    "locationType": "体育館"
   },
   {
     "idx": 21,
@@ -257,8 +362,7 @@
     "description": "説明22",
     "startDate": "2025-09-21 12:50:00",
     "endDate": "2025-09-21 14:20:00",
-    "locationType": "体育館",
-    "imageUrl": "url22"
+    "locationType": "体育館"
   },
   {
     "idx": 22,
@@ -268,8 +372,7 @@
     "description": "説明23",
     "startDate": "2025-09-21 10:20:00",
     "endDate": "2025-09-21 11:20:00",
-    "locationType": "中庭",
-    "imageUrl": "url23"
+    "locationType": "中庭"
   },
   {
     "idx": 23,
@@ -279,8 +382,7 @@
     "description": "説明24",
     "startDate": "2025-09-21 12:20:00",
     "endDate": "2025-09-21 12:50:00",
-    "locationType": "中庭",
-    "imageUrl": "url24"
+    "locationType": "中庭"
   },
   {
     "idx": 24,
@@ -289,9 +391,19 @@
     "subtitle": "サブタイトル",
     "description": "説明25",
     "startDate": "2025-09-21 09:10:00",
-    "endDate": "2025-09-21 11:20:00",
+    "endDate": "2025-09-21 11:19:30",
     "locationType": "コナコピアホール",
-    "imageUrl": "url25"
+    "groups": [
+      {"name": "to you", "startDate": "2025-09-21 09:10:00", "endDate": "2025-09-21 09:23:30"},
+      {"name": "ルイ＝Big", "startDate": "2025-09-21 09:23:30", "endDate": "2025-09-21 09:39:00"},
+      {"name": "Bocta tides", "startDate": "2025-09-21 09:39:00", "endDate": "2025-09-21 09:53:00"},
+      {"name": "やればできる", "startDate": "2025-09-21 09:53:00", "endDate": "2025-09-21 10:08:00"},
+      {"name": "みりんこびっち", "startDate": "2025-09-21 10:08:00", "endDate": "2025-09-21 10:23:00"},
+      {"name": "UNBALANCE", "startDate": "2025-09-21 10:23:00", "endDate": "2025-09-21 10:36:30"},
+      {"name": "サヘラントロプス・チャデンシス", "startDate": "2025-09-21 10:36:30", "endDate": "2025-09-21 10:48:00"},
+      {"name": "よだか", "startDate": "2025-09-21 10:49:00", "endDate": "2025-09-21 11:04:00"},
+      {"name": "夏色レモン", "startDate": "2025-09-21 11:04:00", "endDate": "2025-09-21 11:19:30"}
+    ]
   },
   {
     "idx": 25,
@@ -301,8 +413,7 @@
     "description": "説明26",
     "startDate": "2025-09-21 11:30:00",
     "endDate": "2025-09-21 12:10:00",
-    "locationType": "コナコピアホール",
-    "imageUrl": "url26"
+    "locationType": "コナコピアホール"
   },
   {
     "idx": 26,
@@ -310,10 +421,19 @@
     "title": "高槻大作戦\n～バンド編～\n午後の部",
     "subtitle": "サブタイトル",
     "description": "説明27",
-    "startDate": "2025-09-21 12:30:00",
-    "endDate": "2025-09-21 14:30:00",
+    "startDate": "2025-09-21 12:20:00",
+    "endDate": "2025-09-21 14:25:00",
     "locationType": "コナコピアホール",
-    "imageUrl": "url27"
+    "groups": [
+      {"name": "メタルカモノハシ", "startDate": "2025-09-21 12:20:00", "endDate": "2025-09-21 12:33:30"},
+      {"name": "ピチピチデニム", "startDate": "2025-09-21 12:33:30", "endDate": "2025-09-21 12:45:00"},
+      {"name": "ANZ", "startDate": "2025-09-21 12:45:00", "endDate": "2025-09-21 13:00:00"},
+      {"name": "Harry Threaders", "startDate": "2025-09-21 13:00:00", "endDate": "2025-09-21 13:16:30"},
+      {"name": "Pietari", "startDate": "2025-09-21 13:32:00", "endDate": "2025-09-21 13:47:00"},
+      {"name": "Digital Delay", "startDate": "2025-09-21 13:47:00", "endDate": "2025-09-21 14:02:00"},
+      {"name": "連帯無責任", "startDate": "2025-09-21 14:02:00", "endDate": "2025-09-21 14:12:30"},
+      {"name": "lazuli", "startDate": "2025-09-21 14:12:30", "endDate": "2025-09-21 14:25:00"}
+    ]
   },
   {
     "idx": 27,
@@ -323,8 +443,7 @@
     "description": "説明28",
     "startDate": "2025-09-21 08:40:00",
     "endDate": "2025-09-21 09:05:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url28"
+    "locationType": "グラウンドステージ"
   },
   {
     "idx": 28,
@@ -332,10 +451,19 @@
     "title": "T-POP\nFブロック",
     "subtitle": "サブタイトル",
     "description": "説明29",
-    "startDate": "2025-09-21 09:10:00",
-    "endDate": "2025-09-21 09:55:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url29"
+    "startDate": "2025-09-21 09:14:30",
+    "endDate": "2025-09-21 09:51:30",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "Spice up", "startDate": "2025-09-21 09:14:30", "endDate": "2025-09-21 09:19:00"},
+      {"name": "Attiy*_2", "startDate": "2025-09-21 09:19:30", "endDate": "2025-09-21 09:23:00"},
+      {"name": "SUNNYS", "startDate": "2025-09-21 09:24:30", "endDate": "2025-09-21 09:29:00"},
+      {"name": "The  Formaliner", "startDate": "2025-09-21 09:29:30", "endDate": "2025-09-21 09:32:30"},
+      {"name": "SCRAM", "startDate": "2025-09-21 09:33:00", "endDate": "2025-09-21 09:37:00"},
+      {"name": "tLiFE!", "startDate": "2025-09-21 09:38:00", "endDate": "2025-09-21 09:42:30"},
+      {"name": "旧帝ストリート", "startDate": "2025-09-21 09:43:00", "endDate": "2025-09-21 09:47:00"},
+      {"name": "twist girls", "startDate": "2025-09-21 09:47:30", "endDate": "2025-09-21 09:51:30"}
+    ]
   },
   {
     "idx": 29,
@@ -344,9 +472,15 @@
     "subtitle": "サブタイトル",
     "description": "説明30",
     "startDate": "2025-09-21 10:00:00",
-    "endDate": "2025-09-21 10:30:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url30"
+    "endDate": "2025-09-21 10:24:00",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "おにぎりザウルス", "startDate": "2025-09-21 10:00:00", "endDate": "2025-09-21 10:04:00"},
+      {"name": "焼きそばパン", "startDate": "2025-09-21 10:05:00", "endDate": "2025-09-21 10:09:00"},
+      {"name": "野うさぎ", "startDate": "2025-09-21 10:10:00", "endDate": "2025-09-21 10:14:00"},
+      {"name": "あさかつ", "startDate": "2025-09-21 10:15:00", "endDate": "2025-09-21 10:19:00"},
+      {"name": "Ipone", "startDate": "2025-09-21 10:20:00", "endDate": "2025-09-21 10:24:00"}
+    ]
   },
   {
     "idx": 30,
@@ -355,9 +489,19 @@
     "subtitle": "サブタイトル",
     "description": "説明31",
     "startDate": "2025-09-21 10:35:00",
-    "endDate": "2025-09-21 11:20:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url31"
+    "endDate": "2025-09-21 11:14:00",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      { "name": "Lumina", "startDate": "2025-09-21 10:35:00", "endDate": "2025-09-21 10:39:00" },
+      { "name": "Vista", "startDate": "2025-09-21 10:39:30", "endDate": "2025-09-21 10:44:00" },
+      { "name": "Wonder", "startDate": "2025-09-21 10:44:30", "endDate": "2025-09-21 10:49:00" },
+      { "name": "To-LIKE", "startDate": "2025-09-21 10:49:30", "endDate": "2025-09-21 10:53:30" },
+      { "name": "ONCE", "startDate": "2025-09-21 10:54:00", "endDate": "2025-09-21 10:58:00" },
+      { "name": "スケバン戦隊_2", "startDate": "2025-09-21 10:58:30", "endDate": "2025-09-21 11:02:30" },
+      { "name": "Boys be ambitious", "startDate": "2025-09-21 11:03:00", "endDate": "2025-09-21 11:05:30" },
+      { "name": "Nexus", "startDate": "2025-09-21 11:06:00", "endDate": "2025-09-21 11:09:30" },
+      { "name": "九州男児", "startDate": "2025-09-21 11:10:00", "endDate": "2025-09-21 11:14:00" }
+    ]
   },
   {
     "idx": 31,
@@ -365,10 +509,19 @@
     "title": "T-POP\nHブロック",
     "subtitle": "サブタイトル",
     "description": "説明32",
-    "startDate": "2025-09-21 12:10:00",
-    "endDate": "2025-09-21 13:00:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url32"
+    "startDate": "2025-09-21 12:12:00",
+    "endDate": "2025-09-21 12:49:30",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "放課後補習クラブ", "startDate": "2025-09-21 12:12:00", "endDate": "2025-09-21 12:16:00"},
+      {"name": "九州男児_2", "startDate": "2025-09-21 12:16:30", "endDate": "2025-09-21 12:20:30"},
+      {"name": "ぷろちょる_2", "startDate": "2025-09-21 12:22:00", "endDate": "2025-09-21 12:26:00"},
+      {"name": "BLACKNOVA_2", "startDate": "2025-09-21 12:28:30", "endDate": "2025-09-21 12:32:00"},
+      {"name": "Salvia", "startDate": "2025-09-21 12:32:30", "endDate": "2025-09-21 12:36:00"},
+      {"name": "stayc", "startDate": "2025-09-21 12:37:00", "endDate": "2025-09-21 12:41:30"},
+      {"name": "Last class_2", "startDate": "2025-09-21 12:42:00", "endDate": "2025-09-21 12:45:30"},
+      {"name": "FEARNOT_2", "startDate": "2025-09-21 12:46:00", "endDate": "2025-09-21 12:49:30"}
+    ]
   },
   {
     "idx": 32,
@@ -376,10 +529,15 @@
     "title": "T-POP\nIブロック",
     "subtitle": "サブタイトル",
     "description": "説明33",
-    "startDate": "2025-09-21 13:05:00",
-    "endDate": "2025-09-21 13:50:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url33"
+    "startDate": "2025-09-21 13:15:00",
+    "endDate": "2025-09-21 13:45:00",
+    "locationType": "グラウンドステージ",
+    "groups": [
+      {"name": "つきプリ_2", "startDate": "2025-09-21 13:15:00", "endDate": "2025-09-21 13:19:30"},
+      {"name": "Tiarece", "startDate": "2025-09-21 13:21:30", "endDate": "2025-09-21 13:26:00"},
+      {"name": "JUNEL_2", "startDate": "2025-09-21 13:31:00", "endDate": "2025-09-21 13:35:30"},
+      {"name": "peeech_2", "startDate": "2025-09-21 13:40:30", "endDate": "2025-09-21 13:45:00"}
+    ]
   },
   {
     "idx": 33,
@@ -389,8 +547,7 @@
     "description": "説明34",
     "startDate": "2025-09-21 14:00:00",
     "endDate": "2025-09-21 14:30:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url34"
+    "locationType": "グラウンドステージ"
   },
   {
     "idx": 34,
@@ -400,7 +557,6 @@
     "description": "説明35",
     "startDate": "2025-09-21 14:40:00",
     "endDate": "2025-09-21 15:00:00",
-    "locationType": "野外ステージ",
-    "imageUrl": "url35"
+    "locationType": "グラウンドステージ"
   }
 ]

@@ -5,7 +5,6 @@ import gsap from "gsap";
 import styles from "./TabBar.module.css";
 import Link from "next/link";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
-import DetailOverlay from "../../app/search/components/DetailOverlay";
 import Image from "next/image";
 
 import { useRouter } from "next/navigation";
@@ -331,7 +330,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
     { label: "Home", to: "/" },
     { label: "Time table", to: "/timetable" },
     { label: "Map", to: "/map" },
-    { label: "Search", to: "/search" },
+    { label: "Events", to: "/events" },
     { label: "Reserve", to: "/reserve" },
     { label: "News", to: "/news" },
   ];
@@ -386,7 +385,6 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
 
   return (
     <div className={styles.wrapper} ref={combinedRef} data-tabbar-wrapper>
-      {!isExpanded ? (
         <div className={styles.content} ref={contentRef}>
           <div className={styles.logo_wrapper}>
             <Link href="/" className={styles.logo_link}>
@@ -440,14 +438,6 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
             </svg>
           </div>
         </div>
-      ) : (
-        selectedEvent && (
-          <DetailOverlay
-            event={selectedEvent}
-            onClose={closeExpanded}
-          />
-        )
-      )}
     </div>
   );
 });

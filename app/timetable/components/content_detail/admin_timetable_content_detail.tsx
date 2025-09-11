@@ -1,30 +1,27 @@
 "use client";
 
 import styles from "./admin_timetable_content_detail.module.css";
-import { useState } from "react";
 
-interface EventData {
-  id: string | number;
+type EventData = {
+  idx: number;
+  id: number;
   title: string | null;
   subtitle: string | null;
   description: string | null;
-  startDate: Date | null;
-  endDate: Date | null;
-  location: string | null;
-  imageUrl: string | null;
-  groups?: string[];
-  displayTimeStartTime?: string;
-  displayTimeEndTime?: string;
+  startDate: string | null;
+  endDate: string | null;
+  locationType: string | null;
+  groups?: { name: string, startDate: string, endDate: string }[];
 }
 
-interface NowEvent {
+type NowEvent = {
   locationtype: string;
   eventid: number;
   groupindex?: number;
   updatedAt?: string;
 }
 
-interface AdminTimeTableContentDetailProps {
+type AdminTimeTableContentDetailProps = {
   eventData: EventData;
   nowEvents: NowEvent[];
   locationType: string;
@@ -40,7 +37,7 @@ export default function AdminTimeTableContentDetail({ eventData, nowEvents, loca
     if (typeof date === "string") {
       d = new Date(date.replace(" ", "T"));
     } else {
-      d = date as Date;
+      d = date;
     }
     const h = d.getHours();
     const m = d.getMinutes();
@@ -61,12 +58,13 @@ export default function AdminTimeTableContentDetail({ eventData, nowEvents, loca
       <div className={styles.wrapper} style={{ gridRowStart, gridRowEnd, gridColumnStart: 3 }}>
         <p className={styles.time_group}>
           {eventData.startDate && eventData.endDate
-            ? `${eventData.startDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${eventData.endDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+            ? `${eventData.startDate.slice(11, 16)} - ${eventData.endDate.slice(11, 16)}`
             : "--:--"}
         </p>
         <p className={styles.title_group}>{eventData.title ?? "タイトルなし"}</p>
         <div className={styles.groupBox_wrapper}>
-          {groups.map((name: string, idx: number) => {
+          {groups.map((groupdata: { name: string, startDate: string, endDate: string }, idx: number) => {
+            const name = groupdata.name;
             const isNow = nowEvents.some(
               (ne) => {
                 const match = (
@@ -79,13 +77,13 @@ export default function AdminTimeTableContentDetail({ eventData, nowEvents, loca
             );
             return (
               <div
-                key={name + '-' + idx}
+                key={`${name}-${String(idx)}`}
                 className={isNow ? `${styles.groupBox} ${styles.nowEvent}` : styles.groupBox}
                 style={{
                   borderBottom: idx !== groups.length - 1 ? '1px solid #aaa' : 'none',
                   ...(isNow && { backgroundColor: 'var(--text)', color: 'black'})
                 }}
-                onClick={() => onRegister(locationType, Number(eventData.id), idx)}
+                onClick={() => { onRegister(locationType, Number(eventData.id), idx); }}
               >
                 <span style={{width: '100%'}}>{name}</span>
               </div>
@@ -108,10 +106,10 @@ export default function AdminTimeTableContentDetail({ eventData, nowEvents, loca
     <div
       className={isNow ? `${styles.wrapper} ${styles.nowEvent}` : styles.wrapper}
       style={{ gridRowStart, gridRowEnd, gridColumnStart: 3 }}
-      onClick={() => onRegister(locationType, Number(eventData.id))}
+      onClick={() => { onRegister(locationType, Number(eventData.id)); }}
     >
       <p className={styles.time}>{eventData.startDate && eventData.endDate
-        ? `${eventData.startDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${eventData.endDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+        ? `${eventData.startDate.slice(11, 16)} - ${eventData.endDate.slice(11, 16)}`
         : "--:--"}
       </p>
       <p className={styles.title}>{eventData.title ?? "タイトルなし"}</p>

@@ -156,7 +156,7 @@ export default function NewsPage() {
             <li key={item.id} className={styles.list_item}>
               <AnimatedLink to={`/news/${item.id}`} className={styles.link}>
                 <figure className={styles.render_img}>
-                  <Image className={styles.img} width={100} height={100} src={item.imgUrl || "/news_test.png"} alt={item.title} />
+                  <Image className={styles.img} width={1000} height={1000} src={item.imgUrl || "/news_test.png"} alt={item.title} />
                 </figure>
                 <div className={styles.type}>{item.type}</div>
                 <p className={styles.list_title}>{item.title}</p>

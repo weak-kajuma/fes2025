@@ -285,12 +285,12 @@ export default function Reserve7DaysBeforeWithlistPage() {
             <div className={styles.top_info}>当選は1回の抽選で1つです。<br/>
             第1希望が落選の場合に第2希望、第2希望が落選の場合に第3希望と順番に抽選を行います。</div>
             <div className={styles.top_info}>対象のイベントは、以下の登録操作の中で検索して調べることができます。</div>
-            <div className={styles.term}>
+            {/* <div className={styles.term}>
               <div className={styles.title}>申込期間：</div>
               <div className={styles.values}><span>　2025年7月10日(木) 0:00</span><span>　-　</span><span>2025年8月2日(土) 23:59</span></div>
               <div className={styles.title}>抽選期間：</div>
               <div className={styles.values}><span>　2025年8月3日(日) 0:00</span><span>　-　</span><span>2025年8月6日(水) 11:59</span></div>
-            </div>
+            </div> */}
           </div>
 
           <div className={styles.middle}>
@@ -300,7 +300,7 @@ export default function Reserve7DaysBeforeWithlistPage() {
             ボタンを押してください。</span>
             <span className={styles.middle_info_normal}>以下の希望リストを登録・変更・削除しただけでは抽選申込は完了しません。<br/>
             必ず「この内容で抽選を申し込む」を押してください。</span>
-            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)<br/>
+            <div className={styles.entrance_date}>来場日時：2025年9月20日(土) 21日(日)<br/>
             追加で申込可能な時間帯</div>
           </div>
 

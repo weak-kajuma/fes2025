@@ -17,20 +17,20 @@ type EventDataForClient = {
 export default function EventCard({ event, onClick }: { event: EventDataForClient, onClick?: (event: EventDataForClient) => void }) {
   const tabBarContext = useContext(TabBarContext);
 
-  const handleClick = () => {
-    // TabBarのアニメーションをトリガー（イベントデータを渡す）
-    if (tabBarContext?.triggerAnimation) {
-      tabBarContext.triggerAnimation(event);
-    }
+  // const handleClick = () => {
+  //   // TabBarのアニメーションをトリガー（イベントデータを渡す）
+  //   if (tabBarContext?.triggerAnimation) {
+  //     tabBarContext.triggerAnimation(event);
+  //   }
 
-    // 元のonClick関数を実行
-    if (onClick) {
-      onClick(event);
-    }
-  };
+  //   // 元のonClick関数を実行
+  //   if (onClick) {
+  //     onClick(event);
+  //   }
+  // };
 
   return (
-    <div className={styles.event_card} onClick={handleClick}>
+    <div className={styles.event_card}>
 
       <div className={styles.img}></div>
 

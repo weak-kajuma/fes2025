@@ -102,7 +102,7 @@ export default function ReserveResultPage() {
           <div className={baseStyles.middle}>
             <span className={baseStyles.middle_info_bold}>抽選申込内容の確認</span>
             <span className={baseStyles.middle_info_normal}>以下は現在登録されている希望リストです。変更がある場合は「申込内容を変更する」から修正してください。</span>
-            <div className={baseStyles.entrance_date}>来場日時：2025年8月10日(日)<br/>申込済みの時間帯一覧</div>
+            <div className={baseStyles.entrance_date}>来場日時：2025年9月20日(土) 21日(日)<br/>申込済みの時間帯一覧</div>
             <div className={baseStyles.entrance_date}>申込者名：{userName || '未設定'}</div>
           </div>
 

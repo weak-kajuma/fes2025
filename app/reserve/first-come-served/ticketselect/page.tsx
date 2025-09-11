@@ -126,8 +126,7 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
               </li>
               <li>
                 {hasSelectedTickets ? (
-                  // <Link href="/reserve/first-come-served/eventSelect">
-                  <Link href="/reserve/first-come-served/eventSelectClub">
+                  <Link href="/reserve/first-come-served/eventSelect">
                     <div className={styles.ticket_link}>
                       選択したチケットで申し込む
                     </div>
@@ -226,8 +225,7 @@ export default function Reserve7DaysBeforeTicketSelectPage() {
               </li>
               <li>
                 {hasSelectedTickets ? (
-                  // <Link href="/reserve/first-come-served/eventSelect">
-                  <Link href="/reserve/first-come-served/eventSelectClub">
+                  <Link href="/reserve/first-come-served/eventSelect">
                     <div className={styles.ticket_link}>
                       選択したチケットで申し込む
                     </div>

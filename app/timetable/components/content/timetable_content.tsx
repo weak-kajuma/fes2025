@@ -2,23 +2,22 @@
 
 import styles from './timetable_content.module.css'
 
-interface EventData {
-  id: string | number; // id の型に合わせて string か number にしてください
-  title: string | null; // null の可能性を許容
-  subtitle: string | null; // 他のフィールドも Prisma の型に合わせる
+type EventData = {
+  idx: number;
+  id: number;
+  title: string | null;
+  subtitle: string | null;
   description: string | null;
-  startDate: Date | null;
-  endDate: Date | null;
-  location: string | null;
-  imageUrl: string | null;
-  displayTimeStartTime?: string; // 追加: サーバーで生成された表示用時刻
-  displayTimeEndTime?: string;   // 追加: サーバーで生成された表示用時刻
+  startDate: string | null;
+  endDate: string | null;
+  locationType: string | null;
+  groups?: { name: string, startDate: string, endDate: string }[];
 }
 
 
 // 日本語→英語変換テーブル（キャメルケース）
 const locationTypeMap: Record<string, string> = {
-  '野外ステージ': 'Stage',
+  'グラウンドステージ': 'Stage',
   '中庭': 'Yard',
   'コナコピアホール': 'Hole',
   '体育館': 'Gym',
@@ -33,7 +32,7 @@ const formatLocationToClassName = (location: string | null): string => {
 
 export default function TimeTableContent ({ eventData }: { eventData: EventData }) {
 
-  const locationClassName = formatLocationToClassName((eventData as any).locationType ?? eventData.location);
+  const locationClassName = formatLocationToClassName(eventData.locationType ?? null);
 
   // Date型からgridRowを計算
     const getGridRow = (timeStr?: string | null) => {
@@ -45,20 +44,8 @@ export default function TimeTableContent ({ eventData }: { eventData: EventData 
       return 2 + (eventMinutes - baseMinutes);
     };
 
-  const gridRowStart = getGridRow(
-    typeof eventData.startDate === "string"
-      ? eventData.startDate
-      : eventData.startDate
-      ? eventData.startDate.toISOString().replace("T", " ").slice(0, 19)
-      : undefined
-  );
-  const gridRowEnd = getGridRow(
-    typeof eventData.endDate === "string"
-      ? eventData.endDate
-      : eventData.endDate
-      ? eventData.endDate.toISOString().replace("T", " ").slice(0, 19)
-      : undefined
-  );
+  const gridRowStart = getGridRow(eventData.startDate ?? undefined);
+  const gridRowEnd = getGridRow(eventData.endDate ?? undefined);
 
   // 表示用時刻（サーバーで生成されていない場合はここで生成）
   const formatTime = (date: Date | string | null | undefined) => {

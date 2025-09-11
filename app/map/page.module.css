@@ -1,3 +1,41 @@
 .mapContainer {
   background-color: white;
 }
+
+
+.floorSelect {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media screen and (max-width: 600px) {
+  .floorSelect {
+    top: 8px;
+    left: 8px;
+    gap: 0.2rem;
+  }
+}
+
+
+.floorButton {
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  color: black;
+  font-size: 2rem;
+  transition: background 0.2s, border 0.2s, font-size 0.2s, padding 0.2s;
+}
+
+@media screen and (max-width: 600px) {
+  .floorButton {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+  }
+}
