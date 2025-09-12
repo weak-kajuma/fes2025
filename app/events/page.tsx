@@ -14,14 +14,17 @@ import { label } from "framer-motion/client";
 
 export default function Search() {
   const [keyword, setKeyword] = useState("");
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  // 選択エリアを配列で管理
-  const [selectedArea, setSelectedArea] = useState<string[]>([]);
+  // 初期値「すべて」選択
+  const [selectedDate, setSelectedDate] = useState<string | null>(null); // すべて
+  const [selectedArea, setSelectedArea] = useState<string[]>([]); // すべて
   const [results, setResults] = useState<EventDataForClient[]>([]);
   const [allEvents, setAllEvents] = useState<EventDataForClient[]>([]);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null); // すべて
   const [isMobile, setIsMobile] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
+
+    // ソート状態管理
+    const [sortType, setSortType] = useState<string>("asc");
 
   // セレクタ用オプション定義
   const dateOptions = [
@@ -63,12 +66,14 @@ export default function Search() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // 初回・セレクター変更時に自動検索
-  // 初回ロード時に全イベント取得
+
+  // 初回ロード時に全イベント取得＆Location「すべて」選択時のフィルタを実行
   useEffect(() => {
     (async () => {
       const data = await getEventsWithFilters(null, [], "");
       setAllEvents(data);
+      // Location「すべて」選択時のフィルタを即実行
+      setResults(data);
     })();
   }, []);
 
@@ -127,8 +132,8 @@ export default function Search() {
             {dateOptions.map(dateOpt => (
               <div
                 key={dateOpt.label}
-                className={`${dateOpt.className} ${styles.nav_item} ${styles.nav_item_back}`}
-                onClick={() => { setSelectedDate(dateOpt.value); }}
+                  className={`${dateOpt.className} ${styles.nav_item} ${styles.nav_item_back}${selectedDate === dateOpt.value ? ' ' + styles.selected : ''}`}
+                  onClick={() => { setSelectedDate(dateOpt.value); }}
               >
                 {dateOpt.label}
               </div>
@@ -141,24 +146,24 @@ export default function Search() {
             {areaOptions.map(areaOpt => (
               <div
                 key={areaOpt.label}
-                className={`${areaOpt.className} ${styles.nav_item} ${styles.nav_item_back}`}
-                onClick={() => {
-                  setSelectedArea(prev => {
-                    // nullの場合は全解除
-                    if (areaOpt.value === null) return [];
-                    const idx = prev.indexOf(areaOpt.value ?? "");
-                    const newSelected = [...prev];
-                    if (idx > -1) {
-                      if (newSelected.length > maxSelectableAreas) {
-                        newSelected.splice(idx, 1);
+                  className={`${areaOpt.className} ${styles.nav_item} ${styles.nav_item_back}${selectedArea.includes(areaOpt.value ?? "") || (areaOpt.value === null && selectedArea.length === 0) ? ' ' + styles.selected : ''}`}
+                  onClick={() => {
+                    setSelectedArea(prev => {
+                      // nullの場合は全解除
+                      if (areaOpt.value === null) return [];
+                      const idx = prev.indexOf(areaOpt.value ?? "");
+                      const newSelected = [...prev];
+                      if (idx > -1) {
+                        if (newSelected.length > maxSelectableAreas) {
+                          newSelected.splice(idx, 1);
+                        }
+                      } else {
+                        if (newSelected.length >= maxSelectableAreas && maxSelectableAreas > 0) newSelected.shift();
+                        if (maxSelectableAreas > 0) newSelected.push(areaOpt.value ?? "");
                       }
-                    } else {
-                      if (newSelected.length >= maxSelectableAreas && maxSelectableAreas > 0) newSelected.shift();
-                      if (maxSelectableAreas > 0) newSelected.push(areaOpt.value ?? "");
-                    }
-                    return newSelected;
-                  });
-                }}
+                      return newSelected;
+                    });
+                  }}
                 // 文字色が薄くならないようにstyle指定を削除
               >
                 {areaOpt.label}
@@ -166,16 +171,15 @@ export default function Search() {
             ))}
           </div>
         </div>
-        {/* タグセレクタ追加 */}
+        {/* タグセレクタも他と同じ構造に統一 */}
         <div className={styles.nav_content}>
           <div className={`${styles.nav_item} ${styles.pre}`}>Tag</div>
-          <div className={styles.nav_item_back_wrapper} style={{ display: 'flex', overflowX: 'auto'}}>
+          <div className={styles.nav_item_back_wrapper}>
             {tagOptions.map(tag => (
               <div
                 key={tag}
-                className={`${styles.nav_item} ${styles.nav_item_back}`}
-                style={{ cursor: "pointer" }}
-                onClick={() => setSelectedTag(tag === "すべて" ? null : tag)}
+                  className={`${styles.nav_item} ${styles.nav_item_back}${(selectedTag === tag || (tag === "すべて" && selectedTag === null)) ? ' ' + styles.selected : ''}`}
+                  onClick={() => setSelectedTag(tag === "すべて" ? null : tag)}
               >
                 {tag}
               </div>
@@ -187,11 +191,11 @@ export default function Search() {
           <div className={`${styles.nav_item} ${styles.pre}`}>Sort</div>
           <div className={styles.nav_item_back_wrapper}>
             <div
-              className={`${styles.nav_item} ${styles.nav_item_back}`}
+              className={`${styles.nav_item} ${styles.nav_item_back}${sortType === 'asc' ? ' ' + styles.selected : ''}`}
               style={{ cursor: "pointer" }}
               onClick={() => {
                 setResults(prev => {
-                  // 日付ソート
+                  // 日付昇順
                   if (selectedDate === "2025-09-20" || selectedDate === "2025-09-21") {
                     return [...prev].sort((a, b) => {
                       const ad = a.date === "" ? selectedDate : a.date;
@@ -204,15 +208,17 @@ export default function Search() {
                     return a.date.localeCompare(b.date);
                   });
                 });
+                setSortType('asc');
               }}
             >
               日付昇順
             </div>
             <div
-              className={`${styles.nav_item} ${styles.nav_item_back}`}
+              className={`${styles.nav_item} ${styles.nav_item_back}${sortType === 'desc' ? ' ' + styles.selected : ''}`}
               style={{ cursor: "pointer" }}
               onClick={() => {
                 setResults(prev => {
+                  // 日付降順
                   if (selectedDate === "2025-09-20" || selectedDate === "2025-09-21") {
                     return [...prev].sort((a, b) => {
                       const ad = a.date === "" ? selectedDate : a.date;
@@ -225,34 +231,37 @@ export default function Search() {
                     return b.date.localeCompare(a.date);
                   });
                 });
+                setSortType('desc');
               }}
             >
               日付降順
             </div>
-            {/* タグ昇順・降順 */}
             <div
-              className={`${styles.nav_item} ${styles.nav_item_back}`}
+              className={`${styles.nav_item} ${styles.nav_item_back}${sortType === 'tagAsc' ? ' ' + styles.selected : ''}`}
               style={{ cursor: "pointer" }}
               onClick={() => {
                 setResults(prev => [...prev].sort((a, b) => {
-                  // タグ昇順（最初のタグで比較）
+                  // タグ昇順
                   const atag = Array.isArray(a.tags) && a.tags.length > 0 ? a.tags[0] : "";
                   const btag = Array.isArray(b.tags) && b.tags.length > 0 ? b.tags[0] : "";
                   return atag.localeCompare(btag);
                 }));
+                setSortType('tagAsc');
               }}
             >
               タグ昇順
             </div>
             <div
-              className={`${styles.nav_item} ${styles.nav_item_back}`}
+              className={`${styles.nav_item} ${styles.nav_item_back}${sortType === 'tagDesc' ? ' ' + styles.selected : ''}`}
               style={{ cursor: "pointer" }}
               onClick={() => {
                 setResults(prev => [...prev].sort((a, b) => {
+                  // タグ降順
                   const atag = Array.isArray(a.tags) && a.tags.length > 0 ? a.tags[0] : "";
                   const btag = Array.isArray(b.tags) && b.tags.length > 0 ? b.tags[0] : "";
                   return btag.localeCompare(atag);
                 }));
+                setSortType('tagDesc');
               }}
             >
               タグ降順

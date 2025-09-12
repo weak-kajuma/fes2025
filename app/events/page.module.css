@@ -41,7 +41,7 @@
   align-items: center;
   background: var(--color-just-black);
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 900px) {
     height: 20dvh;
   }
 }
@@ -58,7 +58,7 @@
   margin-right: 30px;
   font-family: var(--mincho);
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 900px) {
     font-size: 10rem;
   }
 }
@@ -82,7 +82,7 @@
     font-size: 7vw;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 900px) {
     font-size: 10vw;
   }
 }
@@ -170,7 +170,7 @@
 }
 
 /* スマホサイズで1行1列に */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 900px) {
   .selector {
     flex-direction: column;
     gap: 2vw;
@@ -210,7 +210,7 @@
 
 
 /* タブレットサイズで2行2列に */
-@media screen and (max-width: 1024px) and (min-width: 601px) {
+@media screen and (max-width: 1024px) and (min-width: 901px) {
   .selector {
     flex-direction: column;
     gap: 2vw;
@@ -247,7 +247,7 @@
   margin-top: 5rem;
   padding-bottom: 10rem;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 700px) {
     width: 95%;
   }
 
@@ -255,11 +255,11 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 
-    @media screen and (max-width: 1024px) and (min-width: 601px) {
+    @media screen and (max-width: 1024px) and (min-width: 701px) {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 700px) {
       grid-template-columns: repeat(1, 1fr);
     }
 
@@ -285,7 +285,7 @@
   border-radius: 12px; /* 外側枠 */
 }
 
-.selected::before {
+/* .selected::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -304,15 +304,19 @@
   background-clip: border-box;
   z-index: -1;
   box-sizing: border-box;
-}
+} */
 
 .nav {
   margin-top: 3rem;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   color: #cba373;
+
+  @media screen and (max-width: 900px) {
+    width: 100vw;
+  }
 
   .nav_content {
     display: flex;
@@ -323,22 +327,36 @@
     font-family: var(--mincho);
     width: 100%;
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 1200px) {
       padding: 1.4rem 0;
       gap: 20px;
     }
-
-    &:nth-child(2) {
-      border-top: 0px solid #cba373;
+    @media screen and (max-width: 900px) {
+      flex-direction: row;
+      align-items: center;
+      padding: 1rem 0.5rem;
+      gap: 8px;
+      width: 100vw;
+      box-sizing: border-box;
     }
+
+    /* &:nth-child(2) {
+      border-top: 0px solid #cba373;
+    } */
 
     .nav_item_back_wrapper {
       display: flex;
       gap: 80px;
 
-      @media screen and (max-width: 768px) {
+      /* @media screen and (max-width: 768px) {
         transform: translateX(-2rem);
         gap: 25px;
+      } */
+      @media screen and (max-width: 900px) {
+        margin-left: 1rem;
+        gap: 20px;
+        transform: none;
+        flex-wrap: wrap;
       }
     }
 
@@ -409,9 +427,6 @@
         transition: scale cubic-bezier(.25,1,.5,1) .6s;
       }
 
-      &.selected {
-        background-color: var(--text);
-      }
 
       &.pre {
         width: 7.5rem;
@@ -420,9 +435,16 @@
         white-space: nowrap;
         text-align: center;
         font-family: var(--workSans);
+        @media screen and (max-width: 900px) {
+          font-size: 1.1rem;
+          width: 4.5rem;
+          transform: rotate(0deg) translateY(0);
+          text-align: left;
+          margin-right: 8px;
+        }
       }
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 900px) {
         font-size: 1rem;
         word-break: keep-all;
         white-space: nowrap;
@@ -443,6 +465,20 @@
         &:not(.pre) {
           word-break: none;
           white-space: normal;
+        }
+      }
+      @media screen and (max-width: 900px) {
+        font-size: 0.95rem;
+        padding: 7px 0;
+        min-width: 2.5rem;
+        max-width: 100%;
+        white-space: nowrap;
+        &.pre {
+          font-size: 1.1rem;
+          width: 4.5rem;
+          transform: none;
+          text-align: left;
+          margin-right: 4px;
         }
       }
     }
