@@ -19,9 +19,6 @@ import { fetchWithCache } from "@/lib/fetchWithCache";
 
 export default function TicketPage() {
 
-  // リハーサル申込モーダル・日時選択・開放判定ロジック
-  const [isRehearsalModalOpen, setIsRehearsalModalOpen] = useState(false);
-  const [selectedRehearsalTime, setSelectedRehearsalTime] = useState("");
   const router = useRouter();
   // クリック可能期間: 9月4日12:40〜9月10日13:00
   const rehearsalStart = new Date("2025-09-04T12:40:00+09:00");
@@ -299,10 +296,9 @@ export default function TicketPage() {
                       </div>
                     </div>
 
-                    {/* 時間指定で表示 */}
-                    {(() => {
-                      const showStart = new Date("2025-09-20T00:00:00+09:00");
-                      const showEnd = new Date("2025-09-30T23:59:59+09:00");
+                    {/* {(() => {
+                      const showStart = new Date("2025-09-17T12:00:00+09:00");
+                      const showEnd = new Date("2025-09-21T23:59:59+09:00");
                       if (now.getTime() >= showStart.getTime() && now.getTime() <= showEnd.getTime()) {
                         return <>
                           <div className={styles.arrows_event}>
@@ -395,11 +391,11 @@ export default function TicketPage() {
                         </>;
                       }
                       return null;
-                    })()}
+                    })()} */}
 
                     {(() => {
-                      const showStart = new Date("2025-09-20T00:00:00+09:00");
-                      const showEnd = new Date("2025-09-30T23:59:59+09:00");
+                      const showStart = new Date("2025-09-17T12:00:00+09:00");
+                      const showEnd = new Date("2025-09-21T23:59:59+09:00");
                       if (now.getTime() >= showStart.getTime() && now.getTime() <= showEnd.getTime()) {
                         return <>
                           <div className={styles.arrows_event}>
@@ -430,7 +426,7 @@ export default function TicketPage() {
                                     alt="右矢印"
                                   />
                                   <Link className={styles.arrow_middle} href="/reserve/first-come-served/ticketselect">
-                                    <div>空き枠先着申込<br/>(受付中)</div>
+                                    <div>先着登録<br/>(受付中)</div>
                                   </Link>
                                   <Image
                                     src="/images/arrow_red_right.png"
@@ -592,7 +588,7 @@ export default function TicketPage() {
           <div className={styles.buttons}>
             <div className={styles.button_top}>
                 <Link href="/reserve/result">
-                <div className={styles.button_more}>抽選登録状況</div>
+                <div className={styles.button_more}>先着登録状況</div>
                 </Link>
             </div>
             <ul className={styles.button_bottom}>
