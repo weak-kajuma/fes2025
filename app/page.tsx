@@ -689,19 +689,62 @@ export default function Home() {
                       <div className={styles.item_grid}>
                         <div className={styles.img}>
                           <div className={styles.img_inner}>
+                            {/* <Image
+                              src={
+                                i === 0
+                                  ? "/home_tools/timetable_1.png"
+                                  : i === 1
+                                  ? "/home_tools/map_1.png"
+                                  : i === 2
+                                  ? "/home_tools/search_1.png"
+                                  : i === 3
+                                  ? "/home_tools/reserve_1.png"
+                                  : i === 4
+                                  ? "/home_tools/news_1.png"
+                                  : ""
+                              }
+                              alt={
+                                i === 0
+                                  ? "Time Table"
+                                  : i === 1
+                                  ? "Map"
+                                  : i === 2
+                                  ? "Search"
+                                  : i === 3
+                                  ? "Reserve"
+                                  : i === 4
+                                  ? "News"
+                                  : ""
+                              }
+                              fill
+                            /> */}
                             comingsoon
                           </div>
                         </div>
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}>
+                              {/* <video
+                                src={
+                                  i === 0 ? "/home_tools/timetable_2.mp4" :
+                                  i === 1 ? "/home_tools/map_2.mp4" :
+                                  i === 2 ? "/home_tools/search_2.mp4" :
+                                  i === 3 ? "/home_tools/reserve_2.mp4" :
+                                  i === 4 ? "/home_tools/news_2.mp4" : ""
+                                }
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', top: 0, left: 0}}
+                              /> */}
                               comingsoon
                             </div>
                           </div>
                         )}
                         <div className={styles.text_wrapper}>
                           <div className={styles.text_inner}>
-                            <AnimatedLink to={i === 0 ? "/timetable" : i === 1 ? "/map" : i === 2 ? "/search" : i === 3 ? "/reserve" : i === 4 ? "/news" : ""}>
+                            <AnimatedLink to={i === 0 ? "/timetable" : i === 1 ? "/map" : i === 2 ? "/events" : i === 3 ? "/reserve" : i === 4 ? "/news" : ""}>
                             <h2
                               className={styles.text}
                               onMouseEnter={() => {
@@ -713,23 +756,37 @@ export default function Home() {
                             >
                                 {i === 0 && "TIME TABLE"}
                                 {i === 1 && "MAP"}
-                                {i === 2 && "SEARCH"}
+                                {i === 2 && "EVENTS"}
                                 {i === 3 && "RESERVE"}
                                 {i === 4 && "NEWS"}
                             </h2>
                               </AnimatedLink>
                             <div className={styles.info}>
-                              {i === 0 && <><div className={styles.tag}>timetable</div><div className={styles.tag}>aaa</div></>}
-                              {i === 1 && <><div className={styles.tag}>map</div><div className={styles.tag}>bbb</div></>}
-                              {i === 2 && <><div className={styles.tag}>search</div><div className={styles.tag}>ccc</div></>}
-                              {i === 3 && <><div className={styles.tag}>reserve</div><div className={styles.tag}>ddd</div></>}
-                              {i === 4 && <><div className={styles.tag}>news</div><div className={styles.tag}>eee</div></>}
+                              {i === 0 && <><div className={styles.tag}>timetable</div><div className={styles.tag}>taimute-burugamireruyo</div></>}
+                              {i === 1 && <><div className={styles.tag}>map</div><div className={styles.tag}>bennrinamappugatukaeruyo</div></>}
+                              {i === 2 && <><div className={styles.tag}>events</div><div className={styles.tag}>ibentogasubetewakaruyo</div></>}
+                              {i === 3 && <><div className={styles.tag}>reserve</div><div className={styles.tag}>ibentowoyoyakudekiruyo tukurunomendoudatta</div></>}
+                              {i === 4 && <><div className={styles.tag}>news</div><div className={styles.tag}>osirasewonoseteruyo</div></>}
                             </div>
                           </div>
                         </div>
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}>
+                              {/* <video
+                                src={
+                                  i === 0 ? "/home_tools/timetable_3.mp4" :
+                                  i === 1 ? "/home_tools/map_3.mp4" :
+                                  i === 2 ? "/home_tools/search_3.mp4" :
+                                  i === 3 ? "/home_tools/reserve_3.mp4" :
+                                  i === 4 ? "/home_tools/news_3.mp4" : ""
+                                }
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', top: 0, left: 0}}
+                              /> */}
                               comingsoon
                             </div>
                           </div>
@@ -749,7 +806,7 @@ export default function Home() {
                   <p id="news-subtitle">最新情報をお届けします</p>
                 </div>
 
-                {/* <div className={styles.news_list_wrapper}>
+                <div className={styles.news_list_wrapper}>
 
                   <NewsSlider items={newsItems} isMobile={isMobile} />
 
@@ -780,9 +837,9 @@ export default function Home() {
 
                     </div>
                   )}
-                </div> */}
+                </div>
 
-                <div>
+                {/* <div>
                   <div
                     style={{
                       width: '100%',
@@ -803,7 +860,7 @@ export default function Home() {
                   >
                     COMING SOON
                   </div>
-                </div>
+                </div> */}
 
               </div>
             </div>
