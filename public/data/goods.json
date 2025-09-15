@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "フェイスタオル",
+    "price": 450,
+    "image": "/goods/towel.jpg",
+    "state": 1
+  },
+  {
+    "id": 2,
+    "name": "トートバッグ",
+    "price": 400,
+    "image": "/goods/bag.jpg",
+    "state": 1
+  },
+  {
+    "id": 3,
+    "name": "クリアファイル(水色)",
+    "price": 130,
+    "image": "/goods/clearFile_blue.jpg",
+    "state": 1
+  },
+  {
+    "id": 4,
+    "name": "クリアファイル(紫色)",
+    "price": 130,
+    "image": "/goods/clearFile_purple.jpg",
+    "state": 1
+  },
+  {
+    "id": 5,
+    "name": "Tシャツ",
+    "price": 1500,
+    "image": "/goods/tshirt.png",
+    "state": 1
+  },
+  {
+    "id": 6,
+    "name": "ペンライト",
+    "price": 1600,
+    "image": "/goods/penLight.jpg",
+    "state": 1
+  },
+  {
+    "id": 7,
+    "name": "キーホルダー(全学年)",
+    "price": 130,
+    "image": "/goods/keyholder_all.jpg",
+    "state": 1
+  },
+  {
+    "id": 8,
+    "name": "キーホルダー(sparkle)",
+    "price": 130,
+    "image": "/goods/keyholder_sparkle.jpg",
+    "state": 1
+  },
+  {
+    "id": 9,
+    "name": "ボールペン　黒",
+    "price": 200,
+    "image": "/goods/ballpen.jpg",
+    "state": 1
+  },
+  {
+    "id": 10,
+    "name": "シャープペンシル",
+    "price": 200,
+    "image": "/goods/pencil.jpg",
+    "state": 1
+  },
+  {
+    "id": 11,
+    "name": "うちわ(青霞祭)",
+    "price": 100,
+    "image": "/goods/fan_seikasai.jpg",
+    "state": 1
+  },
+  {
+    "id": 12,
+    "name": "うちわ(裏無地)",
+    "price": 100,
+    "image": "/goods/fan_normal.jpg",
+    "state": 1
+  }
+]

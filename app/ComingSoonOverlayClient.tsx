@@ -2,9 +2,10 @@
 import { usePathname } from "next/navigation";
 
 const comingSoonUrls = [
-  "/demo",
-  // "/map",
-  // "/search",
+  // "/demo",
+  "/map",
+  "/events",
+  "/goods",
   // "/news"
 ];
 

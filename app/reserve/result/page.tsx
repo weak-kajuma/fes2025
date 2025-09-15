@@ -17,28 +17,28 @@ export default function ReserveResultPage() {
     const load = async () => {
       try {
         const userId = window.localStorage.getItem('user_id');
-        const [eventsRes, appliedRes] = await Promise.all([
-          fetch('/data/events_7days.json'),
-          userId ? fetch(`/api/lottely-applications?user_id=${userId}`) : Promise.resolve({ ok: false, status: 400, json: async () => ({}) })
-        ]);
-        const allEvents: any[] = await eventsRes.json();
-        if (!appliedRes.ok) {
+        if (!userId) {
           setAppliedList([]);
           setLoading(false);
           return;
         }
-        const applied = await appliedRes.json();
-        // 新API: results配列から申し込みイベント一覧を生成
-        const results = Array.isArray(applied?.results) ? applied.results as any[] : [];
-        // user_nameは最初の行から取得
+        const res = await fetch(`/api/reservations?user_id=${userId}`);
+        if (!res.ok) {
+          setAppliedList([]);
+          setLoading(false);
+          return;
+        }
+        const data = await res.json();
+        const results = Array.isArray(data?.results) ? data.results as any[] : [];
         if (results.length > 0 && typeof results[0].user_name === 'string') {
           setUserName(results[0].user_name);
         }
-        // イベント詳細を紐付け
-        const detailed: AppliedEvent[] = results.map((item: any, idx: number) => {
-          const e = allEvents.find(ev => ev.id === item.event_id);
-          return e ? { id: e.id, name: e.name, time: item.event_time } : null;
-        }).filter(Boolean) as AppliedEvent[];
+        // 予約結果をそのまま表示（event_id, event_time, user_name）
+        const detailed: AppliedEvent[] = results.map((item: any) => ({
+          id: item.event_id,
+          name: item.event_id ? `イベントID: ${item.event_id}` : '',
+          time: item.event_time
+        }));
         setAppliedList(detailed);
       } catch (e) {
         setError('結果の取得に失敗しました。');
@@ -95,14 +95,14 @@ export default function ReserveResultPage() {
       <div className={baseStyles.main}>
         <div className={baseStyles.main_inner}>
           <div className={baseStyles.top}>
-            <h1 className={baseStyles.top_title}>7日前 抽選申込 結果</h1>
-            <div className={baseStyles.top_info}>申し込んだイベントの一覧です。</div>
+            <h1 className={baseStyles.top_title}>先着登録 結果</h1>
+            <div className={baseStyles.top_info}>登録イベントの一覧です。</div>
           </div>
 
           <div className={baseStyles.middle}>
-            <span className={baseStyles.middle_info_bold}>抽選申込内容の確認</span>
+            <span className={baseStyles.middle_info_bold}>先着登録内容の確認</span>
             <span className={baseStyles.middle_info_normal}>以下は現在登録されている希望リストです。変更がある場合は「申込内容を変更する」から修正してください。</span>
-            <div className={baseStyles.entrance_date}>来場日時：2025年8月10日(日)<br/>申込済みの時間帯一覧</div>
+            <div className={baseStyles.entrance_date}>来場日時：2025年9月20日(土) 21日(日)<br/>申込済みの時間帯一覧</div>
             <div className={baseStyles.entrance_date}>申込者名：{userName || '未設定'}</div>
           </div>
 
@@ -119,9 +119,6 @@ export default function ReserveResultPage() {
                       <div className={styles.name}>{item.name}</div>
                       <div className={styles.time}>{item.time || '時間未定'}</div>
                     </div>
-                    <Link href="/reserve/7days-before-reservation/withlist">
-                      <div className={styles.edit_button}>申込内容を変更する</div>
-                    </Link>
                   </li>
                 ))}
               </ul>

@@ -1,50 +1,5 @@
 "use client";
-// Googleアカウントのemailからuuidを取得・新規登録する関数
-  async function getOrCreateUserUuid(email: string): Promise<string | null> {
-    if (!email) return null;
-    const encodedEmail = encodeURIComponent(email);
-    const url = `/rest/v1/user_uuids?select=uuid&email=eq.${encodedEmail}`;
-    try {
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-          'Accept': 'application/json'
-        }
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json && json.length > 0) {
-          return json[0].uuid;
-        }
-      } else if (res.status === 406) {
-        // 406エラー時はnull返却
-        return null;
-      }
-    } catch (e) {}
-    // uuidがなければ新規登録
-    const newUuid = window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
-    try {
-      const postRes = await fetch('/rest/v1/user_uuids', {
-        method: 'POST',
-        headers: {
-          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ email, uuid: newUuid })
-      });
-      if (postRes.ok) {
-        return newUuid;
-      } else if (postRes.status === 409) {
-        // 409エラー（重複）時は再度GETで取得
-        return await getOrCreateUserUuid(email);
-      }
-    } catch (e) {}
-    return null;
-  }
+
 
 import Image from "next/image";
 import Link from "next/link";
@@ -159,6 +114,53 @@ export default function EventReserveClient() {
   }, []);
 
   const hasSelectedTime = !!selectedTime;
+
+  // Googleアカウントのemailからuuidを取得・新規登録する関数
+  async function getOrCreateUserUuid(email: string): Promise<string | null> {
+    if (!email) return null;
+    const encodedEmail = encodeURIComponent(email);
+    const url = `/rest/v1/user_uuids?select=uuid&email=eq.${encodedEmail}`;
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+          'Accept': 'application/json'
+        }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json && json.length > 0) {
+          return json[0].uuid;
+        }
+      } else if (res.status === 406) {
+        // 406エラー時はnull返却
+        return null;
+      }
+    } catch (e) {}
+    // uuidがなければ新規登録
+    const newUuid = window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+    try {
+      const postRes = await fetch('/rest/v1/user_uuids', {
+        method: 'POST',
+        headers: {
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email, uuid: newUuid })
+      });
+      if (postRes.ok) {
+        return newUuid;
+      } else if (postRes.status === 409) {
+        // 409エラー（重複）時は再度GETで取得
+        return await getOrCreateUserUuid(email);
+      }
+    } catch (e) {}
+    return null;
+  }
 
   // eventReserveの登録処理例
   // 先着順予約ロジック
