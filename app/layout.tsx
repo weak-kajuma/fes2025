@@ -10,7 +10,8 @@ import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
 import { unstable_ViewTransition as ViewTransition } from "react";
-// ...existing code...
+
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,6 +73,9 @@ export default function RootLayout({
             </ViewTransition>
           </TabBarProvider>
         </SessionProvider>
+        {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />
+        )}
       </body>
     </html>
   );
