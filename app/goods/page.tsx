@@ -49,7 +49,12 @@ export default function GoodsPage() {
           <div className={styles.products_container}>
             {goods.map(item => (
               <div key={item.id} className={styles.product_card}>
-                <div className={styles.product_img_wrapper}>
+                <div className={styles.product_img_wrapper} style={{ position: 'relative' }}>
+                  {item.state === 0 && (
+                    <div className={styles.soldout_label}>
+                      SOLD OUT
+                    </div>
+                  )}
                   <Image
                     src={item.image}
                     alt={item.name}
