@@ -517,7 +517,7 @@ export default function Timetable_Client() {
                 key={btn.label}
                 onClick={() => { setIsDetailMode(btn.value); }}
                 style={{
-                  color: "black",
+                  color: isDetailMode === btn.value ? 'var(--text)' : 'black',
                   padding: '0.5rem 1.5rem',
                   fontWeight: 'bold',
                   cursor: 'pointer',
@@ -526,33 +526,18 @@ export default function Timetable_Client() {
                   fontFamily: "var(--mincho)",
                   position: 'relative',
                   display: 'inline-block',
-                  transition: 'color 0.2s',
+                  transition: 'color 0.2s, border-color 0.2s',
+                  border: `1px solid ${isDetailMode === btn.value ? 'var(--text)' : 'black'}`,
+                  borderRadius: '20px',
                 }}
                 onMouseEnter={e => {
-                  const underline = e.currentTarget.querySelector('.underline-anim');
-                  if (underline) (underline as HTMLElement).style.transform = 'scaleX(1)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text)';
                 }}
                 onMouseLeave={e => {
-                  const underline = e.currentTarget.querySelector('.underline-anim');
-                  if (underline) (underline as HTMLElement).style.transform = 'scaleX(0)';
+                  (e.currentTarget as HTMLElement).style.color = isDetailMode === btn.value ? 'var(--text)' : 'black';
                 }}
               >
                 {btn.label}
-                <span
-                  className="underline-anim"
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    bottom: 0,
-                    width: '100%',
-                    height: '1px',
-                    background: 'black',
-                    transform: 'scaleX(0)',
-                    transformOrigin: 'left',
-                    transition: 'transform 0.3s cubic-bezier(.4,0,.2,1)',
-                    borderRadius: '2px',
-                  }}
-                />
               </div>
             ))}
           </div>

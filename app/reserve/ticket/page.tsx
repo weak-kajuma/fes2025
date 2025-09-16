@@ -395,7 +395,7 @@ export default function TicketPage() {
 
                     {(() => {
                       const showStart = new Date("2025-09-17T12:40:00+09:00");
-                      const showEnd = new Date("2025-09-21T23:59:59+09:00");
+                      const showEnd = new Date("2025-09-19T15:00:00+09:00");
                       if (now.getTime() >= showStart.getTime() && now.getTime() <= showEnd.getTime()) {
                         return <>
                           <div className={styles.arrows_event}>
