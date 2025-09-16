@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   // Supabaseからハッシュ値で検索
   const { data, error } = await supabase
     .from('admin_passwords')
-    .select('mode')
+    .select('mode,location_name')
     .eq('password_hash', password)
     .single();
 
@@ -17,5 +17,5 @@ export async function POST(req: NextRequest) {
   }
 
   // 認証成功
-  return NextResponse.json({ success: true, mode: data.mode });
+  return NextResponse.json({ success: true, mode: data.mode, location_name: data.location_name });
 }

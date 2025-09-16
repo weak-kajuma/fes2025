@@ -213,9 +213,9 @@ function EventSelectInner() {
       <div className={styles.main}>
         <div className={styles.main_inner}>
           <div className={styles.top}>
-            <h1 className={styles.top_title}><span>＜空き枠先着＞</span><br/>
+            <h1 className={styles.top_title}><span>＜先着登録＞</span><br/>
             イベントを選択する</h1>
-            <div className={styles.entrance_date}>来場日時：2025年8月10日(日)</div>
+            <div className={styles.entrance_date}>来場日時：2025年9月20日(土) or 21日(日)</div>
             <div className={styles.search}>
               <div className={styles.search_inner}>
                 <span className={styles.search_label}>イベントを検索</span>

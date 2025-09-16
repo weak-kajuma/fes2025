@@ -15,17 +15,17 @@ const dateOptions = [
   { label: "21(Sun)", value: "21" },
 ];
 const areaOptions = [
-  { label: "ステージ", value: "stage" },
-  { label: "コナコピア", value: "hole" },
-  { label: "中庭", value: "yard" },
-  { label: "体育館", value: "gym" },
+  { label: "ステージ", value: "グラウンドステージ" },
+  { label: "コナコピア", value: "コナコピアホール" },
+  { label: "中庭", value: "中庭" },
+  { label: "体育館", value: "体育館" },
 ];
 
 // ★ 追加: DBの location_name（label だったり value だったり/空白含む）を
 // タイムテーブルで使う正規化済み value に揃える
 const normalizeLocationName = (name?: string | null): string | undefined => {
   if (!name) return undefined;
-  const trimmed = `${name}`.trim();
+  const trimmed = name.trim();
   if (trimmed === "all") return "all"; // 明示的な全選択だけ許可
   const hit = areaOptions.find(opt => opt.value === trimmed || opt.label === trimmed);
   return hit?.value; // 見つかったら canonical value を返す
@@ -38,7 +38,6 @@ export default function AdminTimetablePage() {
   const [inputPassword, setInputPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState("");
-  const [mode, setMode] = useState<string>("");
   const [nowEvents, setNowEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -67,7 +66,7 @@ export default function AdminTimetablePage() {
     setLoading(true);
     setMessage(null);
     const { error } = await supabase.from("now_events").upsert([
-      { locationtype, eventid, groupindex }
+      { locationtype, eventid, groupindex, updatedat: new Date() }
     ], { onConflict: "locationtype" });
     setLoading(false);
     if (error) {
@@ -114,12 +113,12 @@ export default function AdminTimetablePage() {
                 setSelectedLocation(normalized);
               } else {
                 setSelectedLocation(undefined);
+                console.log(result)
                 setAuthError("このアカウントに紐づくロケーションが不正です。管理者に確認してください。");
                 return; // ロケーションが確定しない限り認証状態にしない
               }
 
               setIsAuthenticated(true);
-              setMode(result.mode);
             } else {
               setAuthError(result.error || "パスワードが違います");
             }
@@ -181,6 +180,7 @@ export default function AdminTimetablePage() {
                 ))}
               </div>
             </div>
+            {message && <div className={styles.message}>{message}</div>}
           </div>
           <div className={styles.eventContentWrapper}>
             {areaOptions.map(areaOpt => {
@@ -226,7 +226,6 @@ export default function AdminTimetablePage() {
                       />
                     ))}
                   </div>
-                  {message && <div className={styles.message}>{message}</div>}
                 </div>
               );
             })}
@@ -260,6 +259,7 @@ export default function AdminTimetablePage() {
               ))}
             </div>
           </div>
+          {message && <div className={styles.message}>{message}</div>}
         </div>
         <div className={styles.eventContentWrapper}>
           <div key={areaOpt.value} className={styles.detail_wrapper}>
@@ -300,7 +300,6 @@ export default function AdminTimetablePage() {
                 />
               ))}
             </div>
-            {message && <div className={styles.message}>{message}</div>}
           </div>
         </div>
       </div>
