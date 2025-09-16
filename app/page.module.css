@@ -181,6 +181,11 @@
     gap: 10vw;
     z-index: 100;
 
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      height: auto;
+    }
+
     .link {
       display: flex;
       flex-direction: column;

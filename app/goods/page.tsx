@@ -55,7 +55,7 @@ export default function GoodsPage() {
                     alt={item.name}
                     width={500}
                     height={500}
-                    style={{ objectFit: 'cover', borderRadius: '1rem', width: '100%', height: 'auto' }}
+                    style={{ objectFit: 'cover', borderRadius: '1rem', width: '100%', height: '100%' }}
                   />
                 </div>
                 <div className={styles.product_info}>

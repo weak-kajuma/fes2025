@@ -2,11 +2,10 @@
 import { usePathname } from "next/navigation";
 
 const comingSoonUrls = [
-  // "/demo",
+  "/demo",
   "/map",
-  "/events",
-  "/goods",
-  // "/news"
+  // "/events",
+  // "/goods",
 ];
 
 export default function ComingSoonOverlayClient() {

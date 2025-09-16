@@ -32,7 +32,7 @@ export default function EventCard({ event, onClick }: { event: EventDataForClien
   return (
     <div className={styles.event_card}>
 
-      <div className={styles.img}></div>
+      {/* <div className={styles.img}></div> */}
 
       <h2 className={styles.event_title}>{event.title}</h2>
       {event.host && <p className={styles.event_host}>{event.host}</p>}
