@@ -477,8 +477,8 @@ export default function Timetable_Client() {
         const ne = getEventById(byLocation, ev.locationtype, ev.eventid, ev.groupindex ?? undefined);
 
         // TODO: テスト用に現在時刻を固定（本番ではコメントアウトして実際の現在時刻を使う）
-        const now_time = new Date("2025-09-20T13:00:00+09:00"); // テスト用固定時刻
-        // const now_time = new Date(); // 実際の現在時刻
+        // const now_time = new Date("2025-09-20T13:00:00+09:00"); // テスト用固定時刻
+        const now_time = new Date(); // 実際の現在時刻
 
         const updatedAtMs = Date.parse(ev.updatedat);
         const startMs = Date.parse((ne?.startDate ?? '').replace(' ', 'T') + '+09:00');
