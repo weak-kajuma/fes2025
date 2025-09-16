@@ -10,7 +10,7 @@ import { ScrollManager } from "../components/ScrollManager"
 import TabBarProvider from "../components/TabBarProvider"
 import { SessionProvider } from "next-auth/react"
 import { unstable_ViewTransition as ViewTransition } from "react";
-
+import SurveyPopupClient from "./SurveyPopupClient";
 import { GoogleAnalytics } from '@next/third-parties/google'
 
 const geistSans = Geist({
@@ -56,6 +56,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="ja">
       <head>
@@ -65,6 +66,7 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansJp.variable} ${mincho.variable} `}>
         <ComingSoonOverlayClient />
+        <SurveyPopupClient />
         <SessionProvider>
           <TabBarProvider>
             <ViewTransition>
