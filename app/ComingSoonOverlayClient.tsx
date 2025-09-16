@@ -5,6 +5,7 @@ const comingSoonUrls = [
   // "/demo",
   "/map",
   "/events",
+  "/goods",
   // "/news"
 ];
 

@@ -74,7 +74,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
         });
       } else {
         gsap.to(contentRef.current, {
-          height: 300,
+          height: 400,
           duration: 0.5,
           ease: "power2.out",
           onComplete: () => {
@@ -332,6 +332,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
     { label: "Map", to: "/map" },
     { label: "Events", to: "/events" },
     { label: "Reserve", to: "/reserve" },
+    { label: "Goods", to: "/goods" },
     { label: "News", to: "/news" },
   ];
 
