@@ -1,0 +1,128 @@
+@media (min-width: 600px) {
+  .overlay {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: auto;
+    height: auto;
+    background: none;
+    z-index: 9999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+  .popup {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    text-align: left;
+    max-width: 4000px;
+    min-width: 180px;
+    pointer-events: auto;
+    transform: translateY(40px);
+    opacity: 0;
+    animation: slideIn 0.5s forwards;
+  }
+  .popup.hide {
+    animation: slideOut 0.4s forwards;
+  }
+}
+@media (max-width: 599px) {
+  .overlay {
+    position: fixed;
+    right: 8px;
+    bottom: 100px; /* タブバー分上げる */
+    width: auto;
+    height: auto;
+    background: none;
+    z-index: 9999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+  .popup {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    text-align: left;
+    max-width: 90vw;
+    min-width: 120px;
+    font-size: 15px;
+    pointer-events: auto;
+    transform: translateX(40px);
+    opacity: 0;
+    animation: slideInRight 0.5s forwards;
+  }
+  .popup.hide {
+    animation: slideOutRight 0.4s forwards;
+  }
+}
+
+/* 重複していたスマホ用のoverlay定義を削除。下のbottom: 100px;のみ有効になります */
+
+@keyframes slideIn {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+@keyframes slideInRight {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+}
+.button {
+  display: inline-block;
+  margin: 10px 0 0 0;
+  padding: 7px 16px;
+  background: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+}
+.close {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  float: right;
+}

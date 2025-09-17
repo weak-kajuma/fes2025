@@ -52,7 +52,9 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
         </div>
 
         <div className={styles.mainTxt}>
-          <p>{item.main}</p>
+          {item.main.split(/\n/).map((line, idx) => (
+            <p key={idx}>{line}</p>
+          ))}
         </div>
 
       </div>

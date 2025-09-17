@@ -49,13 +49,18 @@ export default function GoodsPage() {
           <div className={styles.products_container}>
             {goods.map(item => (
               <div key={item.id} className={styles.product_card}>
-                <div className={styles.product_img_wrapper}>
+                <div className={styles.product_img_wrapper} style={{ position: 'relative' }}>
+                  {item.state === 0 && (
+                    <div className={styles.soldout_label}>
+                      SOLD OUT
+                    </div>
+                  )}
                   <Image
                     src={item.image}
                     alt={item.name}
                     width={500}
                     height={500}
-                    style={{ objectFit: 'cover', borderRadius: '1rem', width: '100%', height: 'auto' }}
+                    style={{ objectFit: 'cover', borderRadius: '1rem', width: '100%', height: '100%' }}
                   />
                 </div>
                 <div className={styles.product_info}>
