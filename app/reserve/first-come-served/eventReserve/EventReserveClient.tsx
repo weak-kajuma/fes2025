@@ -90,6 +90,10 @@ export default function EventReserveClient() {
   const handleApply = async () => {
     setErrorMsg("");
     if (!event || !selectedTime) return;
+    if (!userName.trim()) {
+      setErrorMsg('予約者名を入力してください');
+      return;
+    }
     // 1. reservationsから該当event_id+event_timeの予約数取得
     const { data: reservations, error } = await supabase
       .from('reservations')
