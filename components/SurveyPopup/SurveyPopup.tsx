@@ -7,8 +7,8 @@ interface SurveyPopupProps {
   visible?: boolean;
 }
 
-const SurveyPopup: React.FC = () => {
-  const [visible, setVisible] = useState(true);
+const SurveyPopup: React.FC<SurveyPopupProps> = ({ onClose, visible = true }) => {
+  const [internalVisible, setInternalVisible] = useState(visible);
   const isMobile = typeof window !== "undefined" && window.matchMedia && window.matchMedia('(max-width: 599px)').matches;
 
   // 初期表示判定（スマホのみ）
@@ -19,24 +19,25 @@ const SurveyPopup: React.FC = () => {
       const now = Date.now();
       const diff = now - Number(hideTime);
       if (diff < 300000) { // 5分未満
-        setVisible(false);
+        setInternalVisible(false);
       } else {
-        setVisible(true);
+        setInternalVisible(true);
         localStorage.removeItem('survey_banner_hide_time');
       }
     } else {
-      setVisible(true);
+      setInternalVisible(true);
     }
   }, [isMobile]);
 
   const handleClose = () => {
-    setVisible(false);
+    setInternalVisible(false);
     if (isMobile) {
       localStorage.setItem('survey_banner_hide_time', String(Date.now()));
     }
+    if (onClose) onClose();
   };
 
-  if (!visible) return null;
+  if (!internalVisible) return null;
 
   return (
     <div className={styles.banner}>
