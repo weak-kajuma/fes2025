@@ -1,3 +1,49 @@
+.banner {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 9999;
+  border: 1px solid var(--text);
+  border-radius: 16px 0 0 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 18px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 180px;
+  min-width: 48px;
+  font-family: var(--mincho);
+
+  @media screen and (max-width: 600px) {
+    bottom: 0; /* タブバー分上げる */
+    top: auto;
+    right: 0px;
+    transform: none;
+    border-radius: 10px;
+    padding: 12px 10px;
+    min-height: 120px;
+    min-width: 40px;
+    border-right: none;
+  }
+}
+.bannerLink {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: scale 0.5s;
+  writing-mode: vertical-rl;
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+.bannerLink:hover {
+  scale: 1.05;
+}
+.bannerText {
+  display: block;
+  padding: 0 2px;
+}
 @media (min-width: 600px) {
   .overlay {
     position: fixed;
@@ -118,7 +164,6 @@
   font-size: 15px;
 }
 .close {
-  margin-top: 8px;
   background: none;
   border: none;
   color: #888;
