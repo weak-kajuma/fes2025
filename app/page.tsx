@@ -15,6 +15,7 @@ import NewsSlider from "@/components/NewsSlider/NewsSlider";
 
 import AnimatedLink from "@/components/AnimatedLink";
 import Image from "next/image";
+import { supabase } from "@/lib/supabaseClient";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -567,8 +568,59 @@ export default function Home() {
     };
   }, [opening, isMobile, isTablet]);
 
+  // ランキングデータ
+  const [ranking, setRanking] = useState<{ name: string; time: number }[]>([]);
+  const [tagRanking, setTagRanking] = useState<{ name: string; time: number }[]>([]);
 
+  function formatTime(sec: number) {
+    const m = Math.floor(sec / 60).toString().padStart(2, "0");
+    const s = (sec % 60).toString().padStart(2, "0");
+    return (
+      <>
+        {m}
+        <span className={styles.timeUnit}>分</span>
+        {s}
+        <span className={styles.timeUnit}>秒</span>
+      </>
+    );
+  }
 
+  useEffect(() => {
+    // --- 本番データ取得処理（元に戻すときはコメント解除） ---
+    /*
+    async function fetchRanking() {
+      const { data, error } = await supabase
+        .from("riddle_ta_result")
+        .select("name, time")
+        .eq("mode", "solo")
+        .order("time", { ascending: true })
+        .limit(3);
+      if (!error && data) {
+        setRanking(data);
+      }
+    }
+    async function fetchTagRanking() {
+      const { data, error } = await supabase
+        .from("riddle_ta_result")
+        .select("name, time")
+        .eq("mode", "tag")
+        .order("time", { ascending: true })
+        .limit(3);
+      if (!error && data) {
+        setTagRanking(data);
+      }
+    }
+    fetchRanking();
+    fetchTagRanking();
+    */
+    // --- ダミーデータ（テスト用） ---
+    setRanking([
+
+    ]);
+    setTagRanking([
+
+    ]);
+  }, []);
 
 
   return (
@@ -680,7 +732,7 @@ export default function Home() {
                 </div>
 
                 <div className={styles.items}>
-                  {[0,1,2,3,4].map((i) => (
+                  {[0,1,2,3,4,5,6].map((i) => (
                     <div
                       className={styles.item}
                       ref={el => { itemRefs.current[i] = el; }}
@@ -689,18 +741,22 @@ export default function Home() {
                       <div className={styles.item_grid}>
                         <div className={styles.img}>
                           <div className={styles.img_inner}>
-                            {/* <Image
+                            <Image
                               src={
                                 i === 0
                                   ? "/home_tools/timetable_1.png"
                                   : i === 1
                                   ? "/home_tools/map_1.png"
                                   : i === 2
-                                  ? "/home_tools/search_1.png"
+                                  ? "/home_tools/events_1.png"
                                   : i === 3
                                   ? "/home_tools/reserve_1.png"
                                   : i === 4
                                   ? "/home_tools/news_1.png"
+                                  : i === 5
+                                  ? "/home_tools/goods_1.png"
+                                  : i === 6
+                                  ? "/home_tools/pamphlet_1.png"
                                   : ""
                               }
                               alt={
@@ -714,80 +770,97 @@ export default function Home() {
                                   ? "Reserve"
                                   : i === 4
                                   ? "News"
+                                  : i === 5
+                                  ? "Goods"
+                                  : i === 6
+                                  ? "Pamphlet"
                                   : ""
                               }
                               fill
-                            /> */}
-                            comingsoon
+                            />
                           </div>
                         </div>
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}>
-                              {/* <video
+                              <video
                                 src={
                                   i === 0 ? "/home_tools/timetable_2.mp4" :
                                   i === 1 ? "/home_tools/map_2.mp4" :
-                                  i === 2 ? "/home_tools/search_2.mp4" :
+                                  i === 2 ? "/home_tools/events_2.mp4" :
                                   i === 3 ? "/home_tools/reserve_2.mp4" :
-                                  i === 4 ? "/home_tools/news_2.mp4" : ""
+                                  i === 4 ? "/home_tools/news_2.mp4" :
+                                  i === 5 ? "/home_tools/goods_2.mp4" :
+                                  i === 6 ? "/home_tools/pamphlet_2.mp4" : ""
                                 }
                                 autoPlay
                                 loop
                                 muted
                                 playsInline
                                 style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', top: 0, left: 0}}
-                              /> */}
-                              comingsoon
+                              />
                             </div>
                           </div>
                         )}
                         <div className={styles.text_wrapper}>
                           <div className={styles.text_inner}>
-                            <AnimatedLink to={i === 0 ? "/timetable" : i === 1 ? "/map" : i === 2 ? "/events" : i === 3 ? "/reserve" : i === 4 ? "/news" : ""}>
-                            <h2
-                              className={styles.text}
-                              onMouseEnter={() => {
-                                if (!(isMobile || isTablet)) handleTextWrapperHover(i, true)
-                              }}
-                              onMouseLeave={() => {
-                                if (!(isMobile || isTablet)) handleTextWrapperHover(i, false)
-                              }}
-                            >
+                            <AnimatedLink to={
+                              i === 0 ? "/timetable" :
+                              i === 1 ? "/map" :
+                              i === 2 ? "/events" :
+                              i === 3 ? "/reserve" :
+                              i === 4 ? "/news" :
+                              i === 5 ? "/goods" :
+                              i === 6 ? "/pamphlet" : ""
+                            }>
+                              <h2
+                                className={styles.text}
+                                onMouseEnter={() => {
+                                  if (!(isMobile || isTablet)) handleTextWrapperHover(i, true)
+                                }}
+                                onMouseLeave={() => {
+                                  if (!(isMobile || isTablet)) handleTextWrapperHover(i, false)
+                                }}
+                              >
                                 {i === 0 && "TIME TABLE"}
                                 {i === 1 && "MAP"}
                                 {i === 2 && "EVENTS"}
                                 {i === 3 && "RESERVE"}
                                 {i === 4 && "NEWS"}
-                            </h2>
-                              </AnimatedLink>
+                                {i === 5 && "GOODS"}
+                                {i === 6 && "PAMPHLET"}
+                              </h2>
+                            </AnimatedLink>
                             <div className={styles.info}>
                               {i === 0 && <><div className={styles.tag}>timetable</div><div className={styles.tag}>taimute-burugamireruyo</div></>}
                               {i === 1 && <><div className={styles.tag}>map</div><div className={styles.tag}>bennrinamappugatukaeruyo</div></>}
                               {i === 2 && <><div className={styles.tag}>events</div><div className={styles.tag}>ibentogasubetewakaruyo</div></>}
                               {i === 3 && <><div className={styles.tag}>reserve</div><div className={styles.tag}>ibentowoyoyakudekiruyo tukurunomendoudatta</div></>}
                               {i === 4 && <><div className={styles.tag}>news</div><div className={styles.tag}>osirasewonoseteruyo</div></>}
+                              {i === 5 && <><div className={styles.tag}>goods</div><div className={styles.tag}>tenukiguzzuitirandayo</div></>}
+                              {i === 6 && <><div className={styles.tag}>pamphlet</div><div className={styles.tag}>yomikomiosoikedopanfugamireruyo</div></>}
                             </div>
                           </div>
                         </div>
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}>
-                              {/* <video
+                              <video
                                 src={
                                   i === 0 ? "/home_tools/timetable_3.mp4" :
                                   i === 1 ? "/home_tools/map_3.mp4" :
-                                  i === 2 ? "/home_tools/search_3.mp4" :
+                                  i === 2 ? "/home_tools/events_3.mp4" :
                                   i === 3 ? "/home_tools/reserve_3.mp4" :
-                                  i === 4 ? "/home_tools/news_3.mp4" : ""
+                                  i === 4 ? "/home_tools/news_3.mp4" :
+                                  i === 5 ? "/home_tools/goods_3.mp4" :
+                                  i === 6 ? "/home_tools/pamphlet_3.mp4" : ""
                                 }
                                 autoPlay
                                 loop
                                 muted
                                 playsInline
                                 style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', top: 0, left: 0}}
-                              /> */}
-                              comingsoon
+                              />
                             </div>
                           </div>
                         )}
@@ -838,31 +911,50 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-
-                {/* <div>
-                  <div
-                    style={{
-                      width: '100%',
-                      minHeight: '40vh',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#fff',
-                      fontSize: '4rem',
-                      fontWeight: 'bold',
-                      letterSpacing: '0.1em',
-                      borderRadius: '2rem',
-                      margin: '3rem 0',
-                      textAlign: 'center',
-                      userSelect: 'none',
-                      fontFamily: "var(--mincho)"
-                    }}
-                  >
-                    COMING SOON
-                  </div>
-                </div> */}
-
               </div>
+            </div>
+
+            <div className={styles.riddle_ranking}>
+              <h1 className={styles.riddle_title}>
+                {isMobile ? (
+                  <>
+                    タイムアタック謎解き<br />ランキング
+                  </>
+                ) : (
+                  "タイムアタック謎解き　ランキング"
+                )}
+              </h1>
+              <div className={styles.riddle_inner}>
+                <div className={styles.ranking}>
+                  <h1>ソロ部門</h1>
+                  <div className={styles.ranking_container}>
+                    {ranking.map((person, i) => (
+                      <div className={styles.person} key={i}>
+                        <div className={styles.profile}>
+                          <Image src="/riddle/crown.svg" alt="Crown" width={50} height={50} className={styles[`crown${i+1}`]} />
+                          <p>{person.name}</p>
+                        </div>
+                        <p className={styles.time}>{formatTime(person.time)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className={styles.ranking}>
+                  <h1>タッグ部門</h1>
+                  <div className={styles.ranking_container}>
+                    {tagRanking.map((person, i) => (
+                      <div className={styles.person} key={i}>
+                        <div className={styles.profile}>
+                          <Image src="/riddle/crown.svg" alt="Crown" width={50} height={50} className={styles[`crown${i+1}`]} />
+                          <p>{person.name}</p>
+                        </div>
+                        <p className={styles.time}>{formatTime(person.time)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <p className={styles.riddle_location}>@高校2-1</p>
             </div>
 
           </div>

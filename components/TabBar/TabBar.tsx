@@ -65,7 +65,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
       // 開く
       if (isDesktop) {
         gsap.to(contentRef.current, {
-          width: 900,
+          width: 1100,
           duration: 0.5,
           ease: "power2.out",
           onComplete: () => {
@@ -74,7 +74,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
         });
       } else {
         gsap.to(contentRef.current, {
-          height: 400,
+          height: 500,
           duration: 0.5,
           ease: "power2.out",
           onComplete: () => {
@@ -334,6 +334,7 @@ export default forwardRef<HTMLDivElement>((props, ref) => {
     { label: "Reserve", to: "/reserve" },
     { label: "Goods", to: "/goods" },
     { label: "News", to: "/news" },
+    { label: "Pamphlet", to: "/pamphlet" },
   ];
 
   // ホバーアニメーション

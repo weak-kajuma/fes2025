@@ -119,67 +119,69 @@ const NewsSlider = ({ items, isMobile, onItemClick }: NewsSliderProps) => {
   }, [items, isMobile]);
 
   return (
-    <div ref={wrapperRef} className={styles.news_list_wrapper} style={{ position: "relative" }}>
-      {isMobile ? (
-        <ul className={styles.list} style={{ display: 'flex', flexDirection: 'column' }}>
-          {items.map(item => (
-            <li
-              key={item.id}
-              className={styles.list_item}
-              onClick={e => {
-                if (clickDisabledRef.current) return;
-                if (onItemClick) onItemClick(item);
-                else router.push(`/news/${item.id}`);
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              <div className={styles.image}>
-                {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-              </div>
-              <p className={styles.type_text}>{item.type}</p>
-              <div className={styles.main_text}>
-                <h4 className={styles.title}>{item.title}</h4>
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        [0, 1, 2].map(idx => (
-          <ul ref={listRefs[idx]} className={styles.list} key={"list" + idx}>
+    <div className={styles.wrapper}>
+      <div ref={wrapperRef} className={styles.news_list_wrapper} style={{ position: "relative" }}>
+        {isMobile ? (
+          <ul className={styles.list} style={{ display: 'flex', flexDirection: 'column' }}>
             {items.map(item => (
               <li
-                key={item.id + "_" + idx}
+                key={item.id}
                 className={styles.list_item}
                 onClick={e => {
                   if (clickDisabledRef.current) return;
                   if (onItemClick) onItemClick(item);
+                  else router.push(`/news/${item.id}`);
                 }}
                 style={{ cursor: 'pointer' }}
               >
-                <Link
-                  href={`/news/${item.id}`}
-                  draggable={false}
-                  onClick={e => {
-                    if (clickDisabledRef.current) {
-                      e.preventDefault();
-                      return;
-                    }
-                  }}
-                >
-                  <div className={styles.image}>
-                    {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                  </div>
-                  <p className={styles.type_text}>{item.type}</p>
-                  <div className={styles.main_text}>
-                    <h4 className={styles.title}>{item.title}</h4>
-                    <div className={styles.button}>詳細</div>
-                  </div>
-                </Link>
+                <div className={styles.image}>
+                  {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                </div>
+                <p className={styles.type_text}>{item.type}</p>
+                <div className={styles.main_text}>
+                  <h4 className={styles.title}>{item.title}</h4>
+                </div>
               </li>
             ))}
           </ul>
-        ))
-      )}
+        ) : (
+          [0, 1, 2].map(idx => (
+            <ul ref={listRefs[idx]} className={styles.list} key={"list" + idx}>
+              {items.map(item => (
+                <li
+                  key={item.id + "_" + idx}
+                  className={styles.list_item}
+                  onClick={e => {
+                    if (clickDisabledRef.current) return;
+                    if (onItemClick) onItemClick(item);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Link
+                    href={`/news/${item.id}`}
+                    draggable={false}
+                    onClick={e => {
+                      if (clickDisabledRef.current) {
+                        e.preventDefault();
+                        return;
+                      }
+                    }}
+                  >
+                    <div className={styles.image}>
+                      {item.imgUrl && <img src={item.imgUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                    </div>
+                    <p className={styles.type_text}>{item.type}</p>
+                    <div className={styles.main_text}>
+                      <h4 className={styles.title}>{item.title}</h4>
+                      <div className={styles.button}>詳細</div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ))
+        )}
+      </div>
     </div>
   );
 };

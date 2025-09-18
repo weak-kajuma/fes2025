@@ -5,9 +5,6 @@
 	will-change: transform;
 	user-select: none;
 	white-space: nowrap;
-	position: absolute;
-	top: 0;
-	left: 0;
 }
 .list_item {
 	min-width: 30rem;
@@ -21,15 +18,11 @@
 		margin-right: 0 !important;
 	}
 }
+
 .news_list_wrapper {
 	width: auto;
-  /* display: flex; */
-  height: 50dvh;
-  position: relative;
-
-	@media screen and (max-width: 1000px) {
-		height: 100dvh;
-	}
+	position: relative;
+	height: auto;
 }
 
 .list {
@@ -37,6 +30,11 @@
 	list-style-type: none;
 	will-change: transform;
 	user-select: none;
+	top: 0;
+
+	@media screen and (min-width: 1000px) {
+		position: absolute;
+	}
 
 	@media screen and (max-width: 1000px) {
 		width: 100%;
