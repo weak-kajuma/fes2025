@@ -50,8 +50,8 @@ export const useScrollSmoother = () => {
 				smoothTouch = 0.01;
 			} else if (width > 768 && width <= 1200) {
 				// タブレット
-				smooth = 1;
-				smoothTouch = 0.01;
+				smooth = .5;
+				smoothTouch = 0.000001;
 			} else {
 				// PC
 				smooth = 2;
