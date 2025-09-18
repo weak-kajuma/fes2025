@@ -1,26 +1,26 @@
 [
   {
     "id": 1,
-    "answer": ["finding", "Finding", "FINDING"]
+    "answer": ["wait", "Wait", "WAIT"]
   },
   {
     "id": 2,
-    "answer": ["knew", "Knew", "KNEW"]
+    "answer": ["finding", "Finding", "FINDING"]
   },
   {
     "id": 3,
-    "answer": ["sunday", "Sunday", "SUNDAY"]
+    "answer": ["risk", "Risk", "RISK"]
   },
   {
     "id": 4,
-    "answer": ["sugar", "Sugar", "SUGAR"]
+    "answer": ["know", "Know", "KNOW"]
   },
   {
     "id": 5,
-    "answer": ["doll", "Doll", "DOLL"]
+    "answer": ["son", "Son", "SON"]
   },
   {
     "id": 6,
-    "answer": ["piano", "Piano", "PIANO"]
+    "answer": ["and", "And", "AND"]
   }
 ]
