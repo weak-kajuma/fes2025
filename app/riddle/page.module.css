@@ -5,6 +5,17 @@
   position: relative;
   font-family: var(--mincho);
 
+  .notice {
+    position: absolute;
+    top: 0px;
+    right: 10%;
+    text-align: center;
+    font-size: 0.8rem;
+    color: black;
+    opacity: .5;
+    z-index: 20;
+  }
+
   .backDesign {
     position: relative;
     top: 0;
@@ -85,35 +96,71 @@
     }
 
     .content {
-      display: grid;
-      gap: 20px;
-      position: absolute;
+      position: relative;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      grid-template-columns: repeat(6, 1fr);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 
-      @media screen and (max-width: 1400px) {
-        grid-template-columns: repeat(3, 1fr);
+      .links {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: repeat(6, 1fr);
+
+        @media screen and (max-width: 1400px) {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media screen and (max-width: 600px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .toAnswer {
+          max-width: 180px;
+          width: 30vw;
+          height: 100px;
+          border: 2px solid #cb3826;
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          color: #cb3826;
+          background: white;
+          transition: background 0.3s, color 0.3s, border 0.3s;
+        }
+        .solved {
+          background: #cb3826;
+          color: white;
+        }
       }
+
+
+    }
+  }
+  h2 {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    color: black;
+    width: 100%;
+
+    span {
+      color: #cb3826;
+      font-weight: bold;
+      font-size: 4rem;
 
       @media screen and (max-width: 600px) {
-        grid-template-columns: repeat(2, 1fr);
+        font-size: 3rem;
       }
+    }
 
-
-      .toAnswer {
-        max-width: 180px;
-        width: 30vw;
-        height: 100px;
-        background-color: #cb3826;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        color: white;
-      }
+    @media screen and (max-width: 600px) {
+      bottom: 15%;
     }
   }
 }
