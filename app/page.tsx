@@ -587,7 +587,6 @@ export default function Home() {
 
   useEffect(() => {
     // --- 本番データ取得処理（元に戻すときはコメント解除） ---
-    /*
     async function fetchRanking() {
       const { data, error } = await supabase
         .from("riddle_ta_result")
@@ -612,14 +611,6 @@ export default function Home() {
     }
     fetchRanking();
     fetchTagRanking();
-    */
-    // --- ダミーデータ（テスト用） ---
-    setRanking([
-
-    ]);
-    setTagRanking([
-
-    ]);
   }, []);
 
 
@@ -783,21 +774,42 @@ export default function Home() {
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}>
-                              <video
+                              <Image
                                 src={
-                                  i === 0 ? "/home_tools/timetable_2.mp4" :
-                                  i === 1 ? "/home_tools/map_2.mp4" :
-                                  i === 2 ? "/home_tools/events_2.mp4" :
-                                  i === 3 ? "/home_tools/reserve_2.mp4" :
-                                  i === 4 ? "/home_tools/news_2.mp4" :
-                                  i === 5 ? "/home_tools/goods_2.mp4" :
-                                  i === 6 ? "/home_tools/pamphlet_2.mp4" : ""
+                                  i === 0
+                                    ? "/home_tools/timetable_1.png"
+                                    : i === 1
+                                    ? "/home_tools/map_1.png"
+                                    : i === 2
+                                    ? "/home_tools/events_1.png"
+                                    : i === 3
+                                    ? "/home_tools/reserve_1.png"
+                                    : i === 4
+                                    ? "/home_tools/news_1.png"
+                                    : i === 5
+                                    ? "/home_tools/goods_1.png"
+                                    : i === 6
+                                    ? "/home_tools/pamphlet_1.png"
+                                    : ""
                                 }
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', top: 0, left: 0}}
+                                alt={
+                                  i === 0
+                                    ? "Time Table"
+                                    : i === 1
+                                    ? "Map"
+                                    : i === 2
+                                    ? "Search"
+                                    : i === 3
+                                    ? "Reserve"
+                                    : i === 4
+                                    ? "News"
+                                    : i === 5
+                                    ? "Goods"
+                                    : i === 6
+                                    ? "Pamphlet"
+                                    : ""
+                                }
+                                fill
                               />
                             </div>
                           </div>
@@ -845,21 +857,42 @@ export default function Home() {
                         {!(isMobile || isTablet) && (
                           <div className={styles.img}>
                             <div className={styles.img_inner}>
-                              <video
+                              <Image
                                 src={
-                                  i === 0 ? "/home_tools/timetable_3.mp4" :
-                                  i === 1 ? "/home_tools/map_3.mp4" :
-                                  i === 2 ? "/home_tools/events_3.mp4" :
-                                  i === 3 ? "/home_tools/reserve_3.mp4" :
-                                  i === 4 ? "/home_tools/news_3.mp4" :
-                                  i === 5 ? "/home_tools/goods_3.mp4" :
-                                  i === 6 ? "/home_tools/pamphlet_3.mp4" : ""
+                                  i === 0
+                                    ? "/home_tools/timetable_1.png"
+                                    : i === 1
+                                    ? "/home_tools/map_1.png"
+                                    : i === 2
+                                    ? "/home_tools/events_1.png"
+                                    : i === 3
+                                    ? "/home_tools/reserve_1.png"
+                                    : i === 4
+                                    ? "/home_tools/news_1.png"
+                                    : i === 5
+                                    ? "/home_tools/goods_1.png"
+                                    : i === 6
+                                    ? "/home_tools/pamphlet_1.png"
+                                    : ""
                                 }
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', top: 0, left: 0}}
+                                alt={
+                                  i === 0
+                                    ? "Time Table"
+                                    : i === 1
+                                    ? "Map"
+                                    : i === 2
+                                    ? "Search"
+                                    : i === 3
+                                    ? "Reserve"
+                                    : i === 4
+                                    ? "News"
+                                    : i === 5
+                                    ? "Goods"
+                                    : i === 6
+                                    ? "Pamphlet"
+                                    : ""
+                                }
+                                fill
                               />
                             </div>
                           </div>
