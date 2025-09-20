@@ -587,7 +587,6 @@ export default function Home() {
 
   useEffect(() => {
     // --- 本番データ取得処理（元に戻すときはコメント解除） ---
-    /*
     async function fetchRanking() {
       const { data, error } = await supabase
         .from("riddle_ta_result")
@@ -612,14 +611,6 @@ export default function Home() {
     }
     fetchRanking();
     fetchTagRanking();
-    */
-    // --- ダミーデータ（テスト用） ---
-    setRanking([
-
-    ]);
-    setTagRanking([
-
-    ]);
   }, []);
 
 
