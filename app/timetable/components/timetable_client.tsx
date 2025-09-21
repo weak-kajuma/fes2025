@@ -51,7 +51,7 @@ export default function Timetable_Client() {
 
   const title_Ref = useRef<HTMLHeadingElement>(null);
   const railRef = useRef<HTMLDivElement>(null);
-  const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0].value);
+  const [selectedDate, setSelectedDate] = useState<string>(dateOptions[1].value);
   const [selectedArea, setSelectedArea] = useState<string[]>([]);
   const [maxSelectableAreas, setMaxSelectableAreas] = useState<number>(3);
   const [allEventsData, setAllEventsData] = useState<Record<string, EventsByLocation[] | undefined>>({});
